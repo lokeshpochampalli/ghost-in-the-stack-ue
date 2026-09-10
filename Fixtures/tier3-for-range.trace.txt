@@ -1,0 +1,64 @@
+-- tier3-for-range
+-- covers: Tier 3: for over range in its one, two and three argument forms.
+
+000  literal    L1:15-16     d2  3
+001  call       L1:9-17      d1  range(3) -> 3 values
+002* iterate    L1-4         d0  for i=0 (iteration 1)
+003  name       L2:10-11     d2  i -> 0
+004  call       L2:4-12      d1  print(0) -> None  | out "0"
+005* expr       L2:4-12      d0  print(i) -> None
+006* iterate    L1-4         d0  for i=1 (iteration 2)
+007  name       L2:10-11     d2  i -> 1
+008  call       L2:4-12      d1  print(1) -> None  | out "1"
+009* expr       L2:4-12      d0  print(i) -> None
+010* iterate    L1-4         d0  for i=2 (iteration 3)
+011  name       L2:10-11     d2  i -> 2
+012  call       L2:4-12      d1  print(2) -> None  | out "2"
+013* expr       L2:4-12      d0  print(i) -> None
+014* iterate    L1-4         d0  for i: loop ends after 3
+015  literal    L4:15-16     d2  1
+016  literal    L4:18-19     d2  4
+017  call       L4:9-20      d1  range(1, 4) -> 3 values
+018* iterate    L4-7         d0  for i=1 (iteration 1)
+019  name       L5:10-11     d2  i -> 1
+020  call       L5:4-12      d1  print(1) -> None  | out "1"
+021* expr       L5:4-12      d0  print(i) -> None
+022* iterate    L4-7         d0  for i=2 (iteration 2)
+023  name       L5:10-11     d2  i -> 2
+024  call       L5:4-12      d1  print(2) -> None  | out "2"
+025* expr       L5:4-12      d0  print(i) -> None
+026* iterate    L4-7         d0  for i=3 (iteration 3)
+027  name       L5:10-11     d2  i -> 3
+028  call       L5:4-12      d1  print(3) -> None  | out "3"
+029* expr       L5:4-12      d0  print(i) -> None
+030* iterate    L4-7         d0  for i: loop ends after 3
+031  literal    L7:15-16     d2  0
+032  literal    L7:18-19     d2  6
+033  literal    L7:21-22     d2  2
+034  call       L7:9-23      d1  range(0, 6, 2) -> 3 values
+035* iterate    L7-9         d0  for i=0 (iteration 1)
+036  name       L8:10-11     d2  i -> 0
+037  call       L8:4-12      d1  print(0) -> None  | out "0"
+038* expr       L8:4-12      d0  print(i) -> None
+039* iterate    L7-9         d0  for i=2 (iteration 2)
+040  name       L8:10-11     d2  i -> 2
+041  call       L8:4-12      d1  print(2) -> None  | out "2"
+042* expr       L8:4-12      d0  print(i) -> None
+043* iterate    L7-9         d0  for i=4 (iteration 3)
+044  name       L8:10-11     d2  i -> 4
+045  call       L8:4-12      d1  print(4) -> None  | out "4"
+046* expr       L8:4-12      d0  print(i) -> None
+047* iterate    L7-9         d0  for i: loop ends after 3
+
+-- outcome: completed
+-- statements: 21  steps: 48
+-- printed:
+   0
+   1
+   2
+   1
+   2
+   3
+   0
+   2
+   4

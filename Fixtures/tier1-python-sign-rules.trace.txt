@@ -1,0 +1,40 @@
+-- tier1-python-sign-rules
+-- covers: Tier 1: // floors toward negative infinity and % takes the divisor sign.
+
+000  literal    L2:7-8       d4  7
+001  unaryop    L2:6-8       d3  -7 -> -7
+002  literal    L2:12-13     d3  2
+003  binop      L2:6-13      d2  -7 // 2 -> -4
+004  call       L2:0-14      d1  print(-4) -> None  | out "-4"
+005* expr       L2:0-14      d0  print(-7 // 2) -> None
+006  literal    L3:7-8       d4  7
+007  unaryop    L3:6-8       d3  -7 -> -7
+008  literal    L3:11-12     d3  3
+009  binop      L3:6-12      d2  -7 % 3 -> 2
+010  call       L3:0-13      d1  print(2) -> None  | out "2"
+011* expr       L3:0-13      d0  print(-7 % 3) -> None
+012  literal    L4:6-7       d3  7
+013  literal    L4:11-12     d4  3
+014  unaryop    L4:10-12     d3  -3 -> -3
+015  binop      L4:6-12      d2  7 % -3 -> -2
+016  call       L4:0-13      d1  print(-2) -> None  | out "-2"
+017* expr       L4:0-13      d0  print(7 % -3) -> None
+018  literal    L5:6-7       d3  4
+019  literal    L5:10-11     d3  2
+020  binop      L5:6-11      d2  4 / 2 -> 2.0
+021  call       L5:0-12      d1  print(2.0) -> None  | out "2.0"
+022* expr       L5:0-12      d0  print(4 / 2) -> None
+023  literal    L6:6-7       d3  4
+024  literal    L6:11-12     d3  2
+025  binop      L6:6-12      d2  4 // 2 -> 2
+026  call       L6:0-13      d1  print(2) -> None  | out "2"
+027* expr       L6:0-13      d0  print(4 // 2) -> None
+
+-- outcome: completed
+-- statements: 5  steps: 28
+-- printed:
+   -4
+   2
+   -2
+   2.0
+   2

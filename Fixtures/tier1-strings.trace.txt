@@ -1,0 +1,46 @@
+-- tier1-strings
+-- covers: Tier 1: concatenation, repetition, len, and conversion.
+
+000  literal    L1:8-14      d1  'cold'
+001* assign     L1:0-14      d0  label='cold'
+002  literal    L2:9-17      d1  ' store'
+003* assign     L2:0-17      d0  suffix=' store'
+004  name       L3:7-12      d2  label -> 'cold'
+005  name       L3:15-21     d2  suffix -> ' store'
+006  binop      L3:7-21      d1  label + suffix -> 'cold store'
+007* assign     L3:0-21      d0  full='cold store'
+008  literal    L4:7-10      d2  '-'
+009  literal    L4:13-15     d2  12
+010  binop      L4:7-15      d1  "-" * 12 -> '------------'
+011* assign     L4:0-15      d0  rule='------------'
+012  name       L6:6-10      d2  full -> 'cold store'
+013  call       L6:0-11      d1  print('cold store') -> None  | out "cold store"
+014* expr       L6:0-11      d0  print(full) -> None
+015  name       L7:6-10      d2  rule -> '------------'
+016  call       L7:0-11      d1  print('------------') -> None  | out "------------"
+017* expr       L7:0-11      d0  print(rule) -> None
+018  name       L8:10-14     d3  full -> 'cold store'
+019  call       L8:6-15      d2  len('cold store') -> 10
+020  call       L8:0-16      d1  print(10) -> None  | out "10"
+021* expr       L8:0-16      d0  print(len(full)) -> None
+022  literal    L9:6-14      d3  'depth '
+023  literal    L9:21-22     d4  4
+024  call       L9:17-23     d3  str(4) -> '4'
+025  binop      L9:6-23      d2  "depth " + str(4) -> 'depth 4'
+026  call       L9:0-24      d1  print('depth 4') -> None  | out "depth 4"
+027* expr       L9:0-24      d0  print("depth " + str(4)) -> None
+028  literal    L10:10-14    d4  '42'
+029  call       L10:6-15     d3  int('42') -> 42
+030  literal    L10:18-19    d3  1
+031  binop      L10:6-19     d2  int("42") + 1 -> 43
+032  call       L10:0-20     d1  print(43) -> None  | out "43"
+033* expr       L10:0-20     d0  print(int("42") + 1) -> None
+
+-- outcome: completed
+-- statements: 9  steps: 34
+-- printed:
+   cold store
+   ------------
+   10
+   depth 4
+   43

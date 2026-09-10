@@ -1,0 +1,47 @@
+-- tier3-while
+-- covers: Tier 3: while, and the iteration steps the scrubber collapses.
+
+000  literal    L2:9-10      d1  0
+001* assign     L2:0-10      d0  purges=0
+002  name       L4:6-12      d2  purges -> 0
+003  literal    L4:15-16     d2  3
+004  compare    L4:6-16      d1  purges < 3 -> True
+005* iterate    L4-8         d0  while purges < 3 -> True (iteration 1)
+006  name       L5:10-16     d2  purges -> 0
+007  call       L5:4-17      d1  print(0) -> None  | out "0"
+008* expr       L5:4-17      d0  print(purges) -> None
+009  literal    L6:14-15     d1  1
+010* augassign  L6:4-15      d0  purges=1
+011  name       L4:6-12      d2  purges -> 1
+012  literal    L4:15-16     d2  3
+013  compare    L4:6-16      d1  purges < 3 -> True
+014* iterate    L4-8         d0  while purges < 3 -> True (iteration 2)
+015  name       L5:10-16     d2  purges -> 1
+016  call       L5:4-17      d1  print(1) -> None  | out "1"
+017* expr       L5:4-17      d0  print(purges) -> None
+018  literal    L6:14-15     d1  1
+019* augassign  L6:4-15      d0  purges=2
+020  name       L4:6-12      d2  purges -> 2
+021  literal    L4:15-16     d2  3
+022  compare    L4:6-16      d1  purges < 3 -> True
+023* iterate    L4-8         d0  while purges < 3 -> True (iteration 3)
+024  name       L5:10-16     d2  purges -> 2
+025  call       L5:4-17      d1  print(2) -> None  | out "2"
+026* expr       L5:4-17      d0  print(purges) -> None
+027  literal    L6:14-15     d1  1
+028* augassign  L6:4-15      d0  purges=3
+029  name       L4:6-12      d2  purges -> 3
+030  literal    L4:15-16     d2  3
+031  compare    L4:6-16      d1  purges < 3 -> False
+032* iterate    L4-8         d0  while purges < 3 -> False, loop ends after 3
+033  literal    L8:6-12      d2  'done'
+034  call       L8:0-13      d1  print('done') -> None  | out "done"
+035* expr       L8:0-13      d0  print("done") -> None
+
+-- outcome: completed
+-- statements: 12  steps: 36
+-- printed:
+   0
+   1
+   2
+   done

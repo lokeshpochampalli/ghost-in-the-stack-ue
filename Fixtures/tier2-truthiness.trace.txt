@@ -1,0 +1,19 @@
+-- tier2-truthiness
+-- covers: Tier 2: what counts as false.
+
+000  literal    L1:3-4       d1  0
+001* branch     L1-3         d0  if 0 -> False
+002  literal    L3:3-5       d1  ''
+003* branch     L3-5         d0  if "" -> False
+004  literal    L5:3-7       d1  None
+005* branch     L5-7         d0  if None -> False
+006  literal    L7:3-4       d1  1
+007* branch     L7-9         d0  if 1 -> True
+008  literal    L8:10-23     d2  'one is true'
+009  call       L8:4-24      d1  print('one is true') -> None  | out "one is true"
+010* expr       L8:4-24      d0  print("one is true") -> None
+
+-- outcome: completed
+-- statements: 5  steps: 11
+-- printed:
+   one is true

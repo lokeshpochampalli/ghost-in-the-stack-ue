@@ -1,0 +1,21 @@
+-- station-effects
+-- covers: Station effect builtins. The evaluator emits, it never applies.
+
+000  literal    L2:11-17     d2  'main'
+001  call       L2:0-18      d1  open_valve('main') -> None  | fx set valve.main=true
+002* expr       L2:0-18      d0  open_valve("main") -> None
+003  literal    L3:11-12     d2  3
+004  call       L3:0-13      d1  set_heater(3) -> None  | fx set heater=3
+005* expr       L3:0-13      d0  set_heater(3) -> None
+006  literal    L4:5-6       d2  2
+007  call       L4:0-7       d1  wait(2) -> None  | fx wait 2
+008* expr       L4:0-7       d0  wait(2) -> None
+009  literal    L5:4-19      d2  'cycle started'
+010  call       L5:0-20      d1  log('cycle started') -> None  | fx log "cycle started"
+011* expr       L5:0-20      d0  log("cycle started") -> None
+012  literal    L6:12-18     d2  'main'
+013  call       L6:0-19      d1  close_valve('main') -> None  | fx set valve.main=false
+014* expr       L6:0-19      d0  close_valve("main") -> None
+
+-- outcome: completed
+-- statements: 5  steps: 15

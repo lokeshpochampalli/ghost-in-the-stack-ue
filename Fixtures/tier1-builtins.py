@@ -1,0 +1,6 @@
+print(len("beacon"))
+print(int(3.9))
+print(float(3))
+print(str(True))
+print(bool(0))
+print(bool("a"))
