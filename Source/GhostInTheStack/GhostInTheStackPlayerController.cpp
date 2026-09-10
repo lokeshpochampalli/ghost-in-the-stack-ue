@@ -194,14 +194,34 @@ void AGhostInTheStackPlayerController::GitsClose()
 	CloseTerminal();
 }
 
+void AGhostInTheStackPlayerController::GitsRewind()
+{
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsRewind: %d"), S->BeginRewind()); }
+}
+
+void AGhostInTheStackPlayerController::GitsResume()
+{
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { S->EndRewind(); UE_LOG(LogGhostInTheStack, Display, TEXT("GitsResume: state=%d"), (int32)S->GetPlayState()); }
+}
+
+void AGhostInTheStackPlayerController::GitsVerifyRewind()
+{
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>())
+	{
+		FString Report;
+		const bool bOk = S->VerifyRewind(Report);
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsVerifyRewind: ok=%d %s"), bOk, *Report);
+	}
+}
+
 void AGhostInTheStackPlayerController::GitsStatus()
 {
 	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>())
 	{
 		const FGitsRunSummary& Sum = S->GetLastSummary();
-		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsStatus: ran=%d refused=%d outcome=%s steps=%d statements=%d playing=%d head=%d output=[%s] minFps=%.1f avgFps=%.1f frames=%d worstFrame=%d message=%s"),
-			Sum.bRan, Sum.bRefused, *Sum.Outcome, Sum.Steps, Sum.Statements, S->IsPlaying(), S->GetPlayIndex(), *FString::Join(Sum.Output, TEXT(" | ")),
-			S->PlaybackMinFps, S->PlaybackAvgFps, S->PlaybackFrames, S->PlaybackWorstFrame, *Sum.Message);
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsStatus: ran=%d refused=%d outcome=%s steps=%d statements=%d state=%d head=%d clock=%.2f output=[%s] minFps=%.1f avgFps=%.1f frames=%d worstFrame=%d maxSeekMs=%.2f message=%s"),
+			Sum.bRan, Sum.bRefused, *Sum.Outcome, Sum.Steps, Sum.Statements, (int32)S->GetPlayState(), S->GetPlayIndex(), S->GetPlayClock(), *FString::Join(Sum.Output, TEXT(" | ")),
+			S->PlaybackMinFps, S->PlaybackAvgFps, S->PlaybackFrames, S->PlaybackWorstFrame, S->MaxSeekMs, *Sum.Message);
 		for (const auto& P : S->GetCurrentWorld()) { UE_LOG(LogGhostInTheStack, Display, TEXT("  world %s=%s"), *P.Key, *P.Value.ToText()); }
 	}
 }

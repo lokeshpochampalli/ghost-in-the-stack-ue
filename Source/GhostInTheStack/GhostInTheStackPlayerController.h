@@ -57,6 +57,12 @@ public:
 	UFUNCTION(Exec) void GitsStatus();
 	/** Closes the terminal overlay. */
 	UFUNCTION(Exec) void GitsClose();
+	/** Starts rewinding the last run (as if the rewind key were held). */
+	UFUNCTION(Exec) void GitsRewind();
+	/** Releases the rewind: playback resumes forward. */
+	UFUNCTION(Exec) void GitsResume();
+	/** Seeks backwards through every statement, checking world and line at each, and logs the timing. */
+	UFUNCTION(Exec) void GitsVerifyRewind();
 
 protected:
 

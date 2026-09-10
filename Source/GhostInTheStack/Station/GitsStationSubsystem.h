@@ -2,14 +2,16 @@
 //
 // One per world. Systems register here by id and pose themselves from the folded world
 // at the play head (CLAUDE.md: systems animate, the interpreter decides; rewind is index
-// stepping). Phase 2 plays forward at a readable pace; Phase 3 adds scrubbing backwards
-// on the same play head.
+// stepping). Playback runs forward one statement per beat; holding rewind runs the same
+// clock backwards through the recorder, and every system poses itself from the step the
+// clock is on.
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "Tickable.h"
 #include "Interpreter/GitsTypes.h"
+#include "Recorder/GitsRecorder.h"
 #include "GitsStationSubsystem.generated.h"
 
 class UGitsScript;
@@ -20,6 +22,21 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FGitsOnStepChanged, int32 /*StepIndex*/);
 DECLARE_MULTICAST_DELEGATE(FGitsOnRunStarted);
 DECLARE_MULTICAST_DELEGATE(FGitsOnRunFinished);
 DECLARE_MULTICAST_DELEGATE_OneParam(FGitsOnMessage, const FString& /*Message*/);
+
+UENUM(BlueprintType)
+enum class EGitsPlayState : uint8
+{
+	/** No trace yet. */
+	Idle,
+	/** The clock runs forward, one statement per beat. */
+	Playing,
+	/** Rewind is held: the clock runs backward. */
+	Rewinding,
+	/** The clock reached the end; the world is as the run left it. */
+	Finished
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FGitsOnPlayStateChanged, EGitsPlayState);
 
 /** What a run produced, for displays and tests. */
 USTRUCT(BlueprintType)
@@ -65,8 +82,28 @@ public:
 	// --- playback
 	bool HasTrace() const { return Trace.Steps.Num() > 0; }
 	const FGitsTrace& GetTrace() const { return Trace; }
+	const FGitsRecorder& GetRecorder() const { return Recorder; }
+	/** The script asset the current trace came from, so a terminal knows whether the run is its own. */
+	UGitsScript* GetCurrentScript() const { return CurrentScript.Get(); }
 	int32 GetPlayIndex() const { return PlayIndex; }
-	bool IsPlaying() const { return bPlaying; }
+	UFUNCTION(BlueprintPure, Category = "Station")
+	EGitsPlayState GetPlayState() const { return State; }
+	bool IsPlaying() const { return State == EGitsPlayState::Playing; }
+	bool IsRewinding() const { return State == EGitsPlayState::Rewinding; }
+	/** World time of the play head, in seconds of playback. */
+	float GetPlayClock() const { return PlayClock; }
+
+	// --- rewind (Phase 3): hold to scrub the clock backwards, release to resume forward
+	UFUNCTION(BlueprintCallable, Category = "Station")
+	bool BeginRewind();
+	UFUNCTION(BlueprintCallable, Category = "Station")
+	void EndRewind();
+	/**
+	 * Seeks through every statement boundary backwards, checking that the folded world and the
+	 * current line match the trace at each, and timing each step change. For the acceptance
+	 * report; restores the play head afterwards.
+	 */
+	bool VerifyRewind(FString& Report);
 	/** The world folded up to the play head. */
 	const FGitsWorldState& GetCurrentWorld() const { return CurrentWorld; }
 	/** Everything printed up to the play head. */
@@ -80,12 +117,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station")
 	float StatementsPerSecond = 2.5f;
 
+	/** Rewind pace as a multiple of playback pace when the key is first held... */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station")
+	float RewindSpeedStart = 1.f;
+	/** ...ramping to this after RewindRampSeconds, so a long loop is not a long wait. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station")
+	float RewindSpeedMax = 4.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station")
+	float RewindRampSeconds = 3.f;
+
 	FGitsOnStepChanged OnStepChanged;
 	FGitsOnRunStarted OnRunStarted;
 	FGitsOnRunFinished OnRunFinished;
 	FGitsOnMessage OnMessage;
+	FGitsOnPlayStateChanged OnPlayStateChanged;
 
-	/** Frame time sampled while playback runs, for the acceptance report. */
+	/** Wall time of the last and the slowest step change since the run started, in ms. */
+	float LastSeekMs = 0.f;
+	float MaxSeekMs = 0.f;
+
+	/** Frame time sampled over the current playing or rewinding stretch, for the acceptance report. */
 	float PlaybackMinFps = 0.f;
 	float PlaybackAvgFps = 0.f;
 	int32 PlaybackFrames = 0;
@@ -106,15 +157,20 @@ private:
 	FGitsWorldState BuildInitialWorld() const;
 	void PoseSystems(bool bInstant);
 	void AdvancePlayHead(int32 NewIndex);
+	void SetState(EGitsPlayState NewState);
+	void SampleFrame(float DeltaTime);
 
 	UPROPERTY() TArray<TObjectPtr<AGitsSystemActor>> Systems;
 	FGitsTrace Trace;
+	FGitsRecorder Recorder;
+	TWeakObjectPtr<UGitsScript> CurrentScript;
 	FGitsWorldState CurrentWorld;
 	FGitsRunSummary LastSummary;
 	FString LastMessage;
 	int32 PlayIndex = -1;
-	bool bPlaying = false;
+	EGitsPlayState State = EGitsPlayState::Idle;
 	float PlayClock = 0.f;
+	float RewindHeldSeconds = 0.f;
 	/** Source of the last run per script asset path, for "nothing has changed". */
 	TMap<FString, FString> LastRunSource;
 	double FpsAccum = 0.0;

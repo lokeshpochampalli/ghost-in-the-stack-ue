@@ -136,7 +136,13 @@ FGitsRunSummary AGitsTerminal::RunCurrent()
 
 void AGitsTerminal::HandleRunStarted()
 {
-	if (!bThisTerminalRan) { return; }
+	// A run belongs to the terminal whose script it came from; the others go quiet.
+	if (UGitsStationSubsystem* S = Station()) { bThisTerminalRan = Script && S->GetCurrentScript() == Script; }
+	if (!bThisTerminalRan)
+	{
+		if (HighlightLine != 0 || Status != IdlePrompt) { HighlightLine = 0; Status = IdlePrompt; bStatusIsError = false; RefreshScreen(); }
+		return;
+	}
 	HighlightLine = 0;
 	Status = TEXT("running");
 	bStatusIsError = false;
@@ -149,7 +155,9 @@ void AGitsTerminal::HandleStep(int32 StepIndex)
 	if (UGitsStationSubsystem* S = Station())
 	{
 		HighlightLine = S->CurrentLine();
-		Status = FString::Printf(TEXT("running  line %d"), HighlightLine);
+		if (S->IsRewinding()) { Status = HighlightLine > 0 ? FString::Printf(TEXT("rewind  line %d"), HighlightLine) : TEXT("rewind  before the first line"); }
+		else if (S->IsPlaying()) { Status = HighlightLine > 0 ? FString::Printf(TEXT("running  line %d"), HighlightLine) : TEXT("running"); }
+		else { Status = TEXT("done"); }
 		bStatusIsError = false;
 	}
 	RefreshScreen();

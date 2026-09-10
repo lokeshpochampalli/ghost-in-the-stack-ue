@@ -100,7 +100,14 @@ bool UGitsStationSubsystem::Run(UGitsScript* Script, const FString& Source, FGit
 		}
 	}
 	const AGitsStation* Station = FindStation();
-	const FGitsWorldState Initial = BuildInitialWorld();
+	// The world carries over between runs: a door the last script opened is still open when
+	// the next script starts. The station's initial values only fill in what no run has set.
+	FGitsWorldState Initial = BuildInitialWorld();
+	if (HasTrace())
+	{
+		const FGitsWorldState Carried = GitsTrace::WorldAt(Trace, Trace.Steps.Num() - 1);
+		for (const auto& P : Carried) { Initial.Add(P.Key, P.Value); }
+	}
 	FGitsWorldOracle Oracle;
 	if (Station)
 	{
@@ -117,6 +124,7 @@ bool UGitsStationSubsystem::Run(UGitsScript* Script, const FString& Source, FGit
 
 	Trace = GitsEvaluator::Run(Parsed.Program, Initial, Oracle, RunOptions);
 	LastRunSource.Add(Key, Normalised);
+	CurrentScript = Script;
 
 	Summary.bRan = true;
 	Summary.Steps = Trace.Steps.Num();
@@ -131,16 +139,19 @@ bool UGitsStationSubsystem::Run(UGitsScript* Script, const FString& Source, FGit
 	LastMessage = Summary.Message;
 	LastSummary = Summary;
 
-	// Start playback from the level's world, before the first step.
+	// Start playback from the world before the first step.
+	Recorder.Build(Trace, StatementsPerSecond);
 	CurrentWorld = Initial;
 	PlayIndex = -1;
 	PlayClock = 0.f;
-	bPlaying = Trace.Steps.Num() > 0;
+	RewindHeldSeconds = 0.f;
 	PlaybackMinFps = 0.f; PlaybackAvgFps = 0.f; PlaybackFrames = 0; FpsAccum = 0.0;
 	PlaybackWorstFrame = -1; bSkipNextFrameSample = true;
+	LastSeekMs = 0.f; MaxSeekMs = 0.f;
 	for (AGitsSystemActor* S : Systems) { if (S) { S->PoseFromWorld(CurrentWorld, true); } }
+	SetState(Trace.Steps.Num() > 0 ? EGitsPlayState::Playing : EGitsPlayState::Finished);
 	OnRunStarted.Broadcast();
-	if (!bPlaying) { FinishPlayback(); }
+	if (Trace.Steps.Num() == 0) { FinishPlayback(); }
 	return true;
 }
 
@@ -190,47 +201,117 @@ void UGitsStationSubsystem::AdvancePlayHead(int32 NewIndex)
 void UGitsStationSubsystem::SeekTo(int32 StepIndex, bool bInstant)
 {
 	if (!HasTrace()) { return; }
+	const double Started = FPlatformTime::Seconds();
 	AdvancePlayHead(StepIndex);
 	PoseSystems(bInstant);
 	OnStepChanged.Broadcast(PlayIndex);
+	LastSeekMs = (float)((FPlatformTime::Seconds() - Started) * 1000.0);
+	MaxSeekMs = FMath::Max(MaxSeekMs, LastSeekMs);
+}
+
+void UGitsStationSubsystem::SetState(EGitsPlayState NewState)
+{
+	if (State == NewState) { return; }
+	State = NewState;
+	// Frame samples describe one stretch of playing or rewinding, so the report can tell
+	// them apart; the frame that changed state (a key, a console command) is not sampled.
+	if (State == EGitsPlayState::Playing || State == EGitsPlayState::Rewinding)
+	{
+		PlaybackMinFps = 0.f; PlaybackAvgFps = 0.f; PlaybackFrames = 0; FpsAccum = 0.0; PlaybackWorstFrame = -1;
+		bSkipNextFrameSample = true;
+	}
+	else if (PlaybackFrames > 0) { PlaybackAvgFps = (float)(PlaybackFrames / FpsAccum); }
+	OnPlayStateChanged.Broadcast(State);
 }
 
 void UGitsStationSubsystem::FinishPlayback()
 {
-	bPlaying = false;
+	PlayClock = Recorder.IsBuilt() ? Recorder.TotalTime() : 0.f;
 	if (HasTrace() && PlayIndex < Trace.Steps.Num() - 1) { SeekTo(Trace.Steps.Num() - 1, false); }
-	if (PlaybackFrames > 0) { PlaybackAvgFps = (float)(PlaybackFrames / FpsAccum); }
+	SetState(EGitsPlayState::Finished);
 	OnRunFinished.Broadcast();
 	OnMessage.Broadcast(LastMessage);
 }
 
-void UGitsStationSubsystem::Tick(float DeltaTime)
+// --- rewind ---------------------------------------------------------------------------------
+
+bool UGitsStationSubsystem::BeginRewind()
 {
-	if (!bPlaying || !HasTrace()) { return; }
+	if (!HasTrace() || !Recorder.IsBuilt()) { return false; }
+	if (State == EGitsPlayState::Rewinding) { return true; }
+	if (State == EGitsPlayState::Finished) { PlayClock = Recorder.TotalTime(); }
+	RewindHeldSeconds = 0.f;
+	SetState(EGitsPlayState::Rewinding);
+	OnStepChanged.Broadcast(PlayIndex);
+	return true;
+}
+
+void UGitsStationSubsystem::EndRewind()
+{
+	if (State != EGitsPlayState::Rewinding) { return; }
+	// Release to resume: the clock runs forward again from wherever it got to.
+	SetState(EGitsPlayState::Playing);
+	OnStepChanged.Broadcast(PlayIndex);
+}
+
+bool UGitsStationSubsystem::VerifyRewind(FString& Report)
+{
+	if (!HasTrace() || !Recorder.IsBuilt()) { Report = TEXT("no trace"); return false; }
+	const int32 SavedIndex = PlayIndex;
+	const EGitsPlayState SavedState = State;
+	const TArray<int32>& Bounds = Recorder.Boundaries();
+	int32 Checked = 0, Mismatches = 0;
+	float Worst = 0.f;
+	for (int32 b = Bounds.Num() - 1; b >= 0; --b)
+	{
+		SeekTo(Bounds[b], true);
+		Worst = FMath::Max(Worst, LastSeekMs);
+		++Checked;
+		const FGitsWorldState Expected = GitsTrace::WorldAt(Trace, Bounds[b]);
+		bool bSame = Expected.Num() == CurrentWorld.Num();
+		for (const auto& P : Expected) { const FGitsWorldValue* V = CurrentWorld.Find(P.Key); if (!V || !(*V == P.Value)) { bSame = false; } }
+		const int32 ExpectedLine = Trace.Steps[Bounds[b]].Span.Start.Line;
+		if (!bSame || CurrentLine() != ExpectedLine) { ++Mismatches; }
+	}
+	SeekTo(SavedIndex, true);
+	SetState(SavedState);
+	Report = FString::Printf(TEXT("verified %d boundaries backwards, mismatches=%d, slowest step change %.2f ms"), Checked, Mismatches, Worst);
+	return Mismatches == 0;
+}
+
+// --- the clock ------------------------------------------------------------------------------
+
+void UGitsStationSubsystem::SampleFrame(float DeltaTime)
+{
 	// The first tick after Run() carries the delta of the frame that ran the interpreter (and,
 	// under automation, the remote command that triggered it), so it is not a playback frame.
-	if (bSkipNextFrameSample) { bSkipNextFrameSample = false; }
-	else if (DeltaTime > 0.f)
+	if (bSkipNextFrameSample) { bSkipNextFrameSample = false; return; }
+	if (DeltaTime <= 0.f) { return; }
+	const float Fps = 1.f / DeltaTime;
+	if (PlaybackFrames == 0 || Fps < PlaybackMinFps) { PlaybackMinFps = Fps; PlaybackWorstFrame = PlaybackFrames; }
+	FpsAccum += DeltaTime;
+	++PlaybackFrames;
+}
+
+void UGitsStationSubsystem::Tick(float DeltaTime)
+{
+	if (!HasTrace() || !Recorder.IsBuilt()) { return; }
+	if (State == EGitsPlayState::Playing)
 	{
-		const float Fps = 1.f / DeltaTime;
-		if (PlaybackFrames == 0 || Fps < PlaybackMinFps) { PlaybackMinFps = Fps; PlaybackWorstFrame = PlaybackFrames; }
-		FpsAccum += DeltaTime;
-		++PlaybackFrames;
+		SampleFrame(DeltaTime);
+		PlayClock += DeltaTime;
+		if (PlayClock >= Recorder.TotalTime()) { FinishPlayback(); return; }
+		const int32 Step = Recorder.StepAtTime(PlayClock);
+		if (Step != PlayIndex) { SeekTo(Step, false); }
 	}
-	PlayClock += DeltaTime;
-	const float Interval = 1.f / FMath::Max(0.1f, StatementsPerSecond);
-	while (bPlaying && PlayClock >= Interval)
+	else if (State == EGitsPlayState::Rewinding)
 	{
-		PlayClock -= Interval;
-		// Advance to the next statement boundary, so the pace is one statement per beat.
-		int32 Next = PlayIndex + 1;
-		while (Next < Trace.Steps.Num() && !Trace.Steps[Next].bIsStatementBoundary) { ++Next; }
-		if (Next >= Trace.Steps.Num())
-		{
-			FinishPlayback();
-			return;
-		}
-		SeekTo(Next, false);
-		if (PlayIndex >= Trace.Steps.Num() - 1) { FinishPlayback(); return; }
+		SampleFrame(DeltaTime);
+		RewindHeldSeconds += DeltaTime;
+		const float Ramp = RewindRampSeconds > 0.f ? FMath::Clamp(RewindHeldSeconds / RewindRampSeconds, 0.f, 1.f) : 1.f;
+		const float Speed = FMath::Lerp(RewindSpeedStart, RewindSpeedMax, Ramp);
+		PlayClock = FMath::Max(0.f, PlayClock - DeltaTime * Speed);
+		const int32 Step = Recorder.StepAtTime(PlayClock);
+		if (Step != PlayIndex) { SeekTo(Step, false); }
 	}
 }

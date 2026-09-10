@@ -53,6 +53,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* InteractAction;
 
+	/** Rewind Input Action: hold to scrub the last run backwards, release to resume */
+	UPROPERTY(EditAnywhere, Category ="Input")
+	class UInputAction* RewindAction;
+
 	/** How far the player can reach, in cm */
 	UPROPERTY(EditAnywhere, Category ="Input")
 	float InteractReach = 320.f;
@@ -87,6 +91,10 @@ protected:
 	/** Uses whatever interactable the camera points at, within reach */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoInteract();
+
+	/** Handles rewind hold and release */
+	virtual void DoRewindStart();
+	virtual void DoRewindEnd();
 
 protected:
 

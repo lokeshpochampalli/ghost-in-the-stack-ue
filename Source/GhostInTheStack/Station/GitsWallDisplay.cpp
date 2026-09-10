@@ -45,6 +45,7 @@ void AGitsWallDisplay::BeginPlay()
 		StartHandle = S->OnRunStarted.AddUObject(this, &AGitsWallDisplay::HandleRun);
 		FinishHandle = S->OnRunFinished.AddUObject(this, &AGitsWallDisplay::HandleRun);
 		MessageHandle = S->OnMessage.AddUObject(this, &AGitsWallDisplay::HandleMessage);
+		StateHandle = S->OnPlayStateChanged.AddUObject(this, &AGitsWallDisplay::HandleState);
 	}
 	Refresh();
 }
@@ -57,6 +58,7 @@ void AGitsWallDisplay::EndPlay(const EEndPlayReason::Type Reason)
 		S->OnRunStarted.Remove(StartHandle);
 		S->OnRunFinished.Remove(FinishHandle);
 		S->OnMessage.Remove(MessageHandle);
+		S->OnPlayStateChanged.Remove(StateHandle);
 	}
 	Super::EndPlay(Reason);
 }
@@ -84,6 +86,51 @@ FString AGitsWallDisplay::DescribeEffect(const FGitsEffect& E)
 	return TEXT("");
 }
 
+void AGitsWallDisplay::HandleState(EGitsPlayState NewState)
+{
+	Refresh();
+}
+
+// While rewinding the display is VANT's recorder: where the play head is, which loop it is
+// inside (one line, not every iteration flickering past), the bindings at that step and the
+// world as it was. Nothing here is simulated; it is all read off the trace at the step.
+void AGitsWallDisplay::BuildRewindView(FGitsScreenModel& M, UGitsStationSubsystem* S) const
+{
+	const FGitsTrace& T = S->GetTrace();
+	const FGitsRecorder& R = S->GetRecorder();
+	const int32 Head = S->GetPlayIndex();
+	const int32 Beat = R.BeatOfStep(Head);
+	M.Title = TEXT("RECORDER  rewind");
+	if (Head < 0)
+	{
+		M.MessageLines.Add(TEXT("VANT: before the first line ran."));
+		M.Status = TEXT("release to run it again");
+		return;
+	}
+	const FGitsStep& Step = T.Steps[Head];
+	M.MessageLines.Add(FString::Printf(TEXT("line %d   %s"), Step.Span.Start.Line, *Step.Label));
+	for (const FGitsLoopContext& L : R.LoopsAt(Head)) { M.MessageLines.Add(TEXT("VANT: ") + L.Describe()); }
+	TArray<TPair<FString, FGitsValue>> Bindings = GitsTrace::BindingsAt(T, Head);
+	if (Bindings.Num() > 0)
+	{
+		FString Line;
+		for (const auto& B : Bindings)
+		{
+			if (B.Value.Kind == EGitsValueKind::Function) { continue; }
+			Line += (Line.IsEmpty() ? TEXT("") : TEXT("   ")) + B.Key + TEXT(" = ") + GitsValue::Repr(B.Value);
+		}
+		if (!Line.IsEmpty()) { M.MessageLines.Add(Line); }
+	}
+	const FGitsWorldState& World = S->GetCurrentWorld();
+	TArray<FString> Keys;
+	for (const auto& P : World) { if (!P.Key.StartsWith(TEXT("sensor")) && P.Key != GitsWorld::LogCountKey) { Keys.Add(P.Key); } }
+	Keys.Sort();
+	FString State;
+	for (const FString& K : Keys) { State += (State.IsEmpty() ? TEXT("") : TEXT("   ")) + K + TEXT("=") + World[K].ToText(); }
+	if (!State.IsEmpty()) { M.MessageLines.Add(State); }
+	M.Status = FString::Printf(TEXT("statement %d of %d   step %d of %d"), Beat + 1, R.NumBeats(), Head + 1, T.Steps.Num());
+}
+
 void AGitsWallDisplay::Refresh()
 {
 	if (!Screen) { return; }
@@ -92,6 +139,12 @@ void AGitsWallDisplay::Refresh()
 	FGitsScreenModel M;
 	M.Title = Title;
 	UGitsStationSubsystem* S = Station();
+	if (S && S->HasTrace() && S->IsRewinding())
+	{
+		BuildRewindView(M, S);
+		W->SetModel(M);
+		return;
+	}
 	if (!S || !S->HasTrace())
 	{
 		if (S && S->GetLastSummary().bParseFailed) { M.MessageLines.Add(TEXT("!") + S->GetLastMessage()); M.Status = TEXT("did not run"); M.bStatusIsError = true; }
