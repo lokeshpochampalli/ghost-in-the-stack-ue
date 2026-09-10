@@ -24,6 +24,16 @@ build order and status. `SETUP.md` is the machine setup, in order.
 "C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat" GhostInTheStackEditor Win64 Development -Project="D:\ghost-in-the-stack-ue\GhostInTheStack\GhostInTheStack.uproject" -WaitMutex
 ```
 
+## Interpreter tests
+
+```
+Toolsun_interpreter_tests.cmd
+```
+
+Runs the 45 interpreter automation tests headlessly, including the thirty golden traces, and prints
+the pass and fail counts. In the editor they run from Session Frontend or the MCP automation
+toolset under `GhostInTheStack.Interpreter`. Details in `docs/INTERPRETER-PORT.md`.
+
 ## MCP server
 
 The editor starts the MCP server on launch; `bAutoStartServer=True` is committed in

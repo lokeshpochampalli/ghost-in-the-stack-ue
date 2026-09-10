@@ -9,6 +9,7 @@ Python, not Unreal's.
 | `ue_remote_python.py` | Runs a Python file inside the running editor via the Python plugin's remote execution (multicast `239.0.0.1:6766`, enabled in `DefaultEngine.ini`). `python Tools/ue_remote_python.py script.py`. Use this for anything the MCP toolsets can't do; the Programmatic toolset's sandbox cannot import `unreal`. |
 | `blender_socket.py` | Talks to the Blender MCP addon socket on `127.0.0.1:9876`. `python Tools/blender_socket.py get_scene_info`, or `execute_code '{"file": "C:/path/script.py"}'` to run a script in Blender. |
 | `export_kit.py` | The kit export pipeline. Reads `Content/Kit/Kit.blend`, exports every `SM_Kit_<Name>` mesh in the `Kit` collection to `Content/Kit/SM_Kit_<Name>.glb` with its `UCX_SM_Kit_<Name>` collision mesh, transforms applied, Y-up. Run headless from the project root: `"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background Content/Kit/Kit.blend --python Tools/export_kit.py` |
+| `run_interpreter_tests.cmd` | Runs the `GhostInTheStack.Interpreter` automation tests headlessly via `UnrealEditor-Cmd` and prints pass/fail counts from `Saved/Logs/GitsTests.log`. |
 | `import_kit.py` | The Unreal side of the pipeline. Imports every `Content/Kit/SM_Kit_*.glb` through Interchange into `/Game/Kit`, flattens Interchange's per-file folders, adds a box collision if no UCX came through, saves. Re-import in place, so placed actors keep their mesh. Run through `ue_remote_python.py`. |
 
 ## Kit pipeline rules
