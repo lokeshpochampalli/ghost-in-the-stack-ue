@@ -4,7 +4,7 @@ Persistent context for Claude Code. Read this before doing anything in this repo
 
 ## What this is
 
-**Ghost in the Stack** — a first-person 3D game in Unreal Engine 5.7 that teaches introductory
+**Ghost in the Stack** — a first-person 3D game in Unreal Engine 5.8 that teaches introductory
 programming by having the player read, predict and repair the code that runs a derelict station.
 Every line of code moves something in the world, and every bug does something you can laugh at.
 
@@ -45,8 +45,10 @@ go in.
 
 ## Stack
 
-- Unreal Engine 5.7, C++ project, first-person template as the base
-- Unreal MCP (5.7 backport of Epic's plugin) + Epic's Claude Code plugin — see `SETUP.md`
+- Unreal Engine 5.8 (launcher build), C++ project, first-person template as the base
+- Unreal MCP: Epic's official `ModelContextProtocol` plugin, shipped prebuilt with 5.8, plus
+  `AllToolsets`; Epic's `unreal-engine-skills-for-claude-code` plugin on the Claude side — see
+  `SETUP.md`
 - Blender 4.x via Blender MCP for the modular kit
 - Git with LFS for `Content/`
 
@@ -83,7 +85,8 @@ docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN
 - **Commit before every MCP-driven editing session.** MCP tools mutate live editor state and can
   move or delete assets in one call. A clean working copy is the undo.
 - **Update `docs/` in the same commit when implementation diverges from spec.**
-- **`docs/DECISIONS.md` is append-only and human-written.** Continue from ADR-026. Say when a
+- **`docs/DECISIONS.md` is append-only and human-written.** ADR-025 is reserved for the
+  cycle-two redesign decision and has not been written yet; continue from ADR-026. Say when a
   decision is needed and stop; do not write entries.
 - **Commits:** `phase-N: short imperative summary`.
 

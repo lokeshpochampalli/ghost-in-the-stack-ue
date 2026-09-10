@@ -161,7 +161,7 @@ the language spec is authoritative, and where any interpreter behaviour question
 
 ## 5. Engine decision
 
-**Unreal Engine 5.7**, with Blender for the modular station kit.
+**Unreal Engine 5.8**, with Blender for the modular station kit.
 
 **Why Unreal now, having argued against it in August.** The objection was tooling: Claude Code
 could not author Blueprints, see the editor, or iterate quickly. Epic now ships an official MCP
@@ -170,8 +170,11 @@ materials, Niagara, screenshots and automation tests. Third-party servers add he
 in-play viewport capture. The objection is gone. What Unreal was always best at — a lit, physical,
 atmospheric 3D place — is exactly what the supervisor asked for.
 
-**Why 5.7 and not 5.8.** The official MCP plugin is 5.8 and experimental, and reportedly needs a
-source build. The 5.7 backport is working and 5.7 is a launcher build. Stability over novelty.
+**Why 5.8, revising the earlier 5.7 call.** The plan had been 5.7 with a community backport of
+the MCP plugin, on the belief that the official 5.8 plugin needed a source build. It does not:
+the 5.8 launcher build ships it prebuilt under `Engine/Plugins/Experimental`, with the toolset
+plugins beside it. The official plugin removes a third-party compile risk, and 5.8 is a launcher
+build too. Revised in Phase 0, 10 September 2026.
 
 **Why C++ for the interpreter, not Blueprints.** The interpreter is a tree-walking evaluator with
 recorded traces. That is what C++ is for. Blueprints for world interaction, sequencing, UI wiring.

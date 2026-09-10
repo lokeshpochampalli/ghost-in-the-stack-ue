@@ -10,22 +10,26 @@ driver, Unreal compiles from the command line. No Visual Studio IDE.
 - **GPU.** Lumen needs DX12 / Shader Model 6 — any RTX or RX 6000+. On integrated graphics or a
   GTX 10-series, turn Lumen off (Project Settings → Rendering → Global Illumination → None) and
   use baked lighting. One setting, nothing else in the plan changes.
-- **Disk.** 120 GB free. UE 5.7 ~60 GB, Build Tools ~10 GB, project grows.
+- **Disk.** 120 GB free. UE 5.8 ~60 GB, Build Tools ~10 GB, project grows.
 - **RAM.** 32 GB comfortable, 16 GB workable with only the editor and Cursor open.
 - **OS.** Windows 10/11.
 
 ---
 
-## 1. Compiler — Build Tools for Visual Studio 2022
+## 1. Compiler — Build Tools for Visual Studio 2026 (2022 also works)
 
 Unreal needs the MSVC compiler, not the Visual Studio IDE.
 
 1. Microsoft's Visual Studio downloads page → scroll to **Tools for Visual Studio** → **Build
-   Tools for Visual Studio 2022** → download and run.
+   Tools for Visual Studio** → download and run.
 2. Workload: tick **Desktop development with C++**.
-3. Individual components tab, confirm ticked: **MSVC v143 – VS 2022 C++ x64/x86 build tools**,
-   **Windows 11 SDK** (10 is fine too), **.NET 8.0 SDK**.
+3. Individual components tab, confirm ticked: **MSVC v143 – VC++ 2022 C++ x64/x86 build tools
+   (v14.44-17.14)** — the x64/x86 entry, not the ARM one; UE 5.8 picks the 14.44 toolset —
+   **Windows 11 SDK** (10.0.28000 verified), **.NET Framework 4.8 SDK**, **.NET 8.0 runtime**.
 4. Install. ~10 GB.
+
+If only the ARM variant of the toolset is ticked, the template compiles but linking fails with
+`LNK1181: cannot open input file 'delayimp.lib'`. Tick the x64/x86 component and rebuild.
 
 Must be done **before** step 5. The C++ project template refuses to generate without a compiler.
 
@@ -44,9 +48,9 @@ Community with the same workload and never open it. Same toolchain.
 
 ---
 
-## 3. Unreal Engine 5.7
+## 3. Unreal Engine 5.8
 
-1. Epic Games Launcher → Unreal Engine → Library → **+** → 5.7.x.
+1. Epic Games Launcher → Unreal Engine → Library → **+** → 5.8.x.
 2. Options: untick **Editor symbols for debugging** (saves ~20 GB). Target platforms: Windows only.
 3. Install. Go do something else; it's an hour.
 
@@ -72,14 +76,19 @@ Claude Code holds the MCP connection to Unreal and is the driver for every phase
 
 ## 5. Create the project
 
-1. Epic Launcher → Launch UE 5.7 → **Games** → **First Person** → **C++** → Starter Content
+1. Epic Launcher → Launch UE 5.8 → **Games** → **First Person** → **C++** → Starter Content
    **off**, Raytracing **off** → name `GhostInTheStack`, location somewhere with the space, e.g.
    `D:\ghost-in-the-stack-ue`.
 2. It will compile the template. Wait for the editor to open.
-3. **Edit → Editor Preferences → General → Source Code → Source Code Editor → Visual Studio
-   Code**. Then **File → Generate Visual Studio Code Project**. This writes
-   `GhostInTheStack.code-workspace` and a `.vscode/` folder with build tasks and IntelliSense
-   config.
+3. Generate the VS Code project files from the command line (no editor needed):
+   ```
+   "C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat" -projectfiles -project="D:\ghost-in-the-stack-ue\GhostInTheStack\GhostInTheStack.uproject" -game -engine -vscode
+   ```
+   This writes `GhostInTheStack.code-workspace` (build tasks and launch configs live inside it)
+   and a `.vscode/` folder with IntelliSense config. Both contain absolute machine paths and are
+   gitignored, as is the generated `.ignore`; that file tells ripgrep to skip `docs/` and
+   `Fixtures/`, so delete those two lines after regenerating or Claude Code's search will not
+   see the spec.
 4. Open `GhostInTheStack.code-workspace` in Cursor. Unreal won't auto-launch Cursor because it
    doesn't recognise it as VS Code; you open the workspace yourself. That's the only difference
    from the VS Code flow.
@@ -111,7 +120,7 @@ Saved/
 *.suo
 ```
 
-Then `git add . && git commit -m "phase-0: UE 5.7 first-person C++ template"`.
+Then `git add . && git commit -m "phase-0: UE 5.8 first-person C++ template"`.
 
 ---
 
@@ -133,24 +142,42 @@ fixtures and the spec, not from the TypeScript. Commit.
 
 ## 8. Unreal MCP — the Unreal side
 
-Epic's official ModelContextProtocol plugin ships with 5.8 and is experimental; use the 5.7
-backport (`thecodebrozilla/UE_MCP`).
+Epic's official `ModelContextProtocol` plugin ships prebuilt with the 5.8 launcher build under
+`Engine/Plugins/Experimental`, alongside `ToolsetRegistry` and the `Toolsets/` family. No clone,
+no plugin compile. All of this is already committed in this repo; the steps are recorded so it can
+be redone on a fresh machine.
 
-1. In the project root: `git clone https://github.com/thecodebrozilla/UE_MCP Plugins/UE_MCP`
-   — the repo root *is* a `Plugins/` directory.
-2. Open the project. It asks to rebuild plugins → **Yes**. C++ compile, several minutes.
-3. Edit → Plugins → confirm enabled: **ModelContextProtocol**, **ToolsetRegistry**,
-   **AllToolsets**, **Python Editor Script Plugin**, **Editor Scripting Utilities**. Restart if
-   asked.
-4. Editor console (`~` key): `ModelContextProtocol.StartServer`
-5. Then: `ModelContextProtocol.GenerateClientConfig ClaudeCode` — writes `.mcp.json` in the
-   project root, which Claude Code reads.
-6. Optional: set `bAutoStartServer=True` under
-   `[/Script/ModelContextProtocolEngine.ModelContextProtocolSettings]` in
-   `Config/DefaultEngine.ini` so you never type step 4 again.
+1. In `GhostInTheStack.uproject`, the `Plugins` array enables **ModelContextProtocol** (with
+   `TargetAllowList: ["Editor"]` so the server never ships in a packaged game),
+   **ToolsetRegistry**, **AllToolsets**, **PythonScriptPlugin**, **EditorScriptingUtilities**.
+   `AllToolsets` is the aggregator that pulls in the 21 toolset plugins; without it the server
+   starts but exposes no tools.
+2. Rebuild from the command line after any `.uproject` change:
+   ```
+   "C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat" GhostInTheStackEditor Win64 Development -Project="D:\ghost-in-the-stack-ue\GhostInTheStack\GhostInTheStack.uproject" -WaitMutex
+   ```
+3. Auto-start is on via `Config/DefaultEditorPerProjectUserSettings.ini`:
+   ```ini
+   [/Script/ModelContextProtocolEngine.ModelContextProtocolSettings]
+   bAutoStartServer=True
+   ```
+   It has to be that file, not `DefaultEngine.ini`: the settings class is declared
+   `config=EditorPerProjectUserSettings`, so the engine ini is never consulted for it.
+4. Manual control from the editor console (`~` key): `ModelContextProtocol.StartServer`,
+   `ModelContextProtocol.StopServer`, `ModelContextProtocol.RefreshTools`.
+5. `ModelContextProtocol.GenerateClientConfig ClaudeCode` rewrites `.mcp.json` from the current
+   port and path. The committed one is hand-written to the same shape: HTTP transport,
+   `http://localhost:8000/mcp`, server name `unreal-mcp`.
 
-**Time-box: one hour.** If the backport won't compile by then, go to section 10 and use the
-fallback as primary. Don't lose an evening to a community port.
+Fallback, only if the official plugin breaks in a future engine update: `thecodebrozilla/UE_MCP`
+cloned into `Plugins/UE_MCP`. Time-box it to an hour.
+
+**Python inside the editor.** The MCP toolsets cover most editing, but the Programmatic toolset's
+sandbox cannot import `unreal`, and some jobs (glTF import through Interchange, saving the level)
+need real editor Python. `bRemoteExecution=True` is committed under
+`[/Script/PythonScriptPlugin.PythonScriptPluginSettings]` in `Config/DefaultEngine.ini`, so the
+editor listens on multicast `239.0.0.1:6766` (bound to `127.0.0.1`). `Tools/ue_remote_python.py`
+runs a script file there using Epic's own `remote_execution.py` client. See `Tools/README.md`.
 
 ---
 
@@ -159,14 +186,14 @@ fallback as primary. Don't lose an evening to a community port.
 Epic's skills plugin tells Claude Code how to use the tools.
 
 1. Clone `EpicGames/unreal-engine-skills-for-claude-code-plugin` somewhere **outside** the project,
-   e.g. `D:\tools\ue-skills`.
-2. In Cursor's terminal, in the project root, run `claude`, then:
-   ```
-   /plugin marketplace add D:\tools\ue-skills
-   /plugin install unreal-engine-skills-for-claude-code@ue-skills
-   ```
-   (The name after `@` is the folder name you cloned into.)
-3. Verify: `/plugin` shows it enabled. `/mcp` shows `unreal-mcp` connected.
+   to `D:\tools\ue-skills` exactly — the committed `.claude/settings.json` points there.
+2. `.claude/settings.json` (committed) registers that directory as a marketplace named
+   `ue-skills` under `extraKnownMarketplaces` and enables
+   `unreal-engine-skills-for-claude-code@ue-skills`. Anyone who trusts the project folder is
+   prompted to install it. If that ever fails, the plugin is also on Anthropic's official
+   marketplace: `/plugin install unreal-engine-skills-for-claude-code@claude-plugins-official`.
+3. Verify: `/plugin` shows it enabled. `/mcp` shows `unreal-mcp` connected. The project-scoped
+   `.mcp.json` server needs a one-time approval the first time `claude` runs in this folder.
 4. Ask: "List all actors in the current level." If it answers with the template actors, done.
 
 The CLI and the extension share `~/.claude`, so the plugin is available in both.
@@ -175,7 +202,8 @@ The CLI and the extension share `~/.claude`, so the plugin is available in both.
 
 ## 10. Fallback, and Phase 2 addition — `remiphilippe/mcp-unreal`
 
-A Go binary plus its own `MCPUnreal` editor plugin, targeting 5.7. Adds headless build and test
+A Go binary plus its own `MCPUnreal` editor plugin, targeting 5.7 at the time of writing; check
+5.8 support before relying on it. Adds headless build and test
 without the editor open, **viewport capture during play**, and **player control in PIE**. Phase 2
 onward wants those for screenshots of the door opening.
 
@@ -189,6 +217,12 @@ alongside section 8 without conflict. If section 8 failed, this is primary.
 Confirm Blender MCP is connected from Cursor's Claude Code: "Create a 1 m cube in Blender and
 report its dimensions." If it answers, fine. If not, reconnect it before Phase 0 — it's on the
 Phase 0 acceptance list.
+
+Two halves: the Blender addon (Edit → Preferences → Add-ons → Blender MCP → **Connect to MCP
+server**) listens on `127.0.0.1:9876`, and the `blender-mcp` server (`uvx blender-mcp`, stdio)
+bridges it to Claude Code. The server must be registered for **this project's** scope or
+globally; a registration made from another folder is invisible here. With the addon connected,
+any script can also drive it directly over the socket, which is how Phase 0's cube was made.
 
 ---
 
@@ -207,7 +241,8 @@ Three passes → say **"go"**.
 
 ## Daily
 
-- Launch editor (server auto-starts if you did 8.6; otherwise `ModelContextProtocol.StartServer`).
+- Launch editor; the MCP server auto-starts (setting committed in
+  `Config/DefaultEditorPerProjectUserSettings.ini`). Otherwise `ModelContextProtocol.StartServer`.
 - Open the `.code-workspace` in Cursor.
 - `git status` clean; commit if not. MCP tools mutate live editor state and can delete assets
   in one call. A clean tree is the undo.
