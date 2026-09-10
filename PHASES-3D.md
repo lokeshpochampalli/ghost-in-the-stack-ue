@@ -29,7 +29,7 @@ Rules that hold throughout:
 
 | Phase | State |
 |---|---|
-| 0 — Project and toolchain | not started |
+| 0 — Project and toolchain | done 10 Sep 2026: builds clean, MCP connected, Blender cube in the level with collision, screenshots in the report. Outstanding: kit `.blend` and export pipeline script, GitHub remote |
 | 1 — Interpreter port | not started |
 | 2 — First system: a door | not started |
 | 3 — Recorder and rewind | not started |
@@ -46,8 +46,9 @@ Rules that hold throughout:
 
 ## Phase 0 — Project and toolchain
 
-UE 5.7 C++ project, first-person template as the starting point. Install the Unreal MCP plugin
-(5.7 backport) and the Claude Code plugin; confirm `list actors` works. Confirm Blender MCP is
+UE 5.8 C++ project, first-person template as the starting point. Enable Epic's official
+`ModelContextProtocol` plugin (ships with 5.8) plus `AllToolsets`, and Epic's Claude Code skills
+plugin; confirm `list actors` works. Confirm Blender MCP is
 connected. Set up the Blender export pipeline: one `.blend` kit file, one export script, glTF with
 collision, 1 unit = 1 cm, naming `SM_Kit_<Name>`. Export one test cube through it and place it in
 the level.
@@ -66,8 +67,10 @@ C++ module `Interpreter`. Lexer, parser with recognition pass, generator-style e
 one `FStep` per AST node, recorded `FTrace`, `WorldOracle` interface with every read recorded,
 observable-state `Diff`, error catalogue with all 46 codes.
 
-Port the fixture runner: read `tests/fixtures/*/source.py`, produce the compact one-line-per-step
-format, compare byte for byte against the expected file. This runs as an Unreal automation test so
+Port the fixture runner: read `Fixtures/<name>.py`, produce the compact one-line-per-step
+format, compare byte for byte against `Fixtures/<name>.trace.txt`. The fixtures are flat files,
+not one folder per fixture; normalise line endings when reading, since Git checks them out as
+CRLF on Windows. This runs as an Unreal automation test so
 the MCP can trigger it.
 
 **Acceptance:** all 30 golden traces pass byte for byte. Both caps enforced in their own units.
