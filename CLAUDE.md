@@ -71,7 +71,7 @@ Content/
   Scripts/         Ilse's code as DataAssets, one per system
   UI/              terminal, gauge, VANT display widgets
 Fixtures/          the thirty golden traces, read-only
-docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN
+docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN, INTERPRETER-PORT
 ```
 
 ## How to work

@@ -30,7 +30,7 @@ Rules that hold throughout:
 | Phase | State |
 |---|---|
 | 0 — Project and toolchain | done 10 Sep 2026: builds clean, MCP connected, kit pipeline (`Content/Kit/Kit.blend`, `Tools/export_kit.py`, `Tools/import_kit.py`) exports the test cube with collision into the level, screenshots in the report. Outstanding: GitHub remote |
-| 1 — Interpreter port | not started |
+| 1 — Interpreter port | done 10 Sep 2026: all 30 golden traces byte for byte, 45 automation tests green, run headless and through the MCP. See `docs/INTERPRETER-PORT.md` |
 | 2 — First system: a door | not started |
 | 3 — Recorder and rewind | not started |
 | 4 — VANT and prediction | not started |
@@ -63,9 +63,10 @@ level with collision, screenshot in the report.
 
 ## Phase 1 — Interpreter port
 
-C++ module `Interpreter`. Lexer, parser with recognition pass, generator-style evaluator emitting
-one `FStep` per AST node, recorded `FTrace`, `WorldOracle` interface with every read recorded,
-observable-state `Diff`, error catalogue with all 46 codes.
+C++ code under `Source/GhostInTheStack/Interpreter/`. Lexer, parser with recognition pass, an
+evaluator emitting one `FGitsStep` per AST node into a recorded `FGitsTrace` (eager rather than a
+generator; the trace is identical and the caps bound the work), a `WorldOracle` with every read
+recorded, observable-state `Diff`, error catalogue with all 46 codes.
 
 Port the fixture runner: read `Fixtures/<name>.py`, produce the compact one-line-per-step
 format, compare byte for byte against `Fixtures/<name>.trace.txt`. The fixtures are flat files,

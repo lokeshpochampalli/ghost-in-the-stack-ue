@@ -1,0 +1,234 @@
+{
+  "source": "MCP AutomationTestToolset.RunTestsByFilter('GhostInTheStack.Interpreter') on 10 Sep 2026",
+  "passed": 45,
+  "failed": 0,
+  "total": 45,
+  "duration_s": 1.2016814947128296,
+  "tests": [
+    {
+      "name": "GhostInTheStack.Interpreter.Diagnostics.Catalogue",
+      "state": "Success",
+      "duration": 0.1042
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Evaluator.Caps",
+      "state": "Success",
+      "duration": 0.0867
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Evaluator.Oracle",
+      "state": "Success",
+      "duration": 0.0162
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Evaluator.PythonSemantics",
+      "state": "Success",
+      "duration": 0.0131
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Evaluator.RuntimeErrors",
+      "state": "Success",
+      "duration": 0.0138
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Evaluator.Tier4",
+      "state": "Success",
+      "duration": 0.0189
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.a1-l03-cold-store",
+      "state": "Success",
+      "duration": 0.0169
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.outcome-call-depth",
+      "state": "Success",
+      "duration": 0.0291
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.outcome-division-by-zero",
+      "state": "Success",
+      "duration": 0.0172
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.outcome-name-not-defined",
+      "state": "Success",
+      "duration": 0.0193
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.outcome-statement-cap",
+      "state": "Success",
+      "duration": 0.0174
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.outcome-type-mismatch",
+      "state": "Success",
+      "duration": 0.0174
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.station-effects",
+      "state": "Success",
+      "duration": 0.2086
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.station-oracle-read",
+      "state": "Success",
+      "duration": 0.0241
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier1-arithmetic",
+      "state": "Success",
+      "duration": 0.016
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier1-builtins",
+      "state": "Success",
+      "duration": 0.0159
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier1-literals",
+      "state": "Success",
+      "duration": 0.0173
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier1-python-sign-rules",
+      "state": "Success",
+      "duration": 0.0156
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier1-strings",
+      "state": "Success",
+      "duration": 0.0512
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier2-boolean-logic",
+      "state": "Success",
+      "duration": 0.0182
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier2-comparison",
+      "state": "Success",
+      "duration": 0.0177
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier2-conditional",
+      "state": "Success",
+      "duration": 0.0139
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier2-truthiness",
+      "state": "Success",
+      "duration": 0.0157
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-accumulator",
+      "state": "Success",
+      "duration": 0.0152
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-break-continue",
+      "state": "Success",
+      "duration": 0.037
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-for-range",
+      "state": "Success",
+      "duration": 0.0161
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-list-is-a-reference",
+      "state": "Success",
+      "duration": 0.0159
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-lists",
+      "state": "Success",
+      "duration": 0.0154
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-nested-loop",
+      "state": "Success",
+      "duration": 0.0169
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier3-while",
+      "state": "Success",
+      "duration": 0.0157
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier4-function",
+      "state": "Success",
+      "duration": 0.055
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier4-local-scope",
+      "state": "Success",
+      "duration": 0.0166
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier4-nested-calls",
+      "state": "Success",
+      "duration": 0.0166
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier4-recursion",
+      "state": "Success",
+      "duration": 0.0151
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier4-return-forms",
+      "state": "Success",
+      "duration": 0.0162
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Golden.tier4-return-out-of-loop",
+      "state": "Success",
+      "duration": 0.018
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Parser.MalformedInput",
+      "state": "Success",
+      "duration": 0.0158
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Parser.RecognitionCases",
+      "state": "Success",
+      "duration": 0.0187
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Parser.RecognitionMessages",
+      "state": "Success",
+      "duration": 0.0168
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Parser.Recovery",
+      "state": "Success",
+      "duration": 0.0176
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Parser.Structure",
+      "state": "Success",
+      "duration": 0.0171
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Trace.Diff",
+      "state": "Success",
+      "duration": 0.0149
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.GoldenCoverage",
+      "state": "Success",
+      "duration": 0.017
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Lexer",
+      "state": "Success",
+      "duration": 0.0149
+    },
+    {
+      "name": "GhostInTheStack.Interpreter.Values",
+      "state": "Success",
+      "duration": 0.0151
+    }
+  ]
+}
