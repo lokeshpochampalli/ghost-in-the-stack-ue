@@ -134,8 +134,15 @@ void SGitsTerminalEditor::RunScript()
 	AGitsTerminal* T = Terminal.Get();
 	if (!T) { return; }
 	CommitEdit();
-	T->RunCurrent();
+	const FGitsRunSummary Summary = T->RunCurrent();
 	Refresh();
+	// A run that started is watched in the world, not through the overlay. Closing releases
+	// the controller's reference, so hold one until this call returns.
+	if (Summary.bRan)
+	{
+		TSharedRef<SGitsTerminalEditor> KeepAlive = SharedThis(this);
+		if (AGhostInTheStackPlayerController* PC = Controller.Get()) { PC->CloseTerminal(); }
+	}
 }
 
 FReply SGitsTerminalEditor::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent)

@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GhostInTheStack.h"
 #include "Station/GitsInteractable.h"
+#include "Station/GitsStationSubsystem.h"
 #include "Engine/World.h"
 
 AGhostInTheStackCharacter::AGhostInTheStackCharacter()
@@ -66,6 +67,14 @@ void AGhostInTheStackCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		if (InteractAction)
 		{
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AGhostInTheStackCharacter::DoInteract);
+		}
+
+		// Rewinding: held, not toggled
+		if (RewindAction)
+		{
+			EnhancedInputComponent->BindAction(RewindAction, ETriggerEvent::Started, this, &AGhostInTheStackCharacter::DoRewindStart);
+			EnhancedInputComponent->BindAction(RewindAction, ETriggerEvent::Completed, this, &AGhostInTheStackCharacter::DoRewindEnd);
+			EnhancedInputComponent->BindAction(RewindAction, ETriggerEvent::Canceled, this, &AGhostInTheStackCharacter::DoRewindEnd);
 		}
 	}
 	else
@@ -125,6 +134,16 @@ void AGhostInTheStackCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AGhostInTheStackCharacter::DoRewindStart()
+{
+	if (UGitsStationSubsystem* S = GetWorld() ? GetWorld()->GetSubsystem<UGitsStationSubsystem>() : nullptr) { S->BeginRewind(); }
+}
+
+void AGhostInTheStackCharacter::DoRewindEnd()
+{
+	if (UGitsStationSubsystem* S = GetWorld() ? GetWorld()->GetSubsystem<UGitsStationSubsystem>() : nullptr) { S->EndRewind(); }
 }
 
 void AGhostInTheStackCharacter::DoInteract()

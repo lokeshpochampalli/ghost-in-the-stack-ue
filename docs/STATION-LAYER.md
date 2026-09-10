@@ -18,6 +18,8 @@ Source/GhostInTheStack/
   UI/
     GitsScreen.*              SGitsScreen (Slate) + UGitsScreenWidget: the shared "phosphor screen"
     GitsTerminalEditor.*      SGitsTerminalEditor: the full-screen overlay while a terminal is in use
+  Recorder/
+    GitsRecorder.*            FGitsRecorder: step index <-> world time, loop contexts for the display
 ```
 
 `CLAUDE.md`'s planned `World/` and `Systems/` folders collapsed into `Station/`: the effect
@@ -32,16 +34,48 @@ system types a folder per concept was noise. Split it when the Systems list grow
    `UGitsStationSubsystem::Run(Script, Source)`.
 3. The subsystem refuses unchanged source per ADR-020 (per script asset, keyed by source text),
    otherwise parses, builds the initial world from `AGitsStation` (`InitialSwitches`,
-   `InitialLevels`), and runs the evaluator with the station's sensors as the oracle. The trace is kept whole.
-4. Playback: the play head advances one **statement boundary** per beat (`StatementsPerSecond`,
-   2.5 by default), folding effects into `CurrentWorld` and calling `PoseFromWorld` on every
-   system. Systems animate towards the pose; they never look at the trace's logic.
-5. Terminal and wall display listen to `OnStepChanged` / `OnRunFinished` / `OnMessage`. The
-   terminal highlights the current line and shows VANT's message; the display lists the log lines,
-   effects and sensor reads the run produced, then the world state it left behind.
+   `InitialLevels`) with the world the previous run left behind laid over it, and runs the
+   evaluator with the station's sensors as the oracle. The trace is kept whole and the
+   recorder is built from it. A run that started closes the overlay: it is watched in the world.
+4. Playback: the clock (`PlayClock`, seconds) runs forward; the recorder maps it to a step, one
+   **statement boundary** per beat (`StatementsPerSecond`, 2.5 by default). Reaching a new step
+   folds effects into `CurrentWorld` and calls `PoseFromWorld` on every system. Systems animate
+   towards the pose; they never look at the trace's logic.
+5. Terminal and wall display listen to `OnStepChanged` / `OnRunFinished` / `OnMessage` /
+   `OnPlayStateChanged`. The terminal highlights the current line and shows VANT's message; the
+   display lists the log lines, effects and sensor reads the run produced, then the world state
+   it left behind.
 
 The play head is a step index. `SeekTo(StepIndex)` poses every system from the world folded up
-to that step, which is what Phase 3's rewind will call; nothing here is simulated backward.
+to that step; nothing here is simulated backward.
+
+## Rewind (the recorder)
+
+`FGitsRecorder::Build(Trace, StatementsPerSecond)` computes, from the trace alone:
+
+- the statement boundaries, one beat each, so `StepAtTime(t)` and `TimeOfStep(i)` map the
+  clock to a step and back (before the first beat the head is `-1`; at `TotalTime()` the run
+  is over and the head is the last step);
+- for every beat, the stack of loops it is inside (`LoopsAt(step)`): loop node, header text,
+  iteration and total. A loop owns every boundary whose span sits inside its own, which is
+  the reference ribbon's rule (ADR-008, `scrubberModel.ts`), so nesting needs no extra state.
+
+Holding rewind (`R`, gamepad left shoulder; `UGitsStationSubsystem::BeginRewind`) puts the
+subsystem in `Rewinding`: the same clock runs backward, ramping from 1.5x to 5x playback
+pace over two seconds so a long loop is not a long wait, and every time the clock crosses a
+beat the head seeks to that boundary. Systems get `PoseFromWorld` with the refolded world and
+animate towards it at their own speed, so the door reverses along its travel and the lights
+dim back down. Releasing (`EndRewind`) resumes forward from wherever the clock got to; rewinding
+to the start and releasing replays the run.
+
+While rewinding the wall display becomes the recorder view: the line and label at the head,
+one `VANT: for notch: iteration 3 of 9` line per enclosing loop instead of every iteration
+flickering past, the bindings at that step, the world at that step, and `statement n of m`.
+The terminal keeps highlighting the executing line with `rewind  line n`.
+
+`GitsVerifyRewind` (console) seeks backwards through every boundary, checks the folded world
+and the current line against `GitsTrace::WorldAt` and the step's span, and reports the slowest
+step change in ms; that is the acceptance evidence for Phase 3.
 
 ## Systems
 
@@ -79,8 +113,13 @@ purpose (24 cd full, 2.5/10 lit). Brighter lamps blow the walls out before the s
   a loop in a Blueprint. Widget Blueprints can still wrap `UGitsScreenWidget` for layout. This
   needs an ADR (ADR-027 candidate).
 - **The trace player was built in Phase 2, not Phase 3.** Statement-per-beat playback needed a
-  play head to make the door open *after* the line runs, so `SeekTo` exists now. Phase 3 adds the
-  recorder's time mapping and the scrub input on top of it.
+  play head to make the door open *after* the line runs, so `SeekTo` came first; Phase 3 put the
+  recorder's clock and the rewind on the same head.
+- **The world carries over between runs.** A run starts from the world the previous run left
+  (a door the airlock script opened stays open while the lights script runs), with the station's
+  initial values filling in what no run has set. The reference had one script per level and
+  no such question. ADR-020's refusal still compares source only; a changed world does not
+  make an unchanged script runnable. Worth an ADR if it stays.
 - **Two new builtins.** `open_door(id)` / `close_door(id)` set `door.<id>`; `set_light(id, level)`
   sets `light.<id>`. The reference language spec lists valves, heaters and pumps; doors and lights
   are what Sector 1 has. Spec update needed in `LANGUAGE-SPEC.md` if they stay.
@@ -91,5 +130,6 @@ purpose (24 cd full, 2.5/10 lit). Brighter lamps blow the walls out before the s
 ## Console commands
 
 For automation and for testing without walking: `GitsUse` (open the nearest terminal's overlay),
-`GitsSetLine <n> <text>`, `GitsRun`, `GitsReset`, `GitsStatus` (run summary, world state and
-playback frame times to the log), `GitsClose`.
+`GitsSetLine <n> <text>`, `GitsRun`, `GitsReset`, `GitsStatus` (run summary, play state, world
+state, playback frame times and the slowest step change to the log), `GitsClose`, `GitsRewind`
+and `GitsResume` (hold and release without a key), `GitsVerifyRewind`.

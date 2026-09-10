@@ -1,7 +1,8 @@
-# Runs inside Unreal's Python (Tools/ue_remote_python.py Tools/setup_phase2_content.py).
-# Phase 2 content: binds the Interact action on the player Blueprint, creates the airlock
-# door script asset, and builds the Sector 1 corridor level with one door, one terminal and
-# one wall display. Safe to re-run: existing assets are updated, the level is rebuilt.
+# Runs inside Unreal's Python (Tools/ue_remote_python.py Tools/setup_sector1_content.py).
+# Sector 1 content, Phases 2 and 3: binds the Interact and Rewind actions on the player
+# Blueprint, creates the script assets, and builds the Sector 1 corridor level with two
+# terminals (the airlock door, the corridor lights), one door, one wall display.
+# Safe to re-run: existing assets are updated, the level is rebuilt.
 import unreal
 
 EAL = unreal.EditorAssetLibrary
@@ -9,19 +10,62 @@ TOOLS = unreal.AssetToolsHelpers.get_asset_tools()
 LES = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
 EAS = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
 
-# --- 1. the player's Interact action -------------------------------------------------------
-ia = EAL.load_asset("/Game/Input/Actions/IA_Interact")
+
+def rotator(rot):
+    # rot is (pitch, yaw, roll) like the editor shows it; unreal.Rotator's positional order is (roll, pitch, yaw)
+    return unreal.Rotator(roll=float(rot[2]), pitch=float(rot[0]), yaw=float(rot[1]))
+
+
+def key(name):
+    k = unreal.Key()
+    k.set_editor_property("key_name", name)
+    return k
+
+
+# --- 1. input actions: Interact (E, gamepad face-left) and Rewind (hold R, gamepad left shoulder)
+def ensure_action(name):
+    path = "/Game/Input/Actions/" + name
+    if EAL.does_asset_exist(path):
+        return EAL.load_asset(path)
+    factory = unreal.InputActionFactory() if hasattr(unreal, "InputActionFactory") else None
+    asset = TOOLS.create_asset(name, "/Game/Input/Actions", unreal.InputAction, factory)
+    asset.set_editor_property("value_type", unreal.InputActionValueType.BOOLEAN)
+    EAL.save_asset(path)
+    return asset
+
+
+def ensure_mapping(imc, action, key_names):
+    have = set()
+    # the live data is in default_key_mappings; the top-level "mappings" property is the deprecated view
+    for m in imc.get_editor_property("default_key_mappings").get_editor_property("mappings"):
+        a = m.get_editor_property("action")
+        if a and a.get_name() == action.get_name():
+            have.add(str(m.get_editor_property("key").get_editor_property("key_name")))
+    for k in key_names:
+        if k not in have:
+            imc.map_key(action, key(k))
+    imc.modify()
+    EAL.save_loaded_asset(imc, only_if_is_dirty=False)
+
+
+ia_interact = ensure_action("IA_Interact")
+ia_rewind = ensure_action("IA_Rewind")
+imc = EAL.load_asset("/Game/Input/IMC_Default")
+ensure_mapping(imc, ia_interact, ["E", "Gamepad_FaceButton_Left"])
+ensure_mapping(imc, ia_rewind, ["R", "Gamepad_LeftShoulder"])
+
 bp_path = "/Game/FirstPerson/Blueprints/BP_FirstPersonCharacter"
 bp_class = unreal.load_class(None, bp_path + ".BP_FirstPersonCharacter_C")
 cdo = unreal.get_default_object(bp_class)
-cdo.set_editor_property("interact_action", ia)
+cdo.set_editor_property("interact_action", ia_interact)
+cdo.set_editor_property("rewind_action", ia_rewind)
 bp = EAL.load_asset(bp_path)
 bp.modify()
-unreal.EditorAssetLibrary.save_loaded_asset(bp, only_if_is_dirty=False)
-print("character InteractAction:", cdo.get_editor_property("interact_action").get_name() if cdo.get_editor_property("interact_action") else None)
+EAL.save_loaded_asset(bp, only_if_is_dirty=False)
+print("character actions:", cdo.get_editor_property("interact_action").get_name(), cdo.get_editor_property("rewind_action").get_name())
 
-# --- 2. the door script --------------------------------------------------------------------
-SCRIPT_SOURCE = """# airlock, inner door
+# --- 2. the scripts --------------------------------------------------------------------------
+DOOR_SOURCE = """# airlock, inner door
 # ilse: the pressure has to match the hab side before this
 # will open. it does now. if it ever doesn't, DON'T force it.
 
@@ -34,23 +78,46 @@ if pressure == target:
 else:
     log("pressure off, holding")
 """
-if not EAL.does_directory_exist("/Game/Scripts"):
-    EAL.make_directory("/Game/Scripts")
-script_path = "/Game/Scripts/DA_Airlock_InnerDoor"
-if EAL.does_asset_exist(script_path):
-    script = EAL.load_asset(script_path)
-else:
-    factory = unreal.DataAssetFactory()
-    factory.set_editor_property("data_asset_class", unreal.GitsScript)
-    script = TOOLS.create_asset("DA_Airlock_InnerDoor", "/Game/Scripts", unreal.GitsScript, factory)
-script.set_editor_property("title", "AIRLOCK 1  inner door")
-script.set_editor_property("source", SCRIPT_SOURCE)
-script.set_editor_property("tier", 2)
-script.set_editor_property("statement_cap", 2000)
-script.set_editor_property("editable_lines", [])
-script.set_editor_property("declared_builtins", ["read_sensor", "log", "open_door", "close_door", "wait"])
-EAL.save_asset(script_path)
-print("script asset:", script.get_path_name(), "| lines:", len(SCRIPT_SOURCE.splitlines()))
+
+LIGHTS_SOURCE = """# corridor lights
+# ilse: the old ballasts pop if you slam them on. bring them
+# up a notch at a time and let each notch settle.
+
+level = 0
+for notch in range(9):
+    level = level + 1
+    set_light("corridor", level)
+    for tick in range(3):
+        wait(1)
+log("corridor lit")
+"""
+
+
+def ensure_script(name, title, source, builtins):
+    if not EAL.does_directory_exist("/Game/Scripts"):
+        EAL.make_directory("/Game/Scripts")
+    path = "/Game/Scripts/" + name
+    if EAL.does_asset_exist(path):
+        script = EAL.load_asset(path)
+    else:
+        factory = unreal.DataAssetFactory()
+        factory.set_editor_property("data_asset_class", unreal.GitsScript)
+        script = TOOLS.create_asset(name, "/Game/Scripts", unreal.GitsScript, factory)
+    script.set_editor_property("title", title)
+    script.set_editor_property("source", source)
+    script.set_editor_property("tier", 3)
+    script.set_editor_property("statement_cap", 2000)
+    script.set_editor_property("editable_lines", [])
+    script.set_editor_property("declared_builtins", builtins)
+    EAL.save_asset(path)
+    print("script asset:", script.get_path_name(), "| lines:", len(source.splitlines()))
+    return script
+
+
+door_script = ensure_script("DA_Airlock_InnerDoor", "AIRLOCK 1  inner door", DOOR_SOURCE,
+                            ["read_sensor", "log", "open_door", "close_door", "wait"])
+lights_script = ensure_script("DA_Corridor_Lights", "CORRIDOR 1  lights", LIGHTS_SOURCE,
+                              ["log", "set_light", "wait", "range"])
 
 # --- 3. the level ----------------------------------------------------------------------------
 LEVEL = "/Game/Sectors/L_Sector1_Airlock"
@@ -63,12 +130,10 @@ if EAL.does_asset_exist(LEVEL):
 else:
     LES.new_level(LEVEL)
 
+
 def mesh(name):
     return EAL.load_asset(f"/Game/Kit/{name}")
 
-def rotator(rot):
-    # rot is (pitch, yaw, roll) like the editor shows it; unreal.Rotator's positional order is (roll, pitch, yaw)
-    return unreal.Rotator(roll=float(rot[2]), pitch=float(rot[0]), yaw=float(rot[1]))
 
 def place_mesh(name, loc, rot=(0, 0, 0), label=None, scale=(1, 1, 1)):
     a = EAS.spawn_actor_from_object(mesh(name), unreal.Vector(*loc), rotator(rot))
@@ -77,10 +142,13 @@ def place_mesh(name, loc, rot=(0, 0, 0), label=None, scale=(1, 1, 1)):
     a.set_mobility(unreal.ComponentMobility.STATIC)
     return a
 
+
 def spawn(cls, loc, rot=(0, 0, 0), label=None):
     a = EAS.spawn_actor_from_class(cls, unreal.Vector(*loc), rotator(rot))
-    if label: a.set_actor_label(label)
+    if label:
+        a.set_actor_label(label)
     return a
+
 
 # corridor: three segments then the airlock, then one more segment beyond the door
 for i in range(3):
@@ -102,7 +170,12 @@ door.set_editor_property("speed", 140.0)
 
 terminal = spawn(unreal.GitsTerminal, (1120, 105, 0), label="Terminal_Airlock")
 terminal.body.set_static_mesh(mesh("SM_Kit_Terminal"))
-terminal.set_editor_property("script", script)
+terminal.set_editor_property("script", door_script)
+
+# the lights terminal sits a segment back, same wall, so the corridor it lights is in view
+lights_terminal = spawn(unreal.GitsTerminal, (520, 105, 0), label="Terminal_Lights")
+lights_terminal.body.set_static_mesh(mesh("SM_Kit_Terminal"))
+lights_terminal.set_editor_property("script", lights_script)
 
 display = spawn(unreal.GitsWallDisplay, (980, 149, 150), rot=(0, 90, 0), label="WallDisplay_Airlock")
 display.body.set_static_mesh(mesh("SM_Kit_WallDisplay"))
@@ -118,7 +191,8 @@ for i, x in enumerate((250, 650, 1050)):
     light = spawn(unreal.GitsLight, (x, 0, 292), label=f"Light_Corridor_{i+1}")
     light.set_editor_property("system_id", "corridor")
     light.set_editor_property("initial_level", 2.5)
-    light.set_editor_property("full_intensity", 24.0)
+    # 12 cd at level 10: the corridor starts dim and the lights script is what brightens it
+    light.set_editor_property("full_intensity", 12.0)
 beyond = spawn(unreal.GitsLight, (1430, 0, 292), label="Light_Beyond")
 beyond.set_editor_property("system_id", "beyond")
 beyond.set_editor_property("initial_level", 1.0)

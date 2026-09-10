@@ -12,6 +12,8 @@
 class UWidgetComponent;
 class UStaticMeshComponent;
 class UGitsStationSubsystem;
+struct FGitsScreenModel;
+enum class EGitsPlayState : uint8;
 
 UCLASS(Blueprintable)
 class GHOSTINTHESTACK_API AGitsWallDisplay : public AActor
@@ -46,5 +48,8 @@ private:
 	UGitsStationSubsystem* Station() const;
 	static FString DescribeEffect(const struct FGitsEffect& Effect);
 
-	FDelegateHandle StepHandle, StartHandle, FinishHandle, MessageHandle;
+	FDelegateHandle StepHandle, StartHandle, FinishHandle, MessageHandle, StateHandle;
+	void HandleState(EGitsPlayState NewState);
+	/** The recorder view while rewinding: play head, loop iteration, bindings, world. */
+	void BuildRewindView(FGitsScreenModel& M, UGitsStationSubsystem* S) const;
 };

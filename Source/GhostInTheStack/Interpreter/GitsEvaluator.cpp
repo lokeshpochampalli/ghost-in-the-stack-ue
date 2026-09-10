@@ -6,7 +6,7 @@ namespace
 {
 	enum class EFlow : uint8 { Normal, Break, Continue, Return, Abort };
 
-	struct FFrame
+	struct FEvalFrame
 	{
 		FString FunctionName;
 		TArray<TPair<FString, FGitsValue>> Bindings;
@@ -38,7 +38,7 @@ namespace
 		{
 			Trace.InitialWorld = InitialWorld;
 			Trace.Seed = InOptions.Seed;
-			FFrame Module;
+			FEvalFrame Module;
 			Module.FunctionName = TEXT("<module>");
 			Frames.Add(Module);
 		}
@@ -63,7 +63,7 @@ namespace
 		FGitsRunOptions Options;
 		FGitsWorldState World;
 		FGitsTrace Trace;
-		TArray<FFrame> Frames;
+		TArray<FEvalFrame> Frames;
 		TMap<FString, FGitsNodePtr> Definitions;
 		int32 NextListId = 1;
 		int32 StatementCount = 0;
@@ -110,7 +110,7 @@ namespace
 		{
 			TArray<FGitsFrameSnapshot> Out;
 			Out.Reserve(Frames.Num());
-			for (const FFrame& F : Frames)
+			for (const FEvalFrame& F : Frames)
 			{
 				FGitsFrameSnapshot S;
 				S.FunctionName = F.FunctionName;
@@ -666,7 +666,7 @@ namespace
 				if (!CheckArity(Callee.FunctionName, Args.Num(), Callee.Params.Num(), Callee.Params.Num(), N->Span)) { return false; }
 				const FGitsNodePtr* Def = Definitions.Find(Callee.FunctionNodeId);
 				if (!Def) { return Error(EGitsDiagnosticCode::UnknownFunction, N->Span, FGitsDiagnosticParams(Callee.FunctionName + TEXT("()"))); }
-				FFrame Frame;
+				FEvalFrame Frame;
 				Frame.FunctionName = Callee.FunctionName;
 				Frame.bHasCallSite = true;
 				Frame.CallSite = N->Span;

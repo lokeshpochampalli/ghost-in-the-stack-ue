@@ -32,7 +32,7 @@ Rules that hold throughout:
 | 0 — Project and toolchain | done 10 Sep 2026: builds clean, MCP connected, kit pipeline (`Content/Kit/Kit.blend`, `Tools/export_kit.py`, `Tools/import_kit.py`) exports the test cube with collision into the level, screenshots in the report. Outstanding: GitHub remote |
 | 1 — Interpreter port | done 10 Sep 2026: all 30 golden traces byte for byte, 45 automation tests green, run headless and through the MCP. See `docs/INTERPRETER-PORT.md` |
 | 2 — First system: a door | done 10 Sep 2026: `L_Sector1_Airlock` with one corridor, one door, one terminal and one wall display; the interpreter's trace drives the door through the station subsystem's play head; single-line editing and the ADR-020 refusal on the terminal; 60 fps (vsync-capped, min 59.5) while the door animates. Screenshots in `docs/screenshots/phase-2`. See `docs/STATION-LAYER.md` for the divergences (C++ Slate screens, trace player built early, door/light builtins) |
-| 3 — Recorder and rewind | not started |
+| 3 — Recorder and rewind | done 11 Sep 2026: `FGitsRecorder` maps the clock to statement beats and computes loop contexts; hold R scrubs the same play head backwards (door reverses, lights dim, terminal highlights the line, wall display shows `for notch: iteration 3 of 9` and the bindings); release resumes. `GitsVerifyRewind`: door script 5 boundaries and the 224-step lights loop 93 boundaries, zero mismatches, slowest step change 5.2 ms (target 16). 47 automation tests green. Screenshots in `docs/screenshots/phase-3` |
 | 4 — VANT and prediction | not started |
 | 5 — Power | not started |
 | 6 — Blender kit and Sector 1 blockout | not started |
