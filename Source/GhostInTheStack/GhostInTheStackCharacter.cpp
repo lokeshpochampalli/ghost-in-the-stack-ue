@@ -9,6 +9,8 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GhostInTheStack.h"
+#include "Station/GitsInteractable.h"
+#include "Engine/World.h"
 
 AGhostInTheStackCharacter::AGhostInTheStackCharacter()
 {
@@ -59,6 +61,12 @@ void AGhostInTheStackCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 		// Looking/Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGhostInTheStackCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AGhostInTheStackCharacter::LookInput);
+
+		// Interacting
+		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AGhostInTheStackCharacter::DoInteract);
+		}
 	}
 	else
 	{
@@ -117,4 +125,21 @@ void AGhostInTheStackCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AGhostInTheStackCharacter::DoInteract()
+{
+	if (!FirstPersonCameraComponent || !GetWorld()) { return; }
+	const FVector Start = FirstPersonCameraComponent->GetComponentLocation();
+	const FVector End = Start + FirstPersonCameraComponent->GetForwardVector() * InteractReach;
+	FHitResult Hit;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(GitsInteract), false, this);
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	{
+		AActor* Target = Hit.GetActor();
+		if (Target && Target->GetClass()->ImplementsInterface(UGitsInteractable::StaticClass()))
+		{
+			IGitsInteractable::Execute_Interact(Target, this);
+		}
+	}
 }

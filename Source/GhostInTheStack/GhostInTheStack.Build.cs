@@ -18,7 +18,8 @@ public class GhostInTheStack : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"SlateCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
@@ -30,7 +31,9 @@ public class GhostInTheStack : ModuleRules
 			"GhostInTheStack/Variant_Shooter",
 			"GhostInTheStack/Variant_Shooter/AI",
 			"GhostInTheStack/Variant_Shooter/UI",
-			"GhostInTheStack/Variant_Shooter/Weapons"
+			"GhostInTheStack/Variant_Shooter/Weapons",
+			"GhostInTheStack/Station",
+			"GhostInTheStack/UI"
 		});
 
 		// Uncomment if you are using Slate UI

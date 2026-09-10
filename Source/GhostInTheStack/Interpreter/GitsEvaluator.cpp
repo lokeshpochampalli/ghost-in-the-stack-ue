@@ -756,9 +756,21 @@ namespace
 
 			// --- station builtins
 			const bool bStation = Name == TEXT("open_valve") || Name == TEXT("close_valve") || Name == TEXT("set_heater")
-				|| Name == TEXT("log") || Name == TEXT("wait") || Name == TEXT("read_sensor");
+				|| Name == TEXT("log") || Name == TEXT("wait") || Name == TEXT("read_sensor")
+				|| Name == TEXT("open_door") || Name == TEXT("close_door") || Name == TEXT("set_light");
 			if (bStation && StationAllowed(Name))
 			{
+				if (Name == TEXT("set_light"))
+				{
+					if (!CheckArity(Name, Args.Num(), 2, 2, N->Span)) { return false; }
+					if (Args[0].Kind != EGitsValueKind::Str) { return Error(EGitsDiagnosticCode::TypeMismatch, N->Span, FGitsDiagnosticParams(TEXT("name a light with ") + GitsValue::TypeName(Args[0]))); }
+					if (!Args[1].IsNumeric()) { return Error(EGitsDiagnosticCode::TypeMismatch, N->Span, FGitsDiagnosticParams(TEXT("set a light to ") + GitsValue::TypeName(Args[1]))); }
+					TArray<FGitsEffect> LightFx;
+					LightFx.Add(FGitsEffect::MakeSet(TEXT("light.") + Args[0].Str, FGitsWorldValue::MakeNumber(Args[1].AsDouble())));
+					for (const FGitsEffect& E : LightFx) { World = GitsWorld::Reduce(World, E); }
+					Out = FGitsValue::MakeNone();
+					return Emit(N, EGitsStepKind::Call, Depth, Label(Out), false, nullptr, &LightFx);
+				}
 				if (!CheckArity(Name, Args.Num(), 1, 1, N->Span)) { return false; }
 				const FGitsValue& A = Args[0];
 				Out = FGitsValue::MakeNone();
@@ -777,6 +789,15 @@ namespace
 				{
 					if (A.Kind != EGitsValueKind::Str) { return Error(EGitsDiagnosticCode::TypeMismatch, N->Span, FGitsDiagnosticParams(TEXT("name a valve with ") + GitsValue::TypeName(A))); }
 					Effects.Add(FGitsEffect::MakeSet(TEXT("valve.") + A.Str, FGitsWorldValue::MakeBool(Name == TEXT("open_valve"))));
+				}
+				else if (Name == TEXT("open_door") || Name == TEXT("close_door"))
+				{
+					if (A.Kind != EGitsValueKind::Str) { return Error(EGitsDiagnosticCode::TypeMismatch, N->Span, FGitsDiagnosticParams(TEXT("name a door with ") + GitsValue::TypeName(A))); }
+					Effects.Add(FGitsEffect::MakeSet(TEXT("door.") + A.Str, FGitsWorldValue::MakeBool(Name == TEXT("open_door"))));
+				}
+				else if (Name == TEXT("set_light"))
+				{
+					// set_light(id, level): two arguments, checked below after the one-argument gate.
 				}
 				else if (Name == TEXT("set_heater"))
 				{
@@ -849,7 +870,8 @@ namespace GitsEvaluator
 
 	const TArray<FString>& StationBuiltinNames()
 	{
-		static const TArray<FString> Names = { TEXT("open_valve"), TEXT("close_valve"), TEXT("set_heater"), TEXT("log"), TEXT("wait"), TEXT("read_sensor") };
+		static const TArray<FString> Names = { TEXT("open_valve"), TEXT("close_valve"), TEXT("set_heater"), TEXT("log"), TEXT("wait"), TEXT("read_sensor"),
+			TEXT("open_door"), TEXT("close_door"), TEXT("set_light") };
 		return Names;
 	}
 }

@@ -194,9 +194,10 @@ Exported as FBX/glTF with collision. Claude Code drives Blender through the exis
 
 ```
 Source/GhostInTheStack/
-  Interpreter/        C++ port: lexer, parser, evaluator, trace, errors, oracle
-  World/              Station systems as Actors; effect reducer; power
-  Systems/            Door, Drone, Conveyor, Sprinkler, Heater… each binds effects to animation
+  Interpreter/        C++ port: lexer, parser, evaluator, trace, errors, oracle, effect reducer
+  Station/            station subsystem (run, playback, pose), system actors (Door, Light,
+                      Drone, Conveyor, Sprinkler, Heater…), terminal and wall display; power
+  UI/                 Slate screens (see docs/STATION-LAYER.md for why not UMG)
   Recorder/           trace ↔ world-time mapping; rewind
   Companion/          VANT: dialogue, prediction prompts, hints
   Telemetry/          event log, consent gate, JSON export (format unchanged)

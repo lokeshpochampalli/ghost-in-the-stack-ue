@@ -8,21 +8,55 @@
 
 class UInputMappingContext;
 class UUserWidget;
+class AGitsTerminal;
+class SGitsTerminalEditor;
 
 /**
  *  Simple first person Player Controller
  *  Manages the input mapping context.
  *  Overrides the Player Camera Manager class.
+ *  Owns the terminal overlay: using a terminal takes the keyboard, stepping away gives it back.
  */
 UCLASS(abstract, config="Game")
 class GHOSTINTHESTACK_API AGhostInTheStackPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	/** Constructor */
 	AGhostInTheStackPlayerController();
+
+	// --- terminals
+
+	/** Opens the editing overlay for a terminal and hands it the keyboard. */
+	UFUNCTION(BlueprintCallable, Category = "Station")
+	void UseTerminal(AGitsTerminal* Terminal);
+
+	/** Closes the overlay and returns to first-person control. */
+	UFUNCTION(BlueprintCallable, Category = "Station")
+	void CloseTerminal();
+
+	UFUNCTION(BlueprintPure, Category = "Station")
+	AGitsTerminal* GetCurrentTerminal() const { return CurrentTerminal; }
+
+	/** The terminal the player is looking at or standing next to, else null. */
+	UFUNCTION(BlueprintPure, Category = "Station")
+	AGitsTerminal* FindTerminalNearby(float MaxDistance = 400.f) const;
+
+	// --- console commands, for testing the station without touching the keyboard
+	/** Uses the nearest terminal. */
+	UFUNCTION(Exec) void GitsUse();
+	/** Runs the current or nearest terminal's script. */
+	UFUNCTION(Exec) void GitsRun();
+	/** Replaces one line of the current or nearest terminal's script. */
+	UFUNCTION(Exec) void GitsSetLine(int32 Line, const FString& Text);
+	/** Restores the script as Ilse wrote it. */
+	UFUNCTION(Exec) void GitsReset();
+	/** Logs the last run's outcome, output and playback frame rate. */
+	UFUNCTION(Exec) void GitsStatus();
+	/** Closes the terminal overlay. */
+	UFUNCTION(Exec) void GitsClose();
 
 protected:
 
@@ -54,4 +88,13 @@ protected:
 
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
+
+	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+
+private:
+	AGitsTerminal* TerminalForCommands() const;
+
+	UPROPERTY()
+	TObjectPtr<AGitsTerminal> CurrentTerminal;
+	TSharedPtr<SGitsTerminalEditor> Overlay;
 };

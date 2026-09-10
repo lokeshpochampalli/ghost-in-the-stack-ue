@@ -11,6 +11,30 @@ EAL = unreal.EditorAssetLibrary
 SMS = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
 
 
+def apply_sidecar_collision(mesh, sidecar):
+    """Replaces the mesh's simple collision with the boxes the export wrote (Unreal space, cm)."""
+    import json
+    data = json.load(open(sidecar))
+    SMS.remove_collisions(mesh)
+    body = mesh.get_editor_property("body_setup")
+    agg = body.get_editor_property("agg_geom")
+    boxes = []
+    for b in data.get("boxes", []):
+        el = unreal.KBoxElem()
+        cx, cy, cz = b["center"]; sx, sy, sz = b["size"]
+        el.set_editor_property("center", unreal.Vector(cx, cy, cz))
+        el.set_editor_property("x", sx); el.set_editor_property("y", sy); el.set_editor_property("z", sz)
+        boxes.append(el)
+    agg.set_editor_property("box_elems", boxes)
+    body.set_editor_property("agg_geom", agg)
+    body.set_editor_property("collision_trace_flag", unreal.CollisionTraceFlag.CTF_USE_DEFAULT)
+    mesh.set_editor_property("body_setup", body)
+    body.invalidate_physics_data() if hasattr(body, "invalidate_physics_data") else None
+    body.create_physics_meshes() if hasattr(body, "create_physics_meshes") else None
+    mesh.modify()
+    return SMS.get_simple_collision_count(mesh)
+
+
 def import_one(glb_path):
     name = os.path.splitext(os.path.basename(glb_path))[0]
     task = unreal.AssetImportTask()
@@ -46,13 +70,19 @@ def import_one(glb_path):
     mesh = EAL.load_asset(mesh_path)
     if not isinstance(mesh, unreal.StaticMesh):
         raise RuntimeError(f"{name}: no StaticMesh at {mesh_path}; imported={imported}")
-    collision = SMS.get_simple_collision_count(mesh)
-    if collision == 0:
-        SMS.add_simple_collisions(mesh, unreal.ScriptCollisionShapeType.BOX)
-        collision = SMS.get_simple_collision_count(mesh)
-        note = "box added"
+    sidecar = os.path.splitext(glb_path)[0] + ".collision.json"
+    collision = 0
+    if os.path.isfile(sidecar):
+        collision = apply_sidecar_collision(mesh, sidecar)
+        note = "from sidecar"
     else:
-        note = "from UCX"
+        collision = SMS.get_simple_collision_count(mesh)
+        if collision == 0:
+            SMS.add_simple_collisions(mesh, unreal.ScriptCollisionShapeType.BOX)
+            collision = SMS.get_simple_collision_count(mesh)
+            note = "box added"
+        else:
+            note = "kept"
     ext = mesh.get_bounds().box_extent
     for p in EAL.list_assets(DEST, recursive=False):
         EAL.save_asset(p.split(".")[0])

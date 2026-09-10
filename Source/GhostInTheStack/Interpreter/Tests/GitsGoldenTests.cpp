@@ -62,7 +62,7 @@ namespace
 	FString FixturesDir() { return FPaths::Combine(FPaths::ProjectDir(), TEXT("Fixtures")); }
 }
 
-IMPLEMENT_COMPLEX_AUTOMATION_TEST(FGitsGoldenTest, "GhostInTheStack.Interpreter.Golden", GitsTest::Flags)
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(FGitsGoldenTest, "GhostInTheStack.Interpreter.Golden", GitsTest::TestFlags)
 
 void FGitsGoldenTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
 {
@@ -114,7 +114,7 @@ bool FGitsGoldenTest::RunTest(const FString& Name)
 	return false;
 }
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGitsGoldenCoverageTest, "GhostInTheStack.Interpreter.GoldenCoverage", GitsTest::Flags)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGitsGoldenCoverageTest, "GhostInTheStack.Interpreter.GoldenCoverage", GitsTest::TestFlags)
 bool FGitsGoldenCoverageTest::RunTest(const FString&)
 {
 	TArray<FString> Files;

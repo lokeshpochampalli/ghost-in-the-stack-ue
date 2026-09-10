@@ -18,6 +18,8 @@ Pipeline rules (PHASES-3D.md, Phase 0):
 import bpy
 import os
 import sys
+import json
+import mathutils
 
 UNIT_TO_METRES = 0.01  # 1 Blender unit = 1 cm
 
@@ -80,6 +82,18 @@ def export_piece(piece, out_dir):
             src.name = src.name.replace("__hold__", "")
             src.data.name = src.data.name.replace("__hold__", "")
     size = os.path.getsize(out)
+    # Unreal's glTF importer ignores UCX_ meshes, so collision travels as a sidecar of boxes
+    # in Unreal space (x, -y, z), in centimetres, which import_kit.py turns into box primitives.
+    boxes = []
+    for c in colls:
+        bb = [c.matrix_world @ mathutils.Vector(corner) for corner in c.bound_box]
+        xs = [v.x for v in bb]; ys = [v.y for v in bb]; zs = [v.z for v in bb]
+        center = ((min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, (min(zs) + max(zs)) / 2)
+        size3 = (max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs))
+        boxes.append({"center": [round(center[0], 3), round(-center[1], 3), round(center[2], 3)],
+                      "size": [round(size3[0], 3), round(size3[1], 3), round(size3[2], 3)]})
+    with open(os.path.splitext(out)[0] + ".collision.json", "w") as f:
+        json.dump({"piece": piece.name.replace("__hold__", ""), "units": "cm", "space": "unreal", "boxes": boxes}, f, indent=2)
     print(f"  exported {os.path.basename(out)} ({size} bytes) collision={len(colls)} dims_cm={tuple(round(v, 2) for v in piece.dimensions)}")
     return out
 

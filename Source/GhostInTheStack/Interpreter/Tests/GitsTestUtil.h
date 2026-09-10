@@ -11,7 +11,7 @@
 
 namespace GitsTest
 {
-	constexpr EAutomationTestFlags Flags = EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter;
+	constexpr EAutomationTestFlags TestFlags = EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter;
 
 	/** Parses and runs. A parse diagnostic is reported as an error outcome; tests check for it. */
 	inline FGitsTrace Exec(const FString& Source, const FGitsWorldState& World = FGitsWorldState(), FGitsWorldOracle Oracle = nullptr, int32 Cap = GitsLimits::DefaultStatementCap)

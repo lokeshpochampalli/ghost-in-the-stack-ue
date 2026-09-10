@@ -48,6 +48,14 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* MouseLookAction;
+
+	/** Interact Input Action: use the terminal or system the camera points at */
+	UPROPERTY(EditAnywhere, Category ="Input")
+	class UInputAction* InteractAction;
+
+	/** How far the player can reach, in cm */
+	UPROPERTY(EditAnywhere, Category ="Input")
+	float InteractReach = 320.f;
 	
 public:
 	AGhostInTheStackCharacter();
@@ -75,6 +83,10 @@ protected:
 	/** Handles jump end inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
+
+	/** Uses whatever interactable the camera points at, within reach */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoInteract();
 
 protected:
 
