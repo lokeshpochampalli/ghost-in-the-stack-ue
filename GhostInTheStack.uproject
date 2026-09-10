@@ -30,6 +30,29 @@
 		{
 			"Name": "GameplayStateTree",
 			"Enabled": true
+		},
+		{
+			"Name": "ModelContextProtocol",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "ToolsetRegistry",
+			"Enabled": true
+		},
+		{
+			"Name": "AllToolsets",
+			"Enabled": true
+		},
+		{
+			"Name": "PythonScriptPlugin",
+			"Enabled": true
+		},
+		{
+			"Name": "EditorScriptingUtilities",
+			"Enabled": true
 		}
 	]
 }
