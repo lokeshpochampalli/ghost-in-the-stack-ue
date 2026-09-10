@@ -1,0 +1,19 @@
+{
+  "piece": "SM_Kit_TestCube",
+  "units": "cm",
+  "space": "unreal",
+  "boxes": [
+    {
+      "center": [
+        0.0,
+        -0.0,
+        50.0
+      ],
+      "size": [
+        100.0,
+        100.0,
+        100.0
+      ]
+    }
+  ]
+}

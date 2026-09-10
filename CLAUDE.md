@@ -60,8 +60,9 @@ justify.
 ```
 Source/GhostInTheStack/
   Interpreter/     C++ port — lexer, parser, recognition pass, evaluator, trace, oracle, errors
-  World/           station power model, effect reducer, level/system data assets
-  Systems/         one actor class per system type: Door, Light, Drone, Conveyor, Sprinkler…
+  Station/         station subsystem (run, trace playback, pose), system actors (Door, Light…),
+                   station data (sensors, initial world), terminal and wall display actors
+  UI/              Slate screens: the phosphor screen widget and the terminal overlay
   Recorder/        trace ↔ world-time mapping, rewind
   Companion/       VANT — prompts, hints, dialogue hooks
   Telemetry/       event log, consent gate, JSON export
@@ -71,7 +72,7 @@ Content/
   Scripts/         Ilse's code as DataAssets, one per system
   UI/              terminal, gauge, VANT display widgets
 Fixtures/          the thirty golden traces, read-only
-docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN, INTERPRETER-PORT
+docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN, INTERPRETER-PORT, STATION-LAYER
 ```
 
 ## How to work

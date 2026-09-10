@@ -1,0 +1,19 @@
+{
+  "piece": "SM_Kit_WallDisplay",
+  "units": "cm",
+  "space": "unreal",
+  "boxes": [
+    {
+      "center": [
+        -3.0,
+        -0.0,
+        35.0
+      ],
+      "size": [
+        6.0,
+        120.0,
+        70.0
+      ]
+    }
+  ]
+}

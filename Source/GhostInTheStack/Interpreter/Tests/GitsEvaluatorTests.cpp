@@ -6,7 +6,7 @@
 using namespace GitsTest;
 
 #define GITS_TEST(ClassName, PrettyName) \
-	IMPLEMENT_SIMPLE_AUTOMATION_TEST(ClassName, PrettyName, GitsTest::Flags) \
+	IMPLEMENT_SIMPLE_AUTOMATION_TEST(ClassName, PrettyName, GitsTest::TestFlags) \
 	bool ClassName::RunTest(const FString&)
 
 namespace
@@ -358,6 +358,37 @@ GITS_TEST(FGitsValues, "GhostInTheStack.Interpreter.Values")
 		TestEqual(TEXT("log count"), W.FindRef(GitsWorld::LogCountKey).Number, 1.0);
 		FGitsWorldState S; S.Add(GitsWorld::ClockKey, FGitsWorldValue::MakeString(TEXT("stopped")));
 		TestEqual(TEXT("non-number clock ignored"), GitsWorld::Reduce(S, FGitsEffect::MakeWait(1)).FindRef(GitsWorld::ClockKey).Number, 1.0);
+	}
+	return true;
+}
+
+GITS_TEST(FGitsStationBuiltins, "GhostInTheStack.Interpreter.Evaluator.StationBuiltins")
+{
+	// The Phase 2 door script: a matching sensor opens the door, an off one holds it shut. The
+	// door never decides; the effect in the trace is the only thing that moves it.
+	const FString Source = TEXT("pressure = read_sensor(\"airlock\")\ntarget = 4\nif pressure == target:\n    log(\"opening\")\n    open_door(\"inner\")\nelse:\n    log(\"holding\")\n");
+	auto Pressure4 = [](const FGitsWorldState&, const FGitsQuery& Q) { return Q.Id == TEXT("airlock") ? FGitsValue::MakeInt(4) : FGitsValue::MakeNone(); };
+	auto Pressure5 = [](const FGitsWorldState&, const FGitsQuery& Q) { return Q.Id == TEXT("airlock") ? FGitsValue::MakeInt(5) : FGitsValue::MakeNone(); };
+	FGitsWorldState Initial; Initial.Add(TEXT("door.inner"), FGitsWorldValue::MakeBool(false));
+	{
+		FGitsTrace T = Exec(Source, Initial, FGitsWorldOracle(Pressure4));
+		TestEqual(TEXT("completes"), (int32)T.Outcome.Kind, (int32)EGitsOutcomeKind::Completed);
+		TArray<FGitsEffect> Fx = GitsTrace::AllEffects(T);
+		TestEqual(TEXT("log then set"), Fx.Num(), 2);
+		TestTrue(TEXT("open_door sets door.inner"), Fx.Num() == 2 && Fx[1] == FGitsEffect::MakeSet(TEXT("door.inner"), FGitsWorldValue::MakeBool(true)));
+		TestEqual(TEXT("world folds to open"), GitsTrace::WorldAt(T, T.Steps.Num() - 1).FindRef(TEXT("door.inner")).ToText(), FString(TEXT("true")));
+	}
+	{
+		FGitsTrace T = Exec(Source, Initial, FGitsWorldOracle(Pressure5));
+		TestEqual(TEXT("completes"), (int32)T.Outcome.Kind, (int32)EGitsOutcomeKind::Completed);
+		TestEqual(TEXT("only the log"), GitsTrace::AllEffects(T).Num(), 1);
+		TestEqual(TEXT("door stays shut"), GitsTrace::WorldAt(T, T.Steps.Num() - 1).FindRef(TEXT("door.inner")).ToText(), FString(TEXT("false")));
+	}
+	{
+		FGitsTrace T = Exec(TEXT("close_door(\"inner\")\nset_light(\"corridor\", 7)\n"), FGitsWorldState(), FGitsWorldOracle());
+		TArray<FGitsEffect> Fx = GitsTrace::AllEffects(T);
+		TestTrue(TEXT("close_door"), Fx.Num() == 2 && Fx[0] == FGitsEffect::MakeSet(TEXT("door.inner"), FGitsWorldValue::MakeBool(false)));
+		TestTrue(TEXT("set_light"), Fx.Num() == 2 && Fx[1] == FGitsEffect::MakeSet(TEXT("light.corridor"), FGitsWorldValue::MakeNumber(7.0)));
 	}
 	return true;
 }

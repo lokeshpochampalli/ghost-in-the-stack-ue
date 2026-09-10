@@ -29,3 +29,6 @@ Thumbs.db
 .vscode/
 *.code-workspace
 .ignore
+
+# Blender backups
+*.blend1

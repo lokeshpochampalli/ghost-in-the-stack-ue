@@ -27,7 +27,8 @@ build order and status. `SETUP.md` is the machine setup, in order.
 ## Interpreter tests
 
 ```
-Toolsun_interpreter_tests.cmd
+Tools
+un_interpreter_tests.cmd
 ```
 
 Runs the 45 interpreter automation tests headlessly, including the thirty golden traces, and prints
@@ -57,7 +58,7 @@ Launch the editor with:
 ## Scripts
 
 `Tools/` holds the out-of-editor helpers: an MCP client, a Python remote-execution runner, a
-Blender socket client, and the Phase 0 cube export and import scripts. See `Tools/README.md`.
+Blender socket client, the kit export and import scripts, and the Phase 2 content builder. See `Tools/README.md`.
 
 ## Repo notes
 

@@ -1,0 +1,19 @@
+{
+  "piece": "SM_Kit_DoorPanel",
+  "units": "cm",
+  "space": "unreal",
+  "boxes": [
+    {
+      "center": [
+        0.0,
+        -0.0,
+        109.0
+      ],
+      "size": [
+        10.0,
+        116.0,
+        218.0
+      ]
+    }
+  ]
+}

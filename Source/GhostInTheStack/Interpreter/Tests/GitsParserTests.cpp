@@ -10,7 +10,7 @@
 using namespace GitsTest;
 
 #define GITS_TEST(ClassName, PrettyName) \
-	IMPLEMENT_SIMPLE_AUTOMATION_TEST(ClassName, PrettyName, GitsTest::Flags) \
+	IMPLEMENT_SIMPLE_AUTOMATION_TEST(ClassName, PrettyName, GitsTest::TestFlags) \
 	bool ClassName::RunTest(const FString&)
 
 namespace
