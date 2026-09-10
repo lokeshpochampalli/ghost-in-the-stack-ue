@@ -172,6 +172,13 @@ be redone on a fresh machine.
 Fallback, only if the official plugin breaks in a future engine update: `thecodebrozilla/UE_MCP`
 cloned into `Plugins/UE_MCP`. Time-box it to an hour.
 
+**Caches live on D:.** `Config/DefaultEngine.ini` points the local derived-data cache at
+`D:/UE_DDC` (`[DerivedDataCacheStores] InstalledLocal=(Base=Local, Path="D:/UE_DDC")`) and the
+Zen local store at `D:/UE_Zen` (`[Zen.AutoLaunch] DataPath=D:/UE_Zen`). The default location on
+C: ran out of space and the Zen cache started refusing writes with HTTP 507, which shows up as
+repeated shader and mesh builds. Keep at least 5 GB free on C: regardless; the editor and the
+launcher still write logs, crash data and the Zen install there.
+
 **Python inside the editor.** The MCP toolsets cover most editing, but the Programmatic toolset's
 sandbox cannot import `unreal`, and some jobs (glTF import through Interchange, saving the level)
 need real editor Python. `bRemoteExecution=True` is committed under
@@ -222,7 +229,12 @@ Two halves: the Blender addon (Edit → Preferences → Add-ons → Blender MCP 
 server**) listens on `127.0.0.1:9876`, and the `blender-mcp` server (`uvx blender-mcp`, stdio)
 bridges it to Claude Code. The server must be registered for **this project's** scope or
 globally; a registration made from another folder is invisible here. With the addon connected,
-any script can also drive it directly over the socket, which is how Phase 0's cube was made.
+any script can also drive it directly over the socket.
+
+The kit pipeline itself does not need the MCP: `Content/Kit/Kit.blend` is the one kit file and
+`Tools/export_kit.py` runs headless (`blender --background Content/Kit/Kit.blend --python
+Tools/export_kit.py`), then `Tools/import_kit.py` brings the `.glb` files into `/Game/Kit`.
+Rules in `Tools/README.md`.
 
 ---
 

@@ -1,0 +1,74 @@
+# Runs inside Unreal's Python (Tools/ue_remote_python.py Tools/import_kit.py).
+# Imports every Content/Kit/SM_Kit_*.glb through Interchange into /Game/Kit, flattens the
+# per-file folders Interchange creates, makes sure each mesh has simple collision, and saves.
+# Re-running re-imports in place, so actors that reference the meshes keep working.
+import os
+import unreal
+
+KIT_DIR = os.path.join(unreal.Paths.project_content_dir(), "Kit")
+DEST = "/Game/Kit"
+EAL = unreal.EditorAssetLibrary
+SMS = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
+
+
+def import_one(glb_path):
+    name = os.path.splitext(os.path.basename(glb_path))[0]
+    task = unreal.AssetImportTask()
+    task.filename = glb_path
+    task.destination_path = DEST
+    task.destination_name = name
+    task.replace_existing = True
+    task.automated = True
+    task.save = False
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+    imported = list(task.imported_object_paths)
+
+    # Interchange nests results under <name>/StaticMeshes and <name>/Materials; flatten them.
+    mesh_path = f"{DEST}/{name}"
+    moved = []
+    for p in imported:
+        obj_path = p.split(".")[0]
+        base = os.path.basename(obj_path)
+        target = f"{DEST}/{base}"
+        if obj_path != target:
+            if EAL.does_asset_exist(target):
+                EAL.delete_asset(target)
+            EAL.rename_asset(obj_path, target)
+            moved.append((obj_path, target))
+    sub = f"{DEST}/{name}"
+    if EAL.does_directory_exist(sub) and not EAL.does_asset_exist(sub):
+        for a in EAL.list_assets(sub, recursive=True):
+            o = EAL.load_asset(a)
+            if isinstance(o, unreal.ObjectRedirector):
+                EAL.delete_asset(a)
+        EAL.delete_directory(sub)
+
+    mesh = EAL.load_asset(mesh_path)
+    if not isinstance(mesh, unreal.StaticMesh):
+        raise RuntimeError(f"{name}: no StaticMesh at {mesh_path}; imported={imported}")
+    collision = SMS.get_simple_collision_count(mesh)
+    if collision == 0:
+        SMS.add_simple_collisions(mesh, unreal.ScriptCollisionShapeType.BOX)
+        collision = SMS.get_simple_collision_count(mesh)
+        note = "box added"
+    else:
+        note = "from UCX"
+    ext = mesh.get_bounds().box_extent
+    for p in EAL.list_assets(DEST, recursive=False):
+        EAL.save_asset(p.split(".")[0])
+    print(f"{name}: extent=({ext.x:.0f},{ext.y:.0f},{ext.z:.0f}) cm  collision={collision} ({note})  moved={len(moved)}")
+    return mesh_path
+
+
+def main():
+    files = sorted(f for f in os.listdir(KIT_DIR) if f.startswith("SM_Kit_") and f.lower().endswith(".glb"))
+    if not files:
+        print("no SM_Kit_*.glb in", KIT_DIR)
+        return
+    print(f"importing {len(files)} kit piece(s) from {KIT_DIR}")
+    for f in files:
+        import_one(os.path.join(KIT_DIR, f))
+    print("kit assets:", EAL.list_assets(DEST, recursive=True))
+
+
+main()
