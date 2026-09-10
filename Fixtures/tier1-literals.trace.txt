@@ -1,0 +1,43 @@
+-- tier1-literals
+-- covers: Tier 1: every literal kind, and how each prints.
+
+000  literal    L1:8-9       d1  4
+001* assign     L1:0-9       d0  whole=4
+002  literal    L2:10-13     d1  4.5
+003* assign     L2:0-13      d0  decimal=4.5
+004  literal    L3:8-20      d1  'cold store'
+005* assign     L3:0-20      d0  label='cold store'
+006  literal    L4:10-14     d1  True
+007* assign     L4:0-14      d0  running=True
+008  literal    L5:10-15     d1  False
+009* assign     L5:0-15      d0  stopped=False
+010  literal    L6:10-14     d1  None
+011* assign     L6:0-14      d0  nothing=None
+012  name       L8:6-11      d2  whole -> 4
+013  call       L8:0-12      d1  print(4) -> None  | out "4"
+014* expr       L8:0-12      d0  print(whole) -> None
+015  name       L9:6-13      d2  decimal -> 4.5
+016  call       L9:0-14      d1  print(4.5) -> None  | out "4.5"
+017* expr       L9:0-14      d0  print(decimal) -> None
+018  name       L10:6-11     d2  label -> 'cold store'
+019  call       L10:0-12     d1  print('cold store') -> None  | out "cold store"
+020* expr       L10:0-12     d0  print(label) -> None
+021  name       L11:6-13     d2  running -> True
+022  call       L11:0-14     d1  print(True) -> None  | out "True"
+023* expr       L11:0-14     d0  print(running) -> None
+024  name       L12:6-13     d2  stopped -> False
+025  call       L12:0-14     d1  print(False) -> None  | out "False"
+026* expr       L12:0-14     d0  print(stopped) -> None
+027  name       L13:6-13     d2  nothing -> None
+028  call       L13:0-14     d1  print(None) -> None  | out "None"
+029* expr       L13:0-14     d0  print(nothing) -> None
+
+-- outcome: completed
+-- statements: 12  steps: 30
+-- printed:
+   4
+   4.5
+   cold store
+   True
+   False
+   None

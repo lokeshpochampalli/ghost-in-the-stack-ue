@@ -1,0 +1,37 @@
+-- tier1-builtins
+-- covers: Tier 1: print, len, int, float, str, bool.
+
+000  literal    L1:10-18     d3  'beacon'
+001  call       L1:6-19      d2  len('beacon') -> 6
+002  call       L1:0-20      d1  print(6) -> None  | out "6"
+003* expr       L1:0-20      d0  print(len("beacon")) -> None
+004  literal    L2:10-13     d3  3.9
+005  call       L2:6-14      d2  int(3.9) -> 3
+006  call       L2:0-15      d1  print(3) -> None  | out "3"
+007* expr       L2:0-15      d0  print(int(3.9)) -> None
+008  literal    L3:12-13     d3  3
+009  call       L3:6-14      d2  float(3) -> 3.0
+010  call       L3:0-15      d1  print(3.0) -> None  | out "3.0"
+011* expr       L3:0-15      d0  print(float(3)) -> None
+012  literal    L4:10-14     d3  True
+013  call       L4:6-15      d2  str(True) -> 'True'
+014  call       L4:0-16      d1  print('True') -> None  | out "True"
+015* expr       L4:0-16      d0  print(str(True)) -> None
+016  literal    L5:11-12     d3  0
+017  call       L5:6-13      d2  bool(0) -> False
+018  call       L5:0-14      d1  print(False) -> None  | out "False"
+019* expr       L5:0-14      d0  print(bool(0)) -> None
+020  literal    L6:11-14     d3  'a'
+021  call       L6:6-15      d2  bool('a') -> True
+022  call       L6:0-16      d1  print(True) -> None  | out "True"
+023* expr       L6:0-16      d0  print(bool("a")) -> None
+
+-- outcome: completed
+-- statements: 6  steps: 24
+-- printed:
+   6
+   3
+   3.0
+   True
+   False
+   True

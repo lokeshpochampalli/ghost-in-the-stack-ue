@@ -1,0 +1,27 @@
+-- tier4-return-forms
+-- covers: Tier 4: a returned value, a bare return, and running off the end.
+
+000* def        L1-4         d0  def value()
+001* def        L4-7         d0  def bare()
+002* def        L7-10        d0  def falls_off()
+003  literal    L2:11-12     d1  7
+004* return     L2:4-12      d0  return 7
+005  call       L10:6-13     d2  value() -> 7
+006  call       L10:0-14     d1  print(7) -> None  | out "7"
+007* expr       L10:0-14     d0  print(value()) -> None
+008* return     L5-6         d0  return None
+009  call       L11:6-12     d2  bare() -> None
+010  call       L11:0-13     d1  print(None) -> None  | out "None"
+011* expr       L11:0-13     d0  print(bare()) -> None
+012  literal    L8:8-9       d1  1
+013* assign     L8:4-9       d0  x=1
+014  call       L12:6-17     d2  falls_off() -> None
+015  call       L12:0-18     d1  print(None) -> None  | out "None"
+016* expr       L12:0-18     d0  print(falls_off()) -> None
+
+-- outcome: completed
+-- statements: 9  steps: 17
+-- printed:
+   7
+   None
+   None

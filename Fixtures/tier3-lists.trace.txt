@@ -1,0 +1,44 @@
+-- tier3-lists
+-- covers: Tier 3: list literals, indexing including negative, len, in, append.
+
+000  literal    L1:12-13     d2  4
+001  literal    L1:15-16     d2  6
+002  literal    L1:18-19     d2  5
+003  list       L1:11-20     d1  [4, 6, 5] -> [4, 6, 5]
+004* assign     L1:0-20      d0  readings=[4, 6, 5]
+005  name       L3:6-14      d3  readings -> [4, 6, 5]
+006  literal    L3:15-16     d3  0
+007  subscript  L3:6-17      d2  readings[0] -> 4
+008  call       L3:0-18      d1  print(4) -> None  | out "4"
+009* expr       L3:0-18      d0  print(readings[0]) -> None
+010  name       L4:6-14      d3  readings -> [4, 6, 5]
+011  literal    L4:16-17     d4  1
+012  unaryop    L4:15-17     d3  -1 -> -1
+013  subscript  L4:6-18      d2  readings[-1] -> 5
+014  call       L4:0-19      d1  print(5) -> None  | out "5"
+015* expr       L4:0-19      d0  print(readings[-1]) -> None
+016  name       L5:10-18     d3  readings -> [4, 6, 5]
+017  call       L5:6-19      d2  len([4, 6, 5]) -> 3
+018  call       L5:0-20      d1  print(3) -> None  | out "3"
+019* expr       L5:0-20      d0  print(len(readings)) -> None
+020  literal    L6:6-7       d3  6
+021  name       L6:11-19     d3  readings -> [4, 6, 5]
+022  compare    L6:6-19      d2  6 in readings -> True
+023  call       L6:0-20      d1  print(True) -> None  | out "True"
+024* expr       L6:0-20      d0  print(6 in readings) -> None
+025  name       L8:0-8       d2  readings -> [4, 6, 5]
+026  literal    L8:16-17     d2  7
+027  method     L8:0-18      d1  readings.append(7) -> None
+028* expr       L8:0-18      d0  readings.append(7) -> None
+029  name       L9:6-14      d2  readings -> [4, 6, 5, 7]
+030  call       L9:0-15      d1  print([4, 6, 5, 7]) -> None  | out "[4, 6, 5, 7]"
+031* expr       L9:0-15      d0  print(readings) -> None
+
+-- outcome: completed
+-- statements: 7  steps: 32
+-- printed:
+   4
+   5
+   3
+   True
+   [4, 6, 5, 7]

@@ -1,0 +1,51 @@
+-- tier3-break-continue
+-- covers: Tier 3: break and continue, and which one skips what.
+
+000  literal    L1:15-16     d2  5
+001  call       L1:9-17      d1  range(5) -> 5 values
+002* iterate    L1-7         d0  for i=0 (iteration 1)
+003  name       L2:7-8       d2  i -> 0
+004  literal    L2:12-13     d2  1
+005  compare    L2:7-13      d1  i == 1 -> False
+006* branch     L2-4         d0  if i == 1 -> False
+007  name       L4:7-8       d2  i -> 0
+008  literal    L4:12-13     d2  3
+009  compare    L4:7-13      d1  i == 3 -> False
+010* branch     L4-6         d0  if i == 3 -> False
+011  name       L6:10-11     d2  i -> 0
+012  call       L6:4-12      d1  print(0) -> None  | out "0"
+013* expr       L6:4-12      d0  print(i) -> None
+014* iterate    L1-7         d0  for i=1 (iteration 2)
+015  name       L2:7-8       d2  i -> 1
+016  literal    L2:12-13     d2  1
+017  compare    L2:7-13      d1  i == 1 -> True
+018* branch     L2-4         d0  if i == 1 -> True
+019* continue   L3:8-16      d0  continue
+020* iterate    L1-7         d0  for i=2 (iteration 3)
+021  name       L2:7-8       d2  i -> 2
+022  literal    L2:12-13     d2  1
+023  compare    L2:7-13      d1  i == 1 -> False
+024* branch     L2-4         d0  if i == 1 -> False
+025  name       L4:7-8       d2  i -> 2
+026  literal    L4:12-13     d2  3
+027  compare    L4:7-13      d1  i == 3 -> False
+028* branch     L4-6         d0  if i == 3 -> False
+029  name       L6:10-11     d2  i -> 2
+030  call       L6:4-12      d1  print(2) -> None  | out "2"
+031* expr       L6:4-12      d0  print(i) -> None
+032* iterate    L1-7         d0  for i=3 (iteration 4)
+033  name       L2:7-8       d2  i -> 3
+034  literal    L2:12-13     d2  1
+035  compare    L2:7-13      d1  i == 1 -> False
+036* branch     L2-4         d0  if i == 1 -> False
+037  name       L4:7-8       d2  i -> 3
+038  literal    L4:12-13     d2  3
+039  compare    L4:7-13      d1  i == 3 -> True
+040* branch     L4-6         d0  if i == 3 -> True
+041* break      L5:8-13      d0  break
+
+-- outcome: completed
+-- statements: 15  steps: 42
+-- printed:
+   0
+   2

@@ -1,0 +1,21 @@
+-- tier2-conditional
+-- covers: Tier 2: if, elif, else, and which branch runs.
+
+000  literal    L2:7-8       d1  6
+001* assign     L2:0-8       d0  temp=6
+002  name       L4:3-7       d2  temp -> 6
+003  literal    L4:10-11     d2  4
+004  compare    L4:3-11      d1  temp < 4 -> False
+005* branch     L4-10        d0  if temp < 4 -> False
+006  name       L6:5-9       d2  temp -> 6
+007  literal    L6:13-14     d2  5
+008  compare    L6:5-14      d1  temp <= 5 -> False
+009* branch     L6-10        d0  elif temp <= 5 -> False
+010  literal    L9:10-32     d2  'warm, check the door'
+011  call       L9:4-33      d1  print('warm, check the door') -> None  | out "warm, check the door"
+012* expr       L9:4-33      d0  print("warm, check the door") -> None
+
+-- outcome: completed
+-- statements: 4  steps: 13
+-- printed:
+   warm, check the door

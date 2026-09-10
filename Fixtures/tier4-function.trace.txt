@@ -1,0 +1,42 @@
+-- tier4-function
+-- covers: Tier 4: def, positional parameters, return, and calling.
+
+000* def        L2-6         d0  def report(depth, label)
+001  literal    L6:13-14     d3  4
+002  literal    L6:16-28     d3  'cold store'
+003  name       L3:12-17     d2  depth -> 4
+004  literal    L3:20-21     d2  2
+005  binop      L3:12-21     d1  depth * 2 -> 8
+006* assign     L3:4-21      d0  total=8
+007  name       L4:11-16     d3  label -> 'cold store'
+008  literal    L4:19-22     d3  ' '
+009  binop      L4:11-22     d2  label + " " -> 'cold store '
+010  name       L4:29-34     d3  total -> 8
+011  call       L4:25-35     d2  str(8) -> '8'
+012  binop      L4:11-35     d1  label + " " + str(total) -> 'cold store 8'
+013* return     L4:4-35      d0  return 'cold store 8'
+014  call       L6:6-29      d2  report(4, 'cold store') -> 'cold store 8'
+015  call       L6:0-30      d1  print('cold store 8') -> None  | out "cold store 8"
+016* expr       L6:0-30      d0  print(report(4, "cold store")) -> None
+017  literal    L7:13-14     d3  9
+018  literal    L7:16-24     d3  'beacon'
+019  name       L3:12-17     d2  depth -> 9
+020  literal    L3:20-21     d2  2
+021  binop      L3:12-21     d1  depth * 2 -> 18
+022* assign     L3:4-21      d0  total=18
+023  name       L4:11-16     d3  label -> 'beacon'
+024  literal    L4:19-22     d3  ' '
+025  binop      L4:11-22     d2  label + " " -> 'beacon '
+026  name       L4:29-34     d3  total -> 18
+027  call       L4:25-35     d2  str(18) -> '18'
+028  binop      L4:11-35     d1  label + " " + str(total) -> 'beacon 18'
+029* return     L4:4-35      d0  return 'beacon 18'
+030  call       L7:6-25      d2  report(9, 'beacon') -> 'beacon 18'
+031  call       L7:0-26      d1  print('beacon 18') -> None  | out "beacon 18"
+032* expr       L7:0-26      d0  print(report(9, "beacon")) -> None
+
+-- outcome: completed
+-- statements: 7  steps: 33
+-- printed:
+   cold store 8
+   beacon 18

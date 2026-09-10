@@ -1,0 +1,12 @@
+-- outcome-type-mismatch
+-- covers: Adding a number to text, reported without jargon.
+
+000  literal    L1:8-9       d1  4
+001* assign     L1:0-9       d0  depth=4
+002  literal    L2:8-16      d1  'metres'
+003* assign     L2:0-16      d0  label='metres'
+004  name       L3:6-11      d3  depth -> 4
+005  name       L3:14-19     d3  label -> 'metres'
+
+-- outcome: error type-mismatch at line 3
+-- statements: 2  steps: 6

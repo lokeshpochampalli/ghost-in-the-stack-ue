@@ -1,0 +1,30 @@
+-- station-oracle-read
+-- covers: ADR-003: wait is an effect, so the next read sees the advanced world.
+
+000  literal    L1:21-33     d2  'cold_store'
+001  call       L1:9-34      d1  read_sensor('cold_store') -> 4  | read sensor:cold_store -> 4
+002* assign     L1:0-34      d0  before=4
+003  literal    L2:5-6       d2  3
+004  call       L2:0-7       d1  wait(3) -> None  | fx wait 3
+005* expr       L2:0-7       d0  wait(3) -> None
+006  literal    L3:20-32     d2  'cold_store'
+007  call       L3:8-33      d1  read_sensor('cold_store') -> 7  | read sensor:cold_store -> 7
+008* assign     L3:0-33      d0  after=7
+009  name       L5:6-12      d2  before -> 4
+010  call       L5:0-13      d1  print(4) -> None  | out "4"
+011* expr       L5:0-13      d0  print(before) -> None
+012  name       L6:6-11      d2  after -> 7
+013  call       L6:0-12      d1  print(7) -> None  | out "7"
+014* expr       L6:0-12      d0  print(after) -> None
+015  name       L7:6-11      d3  after -> 7
+016  name       L7:14-20     d3  before -> 4
+017  binop      L7:6-20      d2  after - before -> 3
+018  call       L7:0-21      d1  print(3) -> None  | out "3"
+019* expr       L7:0-21      d0  print(after - before) -> None
+
+-- outcome: completed
+-- statements: 6  steps: 20
+-- printed:
+   4
+   7
+   3

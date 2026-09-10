@@ -1,0 +1,13 @@
+-- outcome-division-by-zero
+-- covers: Division by zero.
+
+000  list       L1:11-13     d1  [] -> []
+001* assign     L1:0-13      d0  readings=[]
+002  literal    L2:8-10      d1  10
+003* assign     L2:0-10      d0  total=10
+004  name       L3:6-11      d3  total -> 10
+005  name       L3:18-26     d4  readings -> []
+006  call       L3:14-27     d3  len([]) -> 0
+
+-- outcome: error division-by-zero at line 3
+-- statements: 2  steps: 7

@@ -1,0 +1,47 @@
+-- tier2-comparison
+-- covers: Tier 2: all six comparison operators.
+
+000  literal    L1:4-5       d1  4
+001* assign     L1:0-5       d0  a=4
+002  literal    L2:4-5       d1  6
+003* assign     L2:0-5       d0  b=6
+004  name       L4:6-7       d3  a -> 4
+005  name       L4:11-12     d3  b -> 6
+006  compare    L4:6-12      d2  a == b -> False
+007  call       L4:0-13      d1  print(False) -> None  | out "False"
+008* expr       L4:0-13      d0  print(a == b) -> None
+009  name       L5:6-7       d3  a -> 4
+010  name       L5:11-12     d3  b -> 6
+011  compare    L5:6-12      d2  a != b -> True
+012  call       L5:0-13      d1  print(True) -> None  | out "True"
+013* expr       L5:0-13      d0  print(a != b) -> None
+014  name       L6:6-7       d3  a -> 4
+015  name       L6:10-11     d3  b -> 6
+016  compare    L6:6-11      d2  a < b -> True
+017  call       L6:0-12      d1  print(True) -> None  | out "True"
+018* expr       L6:0-12      d0  print(a < b) -> None
+019  name       L7:6-7       d3  a -> 4
+020  name       L7:10-11     d3  b -> 6
+021  compare    L7:6-11      d2  a > b -> False
+022  call       L7:0-12      d1  print(False) -> None  | out "False"
+023* expr       L7:0-12      d0  print(a > b) -> None
+024  name       L8:6-7       d3  a -> 4
+025  literal    L8:11-12     d3  4
+026  compare    L8:6-12      d2  a <= 4 -> True
+027  call       L8:0-13      d1  print(True) -> None  | out "True"
+028* expr       L8:0-13      d0  print(a <= 4) -> None
+029  name       L9:6-7       d3  b -> 6
+030  literal    L9:11-12     d3  6
+031  compare    L9:6-12      d2  b >= 6 -> True
+032  call       L9:0-13      d1  print(True) -> None  | out "True"
+033* expr       L9:0-13      d0  print(b >= 6) -> None
+
+-- outcome: completed
+-- statements: 8  steps: 34
+-- printed:
+   False
+   True
+   True
+   False
+   True
+   True

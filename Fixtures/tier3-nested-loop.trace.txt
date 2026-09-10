@@ -1,0 +1,80 @@
+-- tier3-nested-loop
+-- covers: Tier 3: a nested loop, and break leaving only the inner one.
+
+000  literal    L1:15-16     d2  2
+001  call       L1:9-17      d1  range(2) -> 2 values
+002* iterate    L1-6         d0  for i=0 (iteration 1)
+003  literal    L2:19-20     d2  3
+004  call       L2:13-21     d1  range(3) -> 3 values
+005* iterate    L2-6         d0  for j=0 (iteration 1)
+006  name       L3:11-12     d2  j -> 0
+007  literal    L3:16-17     d2  2
+008  compare    L3:11-17     d1  j == 2 -> False
+009* branch     L3-5         d0  if j == 2 -> False
+010  name       L5:14-15     d4  i -> 0
+011  literal    L5:18-20     d4  10
+012  binop      L5:14-20     d3  i * 10 -> 0
+013  name       L5:23-24     d3  j -> 0
+014  binop      L5:14-24     d2  i * 10 + j -> 0
+015  call       L5:8-25      d1  print(0) -> None  | out "0"
+016* expr       L5:8-25      d0  print(i * 10 + j) -> None
+017* iterate    L2-6         d0  for j=1 (iteration 2)
+018  name       L3:11-12     d2  j -> 1
+019  literal    L3:16-17     d2  2
+020  compare    L3:11-17     d1  j == 2 -> False
+021* branch     L3-5         d0  if j == 2 -> False
+022  name       L5:14-15     d4  i -> 0
+023  literal    L5:18-20     d4  10
+024  binop      L5:14-20     d3  i * 10 -> 0
+025  name       L5:23-24     d3  j -> 1
+026  binop      L5:14-24     d2  i * 10 + j -> 1
+027  call       L5:8-25      d1  print(1) -> None  | out "1"
+028* expr       L5:8-25      d0  print(i * 10 + j) -> None
+029* iterate    L2-6         d0  for j=2 (iteration 3)
+030  name       L3:11-12     d2  j -> 2
+031  literal    L3:16-17     d2  2
+032  compare    L3:11-17     d1  j == 2 -> True
+033* branch     L3-5         d0  if j == 2 -> True
+034* break      L4:12-17     d0  break
+035* iterate    L1-6         d0  for i=1 (iteration 2)
+036  literal    L2:19-20     d2  3
+037  call       L2:13-21     d1  range(3) -> 3 values
+038* iterate    L2-6         d0  for j=0 (iteration 1)
+039  name       L3:11-12     d2  j -> 0
+040  literal    L3:16-17     d2  2
+041  compare    L3:11-17     d1  j == 2 -> False
+042* branch     L3-5         d0  if j == 2 -> False
+043  name       L5:14-15     d4  i -> 1
+044  literal    L5:18-20     d4  10
+045  binop      L5:14-20     d3  i * 10 -> 10
+046  name       L5:23-24     d3  j -> 0
+047  binop      L5:14-24     d2  i * 10 + j -> 10
+048  call       L5:8-25      d1  print(10) -> None  | out "10"
+049* expr       L5:8-25      d0  print(i * 10 + j) -> None
+050* iterate    L2-6         d0  for j=1 (iteration 2)
+051  name       L3:11-12     d2  j -> 1
+052  literal    L3:16-17     d2  2
+053  compare    L3:11-17     d1  j == 2 -> False
+054* branch     L3-5         d0  if j == 2 -> False
+055  name       L5:14-15     d4  i -> 1
+056  literal    L5:18-20     d4  10
+057  binop      L5:14-20     d3  i * 10 -> 10
+058  name       L5:23-24     d3  j -> 1
+059  binop      L5:14-24     d2  i * 10 + j -> 11
+060  call       L5:8-25      d1  print(11) -> None  | out "11"
+061* expr       L5:8-25      d0  print(i * 10 + j) -> None
+062* iterate    L2-6         d0  for j=2 (iteration 3)
+063  name       L3:11-12     d2  j -> 2
+064  literal    L3:16-17     d2  2
+065  compare    L3:11-17     d1  j == 2 -> True
+066* branch     L3-5         d0  if j == 2 -> True
+067* break      L4:12-17     d0  break
+068* iterate    L1-6         d0  for i: loop ends after 2
+
+-- outcome: completed
+-- statements: 21  steps: 69
+-- printed:
+   0
+   1
+   10
+   11

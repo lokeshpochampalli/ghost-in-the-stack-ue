@@ -1,0 +1,37 @@
+-- tier2-boolean-logic
+-- covers: Tier 2: and, or, not, and short-circuit evaluation.
+
+000  literal    L1:12-16     d1  True
+001* assign     L1:0-16      d0  door_open=True
+002  literal    L2:7-8       d1  6
+003* assign     L2:0-8       d0  temp=6
+004  name       L4:3-12      d2  door_open -> True
+005  name       L4:17-21     d3  temp -> 6
+006  literal    L4:24-25     d3  5
+007  compare    L4:17-25     d2  temp > 5 -> True
+008  boolop     L4:3-25      d1  door_open and temp > 5 -> True
+009* branch     L4-7         d0  if door_open and temp > 5 -> True
+010  literal    L5:10-33     d2  'door open and warming'
+011  call       L5:4-34      d1  print('door open and warming') -> None  | out "door open and warming"
+012* expr       L5:4-34      d0  print("door open and warming") -> None
+013  name       L7:7-16      d3  door_open -> True
+014  unaryop    L7:3-16      d2  not door_open -> False
+015  name       L7:20-24     d3  temp -> 6
+016  literal    L7:27-28     d3  5
+017  compare    L7:20-28     d2  temp > 5 -> True
+018  boolop     L7:3-28      d1  not door_open or temp > 5 -> True
+019* branch     L7-10        d0  if not door_open or temp > 5 -> True
+020  literal    L8:10-26     d2  'one of the two'
+021  call       L8:4-27      d1  print('one of the two') -> None  | out "one of the two"
+022* expr       L8:4-27      d0  print("one of the two") -> None
+023  literal    L10:6-11     d3  False
+024  boolop     L10:6-21     d2  False and 1 / 0 -> False (right side skipped)
+025  call       L10:0-22     d1  print(False) -> None  | out "False"
+026* expr       L10:0-22     d0  print(False and 1 / 0) -> None
+
+-- outcome: completed
+-- statements: 7  steps: 27
+-- printed:
+   door open and warming
+   one of the two
+   False

@@ -1,0 +1,22 @@
+-- tier4-local-scope
+-- covers: Tier 4: names bound in a function are not visible outside it.
+
+000  literal    L2:8-9       d1  1
+001* assign     L2:0-9       d0  count=1
+002* def        L4-8         d0  def bump()
+003  literal    L5:12-14     d1  99
+004* assign     L5:4-14      d0  count=99
+005  name       L6:11-16     d1  count -> 99
+006* return     L6:4-16      d0  return 99
+007  call       L8:6-12      d2  bump() -> 99
+008  call       L8:0-13      d1  print(99) -> None  | out "99"
+009* expr       L8:0-13      d0  print(bump()) -> None
+010  name       L9:6-11      d2  count -> 1
+011  call       L9:0-12      d1  print(1) -> None  | out "1"
+012* expr       L9:0-12      d0  print(count) -> None
+
+-- outcome: completed
+-- statements: 6  steps: 13
+-- printed:
+   99
+   1

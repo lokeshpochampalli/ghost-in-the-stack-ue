@@ -1,0 +1,146 @@
+-- outcome-statement-cap
+-- covers: ADR-021: the design budget, as a diagnosable outcome rather than a crash.
+
+000  literal    L1:4-5       d1  0
+001* assign     L1:0-5       d0  i=0
+002  name       L3:6-7       d2  i -> 0
+003  literal    L3:11-12     d3  1
+004  unaryop    L3:10-12     d2  -1 -> -1
+005  compare    L3:6-12      d1  i > -1 -> True
+006* iterate    L3-5         d0  while i > -1 -> True (iteration 1)
+007  literal    L4:9-10      d1  1
+008* augassign  L4:4-10      d0  i=1
+009  name       L3:6-7       d2  i -> 1
+010  literal    L3:11-12     d3  1
+011  unaryop    L3:10-12     d2  -1 -> -1
+012  compare    L3:6-12      d1  i > -1 -> True
+013* iterate    L3-5         d0  while i > -1 -> True (iteration 2)
+014  literal    L4:9-10      d1  1
+015* augassign  L4:4-10      d0  i=2
+016  name       L3:6-7       d2  i -> 2
+017  literal    L3:11-12     d3  1
+018  unaryop    L3:10-12     d2  -1 -> -1
+019  compare    L3:6-12      d1  i > -1 -> True
+020* iterate    L3-5         d0  while i > -1 -> True (iteration 3)
+021  literal    L4:9-10      d1  1
+022* augassign  L4:4-10      d0  i=3
+023  name       L3:6-7       d2  i -> 3
+024  literal    L3:11-12     d3  1
+025  unaryop    L3:10-12     d2  -1 -> -1
+026  compare    L3:6-12      d1  i > -1 -> True
+027* iterate    L3-5         d0  while i > -1 -> True (iteration 4)
+028  literal    L4:9-10      d1  1
+029* augassign  L4:4-10      d0  i=4
+030  name       L3:6-7       d2  i -> 4
+031  literal    L3:11-12     d3  1
+032  unaryop    L3:10-12     d2  -1 -> -1
+033  compare    L3:6-12      d1  i > -1 -> True
+034* iterate    L3-5         d0  while i > -1 -> True (iteration 5)
+035  literal    L4:9-10      d1  1
+036* augassign  L4:4-10      d0  i=5
+037  name       L3:6-7       d2  i -> 5
+038  literal    L3:11-12     d3  1
+039  unaryop    L3:10-12     d2  -1 -> -1
+040  compare    L3:6-12      d1  i > -1 -> True
+041* iterate    L3-5         d0  while i > -1 -> True (iteration 6)
+042  literal    L4:9-10      d1  1
+043* augassign  L4:4-10      d0  i=6
+044  name       L3:6-7       d2  i -> 6
+045  literal    L3:11-12     d3  1
+046  unaryop    L3:10-12     d2  -1 -> -1
+047  compare    L3:6-12      d1  i > -1 -> True
+048* iterate    L3-5         d0  while i > -1 -> True (iteration 7)
+049  literal    L4:9-10      d1  1
+050* augassign  L4:4-10      d0  i=7
+051  name       L3:6-7       d2  i -> 7
+052  literal    L3:11-12     d3  1
+053  unaryop    L3:10-12     d2  -1 -> -1
+054  compare    L3:6-12      d1  i > -1 -> True
+055* iterate    L3-5         d0  while i > -1 -> True (iteration 8)
+056  literal    L4:9-10      d1  1
+057* augassign  L4:4-10      d0  i=8
+058  name       L3:6-7       d2  i -> 8
+059  literal    L3:11-12     d3  1
+060  unaryop    L3:10-12     d2  -1 -> -1
+061  compare    L3:6-12      d1  i > -1 -> True
+062* iterate    L3-5         d0  while i > -1 -> True (iteration 9)
+063  literal    L4:9-10      d1  1
+064* augassign  L4:4-10      d0  i=9
+065  name       L3:6-7       d2  i -> 9
+066  literal    L3:11-12     d3  1
+067  unaryop    L3:10-12     d2  -1 -> -1
+068  compare    L3:6-12      d1  i > -1 -> True
+069* iterate    L3-5         d0  while i > -1 -> True (iteration 10)
+070  literal    L4:9-10      d1  1
+071* augassign  L4:4-10      d0  i=10
+072  name       L3:6-7       d2  i -> 10
+073  literal    L3:11-12     d3  1
+074  unaryop    L3:10-12     d2  -1 -> -1
+075  compare    L3:6-12      d1  i > -1 -> True
+076* iterate    L3-5         d0  while i > -1 -> True (iteration 11)
+077  literal    L4:9-10      d1  1
+078* augassign  L4:4-10      d0  i=11
+079  name       L3:6-7       d2  i -> 11
+080  literal    L3:11-12     d3  1
+081  unaryop    L3:10-12     d2  -1 -> -1
+082  compare    L3:6-12      d1  i > -1 -> True
+083* iterate    L3-5         d0  while i > -1 -> True (iteration 12)
+084  literal    L4:9-10      d1  1
+085* augassign  L4:4-10      d0  i=12
+086  name       L3:6-7       d2  i -> 12
+087  literal    L3:11-12     d3  1
+088  unaryop    L3:10-12     d2  -1 -> -1
+089  compare    L3:6-12      d1  i > -1 -> True
+090* iterate    L3-5         d0  while i > -1 -> True (iteration 13)
+091  literal    L4:9-10      d1  1
+092* augassign  L4:4-10      d0  i=13
+093  name       L3:6-7       d2  i -> 13
+094  literal    L3:11-12     d3  1
+095  unaryop    L3:10-12     d2  -1 -> -1
+096  compare    L3:6-12      d1  i > -1 -> True
+097* iterate    L3-5         d0  while i > -1 -> True (iteration 14)
+098  literal    L4:9-10      d1  1
+099* augassign  L4:4-10      d0  i=14
+100  name       L3:6-7       d2  i -> 14
+101  literal    L3:11-12     d3  1
+102  unaryop    L3:10-12     d2  -1 -> -1
+103  compare    L3:6-12      d1  i > -1 -> True
+104* iterate    L3-5         d0  while i > -1 -> True (iteration 15)
+105  literal    L4:9-10      d1  1
+106* augassign  L4:4-10      d0  i=15
+107  name       L3:6-7       d2  i -> 15
+108  literal    L3:11-12     d3  1
+109  unaryop    L3:10-12     d2  -1 -> -1
+110  compare    L3:6-12      d1  i > -1 -> True
+111* iterate    L3-5         d0  while i > -1 -> True (iteration 16)
+112  literal    L4:9-10      d1  1
+113* augassign  L4:4-10      d0  i=16
+114  name       L3:6-7       d2  i -> 16
+115  literal    L3:11-12     d3  1
+116  unaryop    L3:10-12     d2  -1 -> -1
+117  compare    L3:6-12      d1  i > -1 -> True
+118* iterate    L3-5         d0  while i > -1 -> True (iteration 17)
+119  literal    L4:9-10      d1  1
+120* augassign  L4:4-10      d0  i=17
+121  name       L3:6-7       d2  i -> 17
+122  literal    L3:11-12     d3  1
+123  unaryop    L3:10-12     d2  -1 -> -1
+124  compare    L3:6-12      d1  i > -1 -> True
+125* iterate    L3-5         d0  while i > -1 -> True (iteration 18)
+126  literal    L4:9-10      d1  1
+127* augassign  L4:4-10      d0  i=18
+128  name       L3:6-7       d2  i -> 18
+129  literal    L3:11-12     d3  1
+130  unaryop    L3:10-12     d2  -1 -> -1
+131  compare    L3:6-12      d1  i > -1 -> True
+132* iterate    L3-5         d0  while i > -1 -> True (iteration 19)
+133  literal    L4:9-10      d1  1
+134* augassign  L4:4-10      d0  i=19
+135  name       L3:6-7       d2  i -> 19
+136  literal    L3:11-12     d3  1
+137  unaryop    L3:10-12     d2  -1 -> -1
+138  compare    L3:6-12      d1  i > -1 -> True
+139* iterate    L3-5         d0  while i > -1 -> True (iteration 20)
+
+-- outcome: statement cap 40 exceeded at line 3
+-- statements: 40  steps: 140

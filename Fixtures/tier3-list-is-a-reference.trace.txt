@@ -1,0 +1,24 @@
+-- tier3-list-is-a-reference
+-- covers: Tier 3: two names for one list, the parallel-assignment misconception.
+
+000  literal    L2:11-12     d2  4
+001  list       L2:10-13     d1  [4] -> [4]
+002* assign     L2:0-13      d0  morning=[4]
+003  name       L3:10-17     d1  morning -> [4]
+004* assign     L3:0-17      d0  evening=[4]
+005  name       L5:0-7       d2  morning -> [4]
+006  literal    L5:15-16     d2  6
+007  method     L5:0-17      d1  morning.append(6) -> None
+008* expr       L5:0-17      d0  morning.append(6) -> None
+009  name       L7:6-13      d2  morning -> [4, 6]
+010  call       L7:0-14      d1  print([4, 6]) -> None  | out "[4, 6]"
+011* expr       L7:0-14      d0  print(morning) -> None
+012  name       L8:6-13      d2  evening -> [4, 6]
+013  call       L8:0-14      d1  print([4, 6]) -> None  | out "[4, 6]"
+014* expr       L8:0-14      d0  print(evening) -> None
+
+-- outcome: completed
+-- statements: 5  steps: 15
+-- printed:
+   [4, 6]
+   [4, 6]

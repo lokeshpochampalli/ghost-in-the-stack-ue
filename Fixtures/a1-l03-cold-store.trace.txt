@@ -1,0 +1,19 @@
+-- a1-l03-cold-store
+-- covers: Tier 1: assignment, reassignment, arithmetic, output. The first real level.
+
+000  literal    L4:12-13     d1  4
+001* assign     L4:0-13      d0  base_temp=4
+002  literal    L5:9-10      d1  2
+003* assign     L5:0-10      d0  adjust=2
+004  name       L6:12-21     d2  base_temp -> 4
+005  name       L6:24-30     d2  adjust -> 2
+006  binop      L6:12-30     d1  base_temp - adjust -> 2
+007* assign     L6:0-30      d0  base_temp=2
+008  name       L8:6-15      d2  base_temp -> 2
+009  call       L8:0-16      d1  print(2) -> None  | out "2"
+010* expr       L8:0-16      d0  print(base_temp) -> None
+
+-- outcome: completed
+-- statements: 4  steps: 11
+-- printed:
+   2

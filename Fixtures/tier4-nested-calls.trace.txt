@@ -1,0 +1,26 @@
+-- tier4-nested-calls
+-- covers: Tier 4: a call inside a call, and one function calling another.
+
+000* def        L1-4         d0  def double(n)
+001* def        L4-7         d0  def quad(n)
+002  literal    L7:11-12     d3  3
+003  name       L5:25-26     d3  n -> 3
+004  name       L2:11-12     d2  n -> 3
+005  literal    L2:15-16     d2  2
+006  binop      L2:11-16     d1  n * 2 -> 6
+007* return     L2:4-16      d0  return 6
+008  call       L5:18-27     d2  double(3) -> 6
+009  name       L2:11-12     d2  n -> 6
+010  literal    L2:15-16     d2  2
+011  binop      L2:11-16     d1  n * 2 -> 12
+012* return     L2:4-16      d0  return 12
+013  call       L5:11-28     d1  double(6) -> 12
+014* return     L5:4-28      d0  return 12
+015  call       L7:6-13      d2  quad(3) -> 12
+016  call       L7:0-14      d1  print(12) -> None  | out "12"
+017* expr       L7:0-14      d0  print(quad(3)) -> None
+
+-- outcome: completed
+-- statements: 6  steps: 18
+-- printed:
+   12

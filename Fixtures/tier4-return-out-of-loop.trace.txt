@@ -1,0 +1,35 @@
+-- tier4-return-out-of-loop
+-- covers: Tier 4: return unwinds the loop as well as the block.
+
+000* def        L1-7         d0  def first_over(limit)
+001  literal    L7:17-18     d3  5
+002  literal    L2:20-21     d2  2
+003  literal    L2:23-24     d2  4
+004  literal    L2:26-27     d2  6
+005  literal    L2:29-30     d2  8
+006  list       L2:19-31     d1  [2, 4, 6, 8] -> [2, 4, 6, 8]
+007* iterate    L2-5         d0  for reading=2 (iteration 1)
+008  name       L3:11-18     d2  reading -> 2
+009  name       L3:21-26     d2  limit -> 5
+010  compare    L3:11-26     d1  reading > limit -> False
+011* branch     L3-5         d0  if reading > limit -> False
+012* iterate    L2-5         d0  for reading=4 (iteration 2)
+013  name       L3:11-18     d2  reading -> 4
+014  name       L3:21-26     d2  limit -> 5
+015  compare    L3:11-26     d1  reading > limit -> False
+016* branch     L3-5         d0  if reading > limit -> False
+017* iterate    L2-5         d0  for reading=6 (iteration 3)
+018  name       L3:11-18     d2  reading -> 6
+019  name       L3:21-26     d2  limit -> 5
+020  compare    L3:11-26     d1  reading > limit -> True
+021* branch     L3-5         d0  if reading > limit -> True
+022  name       L4:19-26     d1  reading -> 6
+023* return     L4:12-26     d0  return 6
+024  call       L7:6-19      d2  first_over(5) -> 6
+025  call       L7:0-20      d1  print(6) -> None  | out "6"
+026* expr       L7:0-20      d0  print(first_over(5)) -> None
+
+-- outcome: completed
+-- statements: 9  steps: 27
+-- printed:
+   6

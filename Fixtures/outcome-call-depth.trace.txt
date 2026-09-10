@@ -1,0 +1,305 @@
+-- outcome-call-depth
+-- covers: Runaway recursion stops with a message, not a stack overflow.
+
+000* def        L1-4         d0  def forever(n)
+001  literal    L4:14-15     d3  1
+002  name       L2:19-20     d3  n -> 1
+003  literal    L2:23-24     d3  1
+004  binop      L2:19-24     d2  n + 1 -> 2
+005  name       L2:19-20     d3  n -> 2
+006  literal    L2:23-24     d3  1
+007  binop      L2:19-24     d2  n + 1 -> 3
+008  name       L2:19-20     d3  n -> 3
+009  literal    L2:23-24     d3  1
+010  binop      L2:19-24     d2  n + 1 -> 4
+011  name       L2:19-20     d3  n -> 4
+012  literal    L2:23-24     d3  1
+013  binop      L2:19-24     d2  n + 1 -> 5
+014  name       L2:19-20     d3  n -> 5
+015  literal    L2:23-24     d3  1
+016  binop      L2:19-24     d2  n + 1 -> 6
+017  name       L2:19-20     d3  n -> 6
+018  literal    L2:23-24     d3  1
+019  binop      L2:19-24     d2  n + 1 -> 7
+020  name       L2:19-20     d3  n -> 7
+021  literal    L2:23-24     d3  1
+022  binop      L2:19-24     d2  n + 1 -> 8
+023  name       L2:19-20     d3  n -> 8
+024  literal    L2:23-24     d3  1
+025  binop      L2:19-24     d2  n + 1 -> 9
+026  name       L2:19-20     d3  n -> 9
+027  literal    L2:23-24     d3  1
+028  binop      L2:19-24     d2  n + 1 -> 10
+029  name       L2:19-20     d3  n -> 10
+030  literal    L2:23-24     d3  1
+031  binop      L2:19-24     d2  n + 1 -> 11
+032  name       L2:19-20     d3  n -> 11
+033  literal    L2:23-24     d3  1
+034  binop      L2:19-24     d2  n + 1 -> 12
+035  name       L2:19-20     d3  n -> 12
+036  literal    L2:23-24     d3  1
+037  binop      L2:19-24     d2  n + 1 -> 13
+038  name       L2:19-20     d3  n -> 13
+039  literal    L2:23-24     d3  1
+040  binop      L2:19-24     d2  n + 1 -> 14
+041  name       L2:19-20     d3  n -> 14
+042  literal    L2:23-24     d3  1
+043  binop      L2:19-24     d2  n + 1 -> 15
+044  name       L2:19-20     d3  n -> 15
+045  literal    L2:23-24     d3  1
+046  binop      L2:19-24     d2  n + 1 -> 16
+047  name       L2:19-20     d3  n -> 16
+048  literal    L2:23-24     d3  1
+049  binop      L2:19-24     d2  n + 1 -> 17
+050  name       L2:19-20     d3  n -> 17
+051  literal    L2:23-24     d3  1
+052  binop      L2:19-24     d2  n + 1 -> 18
+053  name       L2:19-20     d3  n -> 18
+054  literal    L2:23-24     d3  1
+055  binop      L2:19-24     d2  n + 1 -> 19
+056  name       L2:19-20     d3  n -> 19
+057  literal    L2:23-24     d3  1
+058  binop      L2:19-24     d2  n + 1 -> 20
+059  name       L2:19-20     d3  n -> 20
+060  literal    L2:23-24     d3  1
+061  binop      L2:19-24     d2  n + 1 -> 21
+062  name       L2:19-20     d3  n -> 21
+063  literal    L2:23-24     d3  1
+064  binop      L2:19-24     d2  n + 1 -> 22
+065  name       L2:19-20     d3  n -> 22
+066  literal    L2:23-24     d3  1
+067  binop      L2:19-24     d2  n + 1 -> 23
+068  name       L2:19-20     d3  n -> 23
+069  literal    L2:23-24     d3  1
+070  binop      L2:19-24     d2  n + 1 -> 24
+071  name       L2:19-20     d3  n -> 24
+072  literal    L2:23-24     d3  1
+073  binop      L2:19-24     d2  n + 1 -> 25
+074  name       L2:19-20     d3  n -> 25
+075  literal    L2:23-24     d3  1
+076  binop      L2:19-24     d2  n + 1 -> 26
+077  name       L2:19-20     d3  n -> 26
+078  literal    L2:23-24     d3  1
+079  binop      L2:19-24     d2  n + 1 -> 27
+080  name       L2:19-20     d3  n -> 27
+081  literal    L2:23-24     d3  1
+082  binop      L2:19-24     d2  n + 1 -> 28
+083  name       L2:19-20     d3  n -> 28
+084  literal    L2:23-24     d3  1
+085  binop      L2:19-24     d2  n + 1 -> 29
+086  name       L2:19-20     d3  n -> 29
+087  literal    L2:23-24     d3  1
+088  binop      L2:19-24     d2  n + 1 -> 30
+089  name       L2:19-20     d3  n -> 30
+090  literal    L2:23-24     d3  1
+091  binop      L2:19-24     d2  n + 1 -> 31
+092  name       L2:19-20     d3  n -> 31
+093  literal    L2:23-24     d3  1
+094  binop      L2:19-24     d2  n + 1 -> 32
+095  name       L2:19-20     d3  n -> 32
+096  literal    L2:23-24     d3  1
+097  binop      L2:19-24     d2  n + 1 -> 33
+098  name       L2:19-20     d3  n -> 33
+099  literal    L2:23-24     d3  1
+100  binop      L2:19-24     d2  n + 1 -> 34
+101  name       L2:19-20     d3  n -> 34
+102  literal    L2:23-24     d3  1
+103  binop      L2:19-24     d2  n + 1 -> 35
+104  name       L2:19-20     d3  n -> 35
+105  literal    L2:23-24     d3  1
+106  binop      L2:19-24     d2  n + 1 -> 36
+107  name       L2:19-20     d3  n -> 36
+108  literal    L2:23-24     d3  1
+109  binop      L2:19-24     d2  n + 1 -> 37
+110  name       L2:19-20     d3  n -> 37
+111  literal    L2:23-24     d3  1
+112  binop      L2:19-24     d2  n + 1 -> 38
+113  name       L2:19-20     d3  n -> 38
+114  literal    L2:23-24     d3  1
+115  binop      L2:19-24     d2  n + 1 -> 39
+116  name       L2:19-20     d3  n -> 39
+117  literal    L2:23-24     d3  1
+118  binop      L2:19-24     d2  n + 1 -> 40
+119  name       L2:19-20     d3  n -> 40
+120  literal    L2:23-24     d3  1
+121  binop      L2:19-24     d2  n + 1 -> 41
+122  name       L2:19-20     d3  n -> 41
+123  literal    L2:23-24     d3  1
+124  binop      L2:19-24     d2  n + 1 -> 42
+125  name       L2:19-20     d3  n -> 42
+126  literal    L2:23-24     d3  1
+127  binop      L2:19-24     d2  n + 1 -> 43
+128  name       L2:19-20     d3  n -> 43
+129  literal    L2:23-24     d3  1
+130  binop      L2:19-24     d2  n + 1 -> 44
+131  name       L2:19-20     d3  n -> 44
+132  literal    L2:23-24     d3  1
+133  binop      L2:19-24     d2  n + 1 -> 45
+134  name       L2:19-20     d3  n -> 45
+135  literal    L2:23-24     d3  1
+136  binop      L2:19-24     d2  n + 1 -> 46
+137  name       L2:19-20     d3  n -> 46
+138  literal    L2:23-24     d3  1
+139  binop      L2:19-24     d2  n + 1 -> 47
+140  name       L2:19-20     d3  n -> 47
+141  literal    L2:23-24     d3  1
+142  binop      L2:19-24     d2  n + 1 -> 48
+143  name       L2:19-20     d3  n -> 48
+144  literal    L2:23-24     d3  1
+145  binop      L2:19-24     d2  n + 1 -> 49
+146  name       L2:19-20     d3  n -> 49
+147  literal    L2:23-24     d3  1
+148  binop      L2:19-24     d2  n + 1 -> 50
+149  name       L2:19-20     d3  n -> 50
+150  literal    L2:23-24     d3  1
+151  binop      L2:19-24     d2  n + 1 -> 51
+152  name       L2:19-20     d3  n -> 51
+153  literal    L2:23-24     d3  1
+154  binop      L2:19-24     d2  n + 1 -> 52
+155  name       L2:19-20     d3  n -> 52
+156  literal    L2:23-24     d3  1
+157  binop      L2:19-24     d2  n + 1 -> 53
+158  name       L2:19-20     d3  n -> 53
+159  literal    L2:23-24     d3  1
+160  binop      L2:19-24     d2  n + 1 -> 54
+161  name       L2:19-20     d3  n -> 54
+162  literal    L2:23-24     d3  1
+163  binop      L2:19-24     d2  n + 1 -> 55
+164  name       L2:19-20     d3  n -> 55
+165  literal    L2:23-24     d3  1
+166  binop      L2:19-24     d2  n + 1 -> 56
+167  name       L2:19-20     d3  n -> 56
+168  literal    L2:23-24     d3  1
+169  binop      L2:19-24     d2  n + 1 -> 57
+170  name       L2:19-20     d3  n -> 57
+171  literal    L2:23-24     d3  1
+172  binop      L2:19-24     d2  n + 1 -> 58
+173  name       L2:19-20     d3  n -> 58
+174  literal    L2:23-24     d3  1
+175  binop      L2:19-24     d2  n + 1 -> 59
+176  name       L2:19-20     d3  n -> 59
+177  literal    L2:23-24     d3  1
+178  binop      L2:19-24     d2  n + 1 -> 60
+179  name       L2:19-20     d3  n -> 60
+180  literal    L2:23-24     d3  1
+181  binop      L2:19-24     d2  n + 1 -> 61
+182  name       L2:19-20     d3  n -> 61
+183  literal    L2:23-24     d3  1
+184  binop      L2:19-24     d2  n + 1 -> 62
+185  name       L2:19-20     d3  n -> 62
+186  literal    L2:23-24     d3  1
+187  binop      L2:19-24     d2  n + 1 -> 63
+188  name       L2:19-20     d3  n -> 63
+189  literal    L2:23-24     d3  1
+190  binop      L2:19-24     d2  n + 1 -> 64
+191  name       L2:19-20     d3  n -> 64
+192  literal    L2:23-24     d3  1
+193  binop      L2:19-24     d2  n + 1 -> 65
+194  name       L2:19-20     d3  n -> 65
+195  literal    L2:23-24     d3  1
+196  binop      L2:19-24     d2  n + 1 -> 66
+197  name       L2:19-20     d3  n -> 66
+198  literal    L2:23-24     d3  1
+199  binop      L2:19-24     d2  n + 1 -> 67
+200  name       L2:19-20     d3  n -> 67
+201  literal    L2:23-24     d3  1
+202  binop      L2:19-24     d2  n + 1 -> 68
+203  name       L2:19-20     d3  n -> 68
+204  literal    L2:23-24     d3  1
+205  binop      L2:19-24     d2  n + 1 -> 69
+206  name       L2:19-20     d3  n -> 69
+207  literal    L2:23-24     d3  1
+208  binop      L2:19-24     d2  n + 1 -> 70
+209  name       L2:19-20     d3  n -> 70
+210  literal    L2:23-24     d3  1
+211  binop      L2:19-24     d2  n + 1 -> 71
+212  name       L2:19-20     d3  n -> 71
+213  literal    L2:23-24     d3  1
+214  binop      L2:19-24     d2  n + 1 -> 72
+215  name       L2:19-20     d3  n -> 72
+216  literal    L2:23-24     d3  1
+217  binop      L2:19-24     d2  n + 1 -> 73
+218  name       L2:19-20     d3  n -> 73
+219  literal    L2:23-24     d3  1
+220  binop      L2:19-24     d2  n + 1 -> 74
+221  name       L2:19-20     d3  n -> 74
+222  literal    L2:23-24     d3  1
+223  binop      L2:19-24     d2  n + 1 -> 75
+224  name       L2:19-20     d3  n -> 75
+225  literal    L2:23-24     d3  1
+226  binop      L2:19-24     d2  n + 1 -> 76
+227  name       L2:19-20     d3  n -> 76
+228  literal    L2:23-24     d3  1
+229  binop      L2:19-24     d2  n + 1 -> 77
+230  name       L2:19-20     d3  n -> 77
+231  literal    L2:23-24     d3  1
+232  binop      L2:19-24     d2  n + 1 -> 78
+233  name       L2:19-20     d3  n -> 78
+234  literal    L2:23-24     d3  1
+235  binop      L2:19-24     d2  n + 1 -> 79
+236  name       L2:19-20     d3  n -> 79
+237  literal    L2:23-24     d3  1
+238  binop      L2:19-24     d2  n + 1 -> 80
+239  name       L2:19-20     d3  n -> 80
+240  literal    L2:23-24     d3  1
+241  binop      L2:19-24     d2  n + 1 -> 81
+242  name       L2:19-20     d3  n -> 81
+243  literal    L2:23-24     d3  1
+244  binop      L2:19-24     d2  n + 1 -> 82
+245  name       L2:19-20     d3  n -> 82
+246  literal    L2:23-24     d3  1
+247  binop      L2:19-24     d2  n + 1 -> 83
+248  name       L2:19-20     d3  n -> 83
+249  literal    L2:23-24     d3  1
+250  binop      L2:19-24     d2  n + 1 -> 84
+251  name       L2:19-20     d3  n -> 84
+252  literal    L2:23-24     d3  1
+253  binop      L2:19-24     d2  n + 1 -> 85
+254  name       L2:19-20     d3  n -> 85
+255  literal    L2:23-24     d3  1
+256  binop      L2:19-24     d2  n + 1 -> 86
+257  name       L2:19-20     d3  n -> 86
+258  literal    L2:23-24     d3  1
+259  binop      L2:19-24     d2  n + 1 -> 87
+260  name       L2:19-20     d3  n -> 87
+261  literal    L2:23-24     d3  1
+262  binop      L2:19-24     d2  n + 1 -> 88
+263  name       L2:19-20     d3  n -> 88
+264  literal    L2:23-24     d3  1
+265  binop      L2:19-24     d2  n + 1 -> 89
+266  name       L2:19-20     d3  n -> 89
+267  literal    L2:23-24     d3  1
+268  binop      L2:19-24     d2  n + 1 -> 90
+269  name       L2:19-20     d3  n -> 90
+270  literal    L2:23-24     d3  1
+271  binop      L2:19-24     d2  n + 1 -> 91
+272  name       L2:19-20     d3  n -> 91
+273  literal    L2:23-24     d3  1
+274  binop      L2:19-24     d2  n + 1 -> 92
+275  name       L2:19-20     d3  n -> 92
+276  literal    L2:23-24     d3  1
+277  binop      L2:19-24     d2  n + 1 -> 93
+278  name       L2:19-20     d3  n -> 93
+279  literal    L2:23-24     d3  1
+280  binop      L2:19-24     d2  n + 1 -> 94
+281  name       L2:19-20     d3  n -> 94
+282  literal    L2:23-24     d3  1
+283  binop      L2:19-24     d2  n + 1 -> 95
+284  name       L2:19-20     d3  n -> 95
+285  literal    L2:23-24     d3  1
+286  binop      L2:19-24     d2  n + 1 -> 96
+287  name       L2:19-20     d3  n -> 96
+288  literal    L2:23-24     d3  1
+289  binop      L2:19-24     d2  n + 1 -> 97
+290  name       L2:19-20     d3  n -> 97
+291  literal    L2:23-24     d3  1
+292  binop      L2:19-24     d2  n + 1 -> 98
+293  name       L2:19-20     d3  n -> 98
+294  literal    L2:23-24     d3  1
+295  binop      L2:19-24     d2  n + 1 -> 99
+296  name       L2:19-20     d3  n -> 99
+297  literal    L2:23-24     d3  1
+298  binop      L2:19-24     d2  n + 1 -> 100
+
+-- outcome: error call-depth-exceeded at line 2
+-- statements: 1  steps: 299
