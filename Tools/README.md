@@ -8,13 +8,25 @@ Python, not Unreal's.
 | `ue_mcp_client.py` | Minimal streamable-HTTP MCP client for the editor's server at `http://127.0.0.1:8000/mcp`. `python Tools/ue_mcp_client.py` initialises a session and lists the three meta-tools. Import it to call `list_toolsets`, `describe_toolset`, `call_tool`. |
 | `ue_remote_python.py` | Runs a Python file inside the running editor via the Python plugin's remote execution (multicast `239.0.0.1:6766`, enabled in `DefaultEngine.ini`). `python Tools/ue_remote_python.py script.py`. Use this for anything the MCP toolsets can't do; the Programmatic toolset's sandbox cannot import `unreal`. |
 | `blender_socket.py` | Talks to the Blender MCP addon socket on `127.0.0.1:9876`. `python Tools/blender_socket.py get_scene_info`, or `execute_code '{"file": "C:/path/script.py"}'` to run a script in Blender. |
-| `blender_export_test_cube.py` | Phase 0 test: creates `SM_Kit_TestCube`, 1 m, origin at its base, and exports it as `.glb` to `Content/Kit/`. Run it in Blender through `blender_socket.py`. The seed of the kit export pipeline. |
-| `ue_import_test_cube.py` | Phase 0 test: imports that `.glb` through Interchange and places it at the world origin. Run it through `ue_remote_python.py`. |
+| `export_kit.py` | The kit export pipeline. Reads `Content/Kit/Kit.blend`, exports every `SM_Kit_<Name>` mesh in the `Kit` collection to `Content/Kit/SM_Kit_<Name>.glb` with its `UCX_SM_Kit_<Name>` collision mesh, transforms applied, Y-up. Run headless from the project root: `"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background Content/Kit/Kit.blend --python Tools/export_kit.py` |
+| `import_kit.py` | The Unreal side of the pipeline. Imports every `Content/Kit/SM_Kit_*.glb` through Interchange into `/Game/Kit`, flattens Interchange's per-file folders, adds a box collision if no UCX came through, saves. Re-import in place, so placed actors keep their mesh. Run through `ue_remote_python.py`. |
 
-glTF import note: the `StaticMeshTools.import_file` MCP tool only accepts FBX and OBJ. glTF goes
-through Interchange via `unreal.AssetImportTask`, which is why the import script exists. Interchange
-nests the result under `<Name>/StaticMeshes/` and `<Name>/Materials/`; the Phase 0 pass moved the
-assets to `Content/Kit/` root and added a box simple collision afterwards.
+## Kit pipeline rules
+
+- **One kit file:** `Content/Kit/Kit.blend`. Scene units are centimetres (unit scale 0.01), so
+  1 Blender unit = 1 cm and a 100-unit cube is 1 m in Unreal. `export_kit.py` refuses to run if
+  the unit scale is anything else.
+- **Naming:** a kit piece is a mesh object `SM_Kit_<Name>` in the `Kit` collection. Its collision
+  is a convex mesh `UCX_SM_Kit_<Name>`, parented to the piece (the `Kit_Collision` collection
+  holds them). Pieces without a UCX mesh get a box collision on import and a warning on export.
+- **Origin:** at the piece's base, on the floor, so placing at Z=0 stands it on the ground.
+- **Export:** one `.glb` per piece. glTF files are always metres and Blender's exporter ignores
+  the scene unit scale, so the script exports temporary copies scaled by 0.01. Unreal's glTF
+  importer turns metres back into centimetres.
+- **Import:** `import_kit.py`, because the `StaticMeshTools.import_file` MCP tool only accepts FBX
+  and OBJ, and the Programmatic toolset's sandbox cannot import `unreal`. glTF goes through
+  Interchange via `unreal.AssetImportTask`.
+- Fix the pipeline, not individual assets.
 
 Origin note: in the template level `Lvl_FirstPerson` the world origin is enclosed by template
 geometry — `SM_Cube13` (a 7 x 4 x 2 m block) with the yellow `SM_Cylinder` disc on top. A mesh

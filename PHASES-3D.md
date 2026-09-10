@@ -29,7 +29,7 @@ Rules that hold throughout:
 
 | Phase | State |
 |---|---|
-| 0 — Project and toolchain | done 10 Sep 2026: builds clean, MCP connected, Blender cube in the level with collision, screenshots in the report. Outstanding: kit `.blend` and export pipeline script, GitHub remote |
+| 0 — Project and toolchain | done 10 Sep 2026: builds clean, MCP connected, kit pipeline (`Content/Kit/Kit.blend`, `Tools/export_kit.py`, `Tools/import_kit.py`) exports the test cube with collision into the level, screenshots in the report. Outstanding: GitHub remote |
 | 1 — Interpreter port | not started |
 | 2 — First system: a door | not started |
 | 3 — Recorder and rewind | not started |

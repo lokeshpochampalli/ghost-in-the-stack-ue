@@ -85,8 +85,8 @@ docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN
 - **Commit before every MCP-driven editing session.** MCP tools mutate live editor state and can
   move or delete assets in one call. A clean working copy is the undo.
 - **Update `docs/` in the same commit when implementation diverges from spec.**
-- **`docs/DECISIONS.md` is append-only and human-written.** ADR-025 is reserved for the
-  cycle-two redesign decision and has not been written yet; continue from ADR-026. Say when a
+- **`docs/DECISIONS.md` is append-only and human-written.** ADR-026 records this cycle's
+  redesign; continue from ADR-027. Say when a
   decision is needed and stop; do not write entries.
 - **Commits:** `phase-N: short imperative summary`.
 

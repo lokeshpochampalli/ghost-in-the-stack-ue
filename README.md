@@ -53,6 +53,8 @@ Blender socket client, and the Phase 0 cube export and import scripts. See `Tool
 
 - `Content/` is under Git LFS (`.uasset`, `.umap`, `.fbx`, `.glb`, `.gltf`, `.png`, `.wav`, `.blend`).
 - `Fixtures/` holds the thirty golden traces as flat `name.py` and `name.trace.txt` pairs. Read-only.
-- `docs/DECISIONS.md` is human-written and append-only. ADR-025 (the redesign) is still to be written.
+- `docs/DECISIONS.md` is human-written and append-only. ADR-026 is the redesign decision; the next entry is ADR-027.
 - Generated IDE files (`.vscode/`, `*.code-workspace`, `.ignore`) are gitignored; regenerate with
   `Build.bat -projectfiles ... -vscode` as described in `SETUP.md`.
+- Derived-data and Zen caches are configured to `D:/UE_DDC` and `D:/UE_Zen` in `Config/DefaultEngine.ini`.
+- Kit pipeline: `Content/Kit/Kit.blend` → `Tools/export_kit.py` → `Tools/import_kit.py`. Rules in `Tools/README.md`.

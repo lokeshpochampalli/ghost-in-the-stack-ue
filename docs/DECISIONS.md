@@ -569,3 +569,25 @@ Why. ADR-023 permits verification, and verification that cannot observe the rend
 axe-core additionally closes KI-61 properly. That entry records the honest weakness of contrast.ts: it audits a hand-written list of colour pairs rather than the page, and it produced a false positive on a pair the CSS never draws. Auditing the rendered DOM removes the class of error rather than patching the instance.
 
 What it does not close. Automated checks cannot substitute for a person. KI-62's screen-reader claim, KI-42's playtest, and KI-43/53's voice reading all remain open and all still need a human. The harness reduces the chance the manual pass is spent discovering crashes instead of judging the experience.
+
+ADR-025 — The evaluation study runs on Sector 1
+
+Decided. The study covers Sector 1 only. The post-test becomes reachable after its eight systems. Sectors 2–4 remain in the artefact and outside the study.
+
+Why. The consent sheet promises about an hour. Participants are novices by recruitment, and later sectors assume Sector 1's concepts. Sectors 2–4 are also the least validated content in the build, and a study should not put the weakest part of the artefact under the only measurement instrument pointed at it.
+
+Consequences. The pre/post tracing test covers Sector 1 concepts only — variables, types, reassignment, arithmetic, sequence, output. Every empirical claim scopes to Sector 1. The artefact is thirty systems; the evaluation is eight.
+
+ADR-026 — Second design cycle: a first-person 3D game in Unreal Engine
+
+Decided. Supervisor evaluation on 8 September 2026 found the first artefact pedagogically sound and not engaging as a game. The second design cycle rebuilds the presentation as a first-person 3D game in Unreal Engine 5.8, specified in docs/3D-REDESIGN.md. The TypeScript repo becomes the reference implementation: its language spec, decision record and thirty golden trace fixtures are authoritative.
+
+What survives. Reading before writing. PRIMM as mechanics. Free prediction, discounted run, scrub gate, no re-running unchanged source. Misconception-tagged distractors and the telemetry that records them. The recorded-trace model with rewind as index stepping. Level content and its concept mapping.
+
+What is replaced. The text editor, ribbon and diagram view are replaced by a place the player walks through, where every script drives a physical system and every misconception has a choreographed physical failure.
+
+Considered. Embedding the TypeScript interpreter via Puerts or a web view, which would run the existing code unchanged. Rejected: it adds a runtime and a bridge to a commercial game to avoid porting five thousand lines that have a complete fixture suite to verify the port against. The port is verified byte for byte against the thirty fixtures.
+
+Why Unreal now, having rejected it in August. The August objection was that an agent could not author Blueprints, see the editor, or iterate. Epic now ships an official in-editor MCP plugin and Claude Code plugin covering all three. The objection is gone; the engine's strength — a lit, physical, atmospheric place — is what the evaluation asked for.
+
+The design principle for the cycle. Every line of code moves something you can see, and every bug does something you can laugh at. This is both the fun principle and the pedagogy principle.
