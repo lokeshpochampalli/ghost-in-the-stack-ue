@@ -155,6 +155,14 @@ public:
 	float LastSeekMs = 0.f;
 	float MaxSeekMs = 0.f;
 
+	// --- frame sampling over a window, for the walk-through acceptance (Phase 6)
+	void StartFrameSample(float Seconds);
+	bool IsFrameSampling() const { return SampleRemaining > 0.f; }
+	float SampleMinFps = 0.f;
+	float SampleAvgFps = 0.f;
+	int32 SampleFrames = 0;
+	int32 SampleFramesUnder60 = 0;
+
 	/** Frame time sampled over the current playing or rewinding stretch, for the acceptance report. */
 	float PlaybackMinFps = 0.f;
 	float PlaybackAvgFps = 0.f;
@@ -190,6 +198,9 @@ private:
 	EGitsPlayState State = EGitsPlayState::Idle;
 	float PlayClock = 0.f;
 	float RewindHeldSeconds = 0.f;
+	float SampleRemaining = 0.f;
+	double SampleAccum = 0.0;
+	bool bSampleSkipFirst = false;
 	int32 Power = 0;
 	int32 PowerBudget = 0;
 	int32 ReserveRestore = 0;
