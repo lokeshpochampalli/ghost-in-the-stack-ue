@@ -137,6 +137,8 @@ def ensure_script(name, title, source, builtins, c):
     script.set_editor_property("log_entry", c.get("log", ""))
     script.set_editor_property("free_edit", c.get("free_edit", False))
     script.set_editor_property("panel_title", c.get("panel", ""))
+    script.set_editor_property("level_id", c.get("level_id", ""))
+    script.set_editor_property("act", 1)
     script.set_editor_property("run_cost", c.get("run_cost", 10))
     script.set_editor_property("predicted_run_cost", c.get("predicted_run_cost", 3))
     EAL.save_asset(path)
@@ -154,6 +156,7 @@ opened = 7
 # print shows what the name is keeping.
 print(opened)
 """, ["print"], dict(
+    level_id="a1-l01",
     concepts=["variable-assignment", "output"],
     predictions=[prediction("p1", "Before you spend the power: what will line 8 put on the log?", 8, 1, "output", [
         option("a", "7"),
@@ -181,6 +184,7 @@ east = 15
 
 print(west)
 """, ["print"], dict(
+    level_id="a1-l02",
     concepts=["variable-assignment", "reassignment", "output"],
     predictions=[prediction("p1", "What will line 11 report for west?", 11, 1, "output", [
         option("a", "12"),
@@ -206,6 +210,7 @@ base_temp = base_temp - adjust
 
 print(base_temp)
 """, ["print"], dict(
+    level_id="a1-l03",
     concepts=["variable-assignment", "reassignment", "arithmetic", "output"],
     predictions=[prediction("p1", "What will line 8 print?", 8, 1, "output", [
         option("a", "2"),
@@ -234,6 +239,7 @@ print(running)
 print(litres)
 print(rate)
 """, ["print"], dict(
+    level_id="a1-l04",
     concepts=["data-types", "output"],
     predictions=[
         prediction("p1", "What will line 9 put on the panel first?", 9, 1, "output", [
@@ -267,6 +273,7 @@ shifts = 2
 print(hours / shifts)
 print(hours // shifts)
 """, ["print"], dict(
+    level_id="a1-l05",
     concepts=["arithmetic", "type-coercion"],
     predictions=[
         prediction("p1", "Line 8 uses one slash. What comes out?", 8, 1, "output", [
@@ -301,6 +308,7 @@ print(room)
 print(rule)
 print(len(room))
 """, ["print", "len"], dict(
+    level_id="a1-l06",
     concepts=["string-ops", "output"],
     predictions=[
         prediction("p1", "What does line 9 stamp onto the plate?", 9, 1, "output", [
@@ -335,6 +343,7 @@ line = "crates: " + count
 print(line)
 print(count + count)
 """, ["print", "str"], dict(
+    level_id="a1-l07",
     concepts=["type-coercion", "string-ops"],
     predictions=[
         prediction("p1", "What does line 9 write on the manifest?", 9, 1, "output", [
@@ -364,6 +373,7 @@ S8 = ensure_script("DA_S1_ApproachLights", "APPROACH RIG  ilse's missing script"
 
 level = 9
 """, ["print", "set_light"], dict(
+    level_id="a1-l08",
     concepts=["variable-assignment", "output", "type-coercion"],
     hints=[hint(1, "Ilse's note from the page before: 'the rig reads two things. the level, then the word.'"),
            hint(2, "set_light(\"approach\", level) sets the approach rig. print() writes one line each time it is called.", 4),
@@ -389,6 +399,7 @@ for notch in range(9):
         wait(1)
 log("corridor lit")
 """, ["log", "set_light", "wait", "range"], dict(
+    level_id="s1-lights-optional",
     tier=3, concepts=["for-loop", "range", "nested-loop", "accumulator"],
     predictions=[prediction("p1", "Line 10, the wait. How many times does it run before the log on line 11?", 11, 1, "count", [
         option("a", "27. Three waits for each of nine notches."),
@@ -522,6 +533,13 @@ panel((851, -440, 150), 180, S7, "P7_Manifest")
 # 8. the Make task on the leg to the airlock
 terminal((1480, 250, 0), 0, S8, "T8_ApproachRig")
 panel((1494, 400, 150), 0, S8, "P8_ApproachRig")
+# the study terminals: consent and the pre-test by the entry, the post-test and questionnaires beyond the airlock
+study_pre = spawn(unreal.GitsInstrumentTerminal, (-200, -128, 0), rot=(0, -90, 0), label="Study_Pre")
+study_pre.body.set_static_mesh(mesh("SM_Kit_Terminal"))
+study_pre.set_editor_property("occasion", "pre")
+study_post = spawn(unreal.GitsInstrumentTerminal, (1480, 800, 0), rot=(0, 0, 0), label="Study_Post")
+study_post.body.set_static_mesh(mesh("SM_Kit_Terminal"))
+study_post.set_editor_property("occasion", "post")
 # the engineer's terminal, optional, in the generator room
 terminal((470, 400, 0), 180, lights_script, "T9_CorridorLights_Optional")
 

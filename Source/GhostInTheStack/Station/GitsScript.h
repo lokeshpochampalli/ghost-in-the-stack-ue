@@ -135,6 +135,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power")
 	int32 PredictedRunCost = 4;
 
+	/** The reference level this system is re-authored from (a1-l01), for the analysis's level axis. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Curriculum")
+	FString LevelId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Curriculum")
+	int32 Act = 1;
+
 	/** Concept tags (Companion/GitsTags), for the curriculum table. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Curriculum")
 	TArray<FString> Concepts;

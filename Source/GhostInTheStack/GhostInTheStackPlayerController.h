@@ -11,6 +11,8 @@ class UUserWidget;
 class AGitsTerminal;
 class SGitsTerminalEditor;
 class SGitsVantCaption;
+class SGitsInstrumentPanel;
+class AGitsInstrumentTerminal;
 
 /**
  *  Simple first person Player Controller
@@ -85,6 +87,20 @@ public:
 	/** Logs which systems are complete and whether the sector is. */
 	UFUNCTION(Exec) void GitsSector();
 
+	// --- the study (Phase 8)
+	/** Opens the study terminal's panel: consent and instruments. */
+	UFUNCTION(BlueprintCallable, Category = "Study") void UseInstrumentTerminal(AGitsInstrumentTerminal* Terminal);
+	UFUNCTION(BlueprintCallable, Category = "Study") void CloseInstrumentPanel();
+	/** Opens the study panel for "pre" or "post" without a terminal. */
+	UFUNCTION(Exec) void GitsStudy(const FString& Occasion);
+	/** Answers the study panel's current item with the Nth shown option. */
+	UFUNCTION(Exec) void GitsAnswer(int32 Index);
+	UFUNCTION(Exec) void GitsSkip();
+	/** Exports the bundle now, if consent is on file. */
+	UFUNCTION(Exec) void GitsExport();
+	/** Logs the participant code, consent and event count. */
+	UFUNCTION(Exec) void GitsTelemetry();
+
 protected:
 
 	/** Input Mapping Contexts */
@@ -105,6 +121,8 @@ protected:
 
 	/** VANT's caption over the viewport. */
 	TSharedPtr<SGitsVantCaption> Caption;
+	TSharedPtr<SGitsInstrumentPanel> StudyPanel;
+	UPROPERTY() TObjectPtr<AGitsInstrumentTerminal> CurrentStudyTerminal;
 	FDelegateHandle SpeakHandle;
 
 	/** If true, the player will use UMG touch controls even if not playing on mobile platforms */
