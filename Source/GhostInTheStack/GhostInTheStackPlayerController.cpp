@@ -286,6 +286,30 @@ void AGhostInTheStackPlayerController::GitsWalkTo(float X, float Y)
 	if (AGhostInTheStackCharacter* C = Cast<AGhostInTheStackCharacter>(GetPawn())) { C->WalkTo(FVector(X, Y, C->GetActorLocation().Z)); }
 }
 
+void AGhostInTheStackPlayerController::GitsInsertLine(int32 Line, const FString& Text)
+{
+	if (AGitsTerminal* T = TerminalForCommands())
+	{
+		const int32 NewLine = T->InsertLineAfter(Line);
+		if (NewLine > 0) { T->SetLine(NewLine, Text); }
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsInsertLine: after %d -> line %d '%s'"), Line, NewLine, *Text);
+		if (Overlay.IsValid()) { Overlay->Refresh(); }
+	}
+}
+
+void AGhostInTheStackPlayerController::GitsSector()
+{
+	UGitsVantSubsystem* V = GetWorld()->GetSubsystem<UGitsVantSubsystem>();
+	if (!V) { return; }
+	FString Out;
+	for (TActorIterator<AGitsTerminal> It(GetWorld()); It; ++It)
+	{
+		if (!It->Script) { continue; }
+		Out += FString::Printf(TEXT("%s=%d%s "), *It->Script->GetName(), V->IsComplete(It->Script), It->Script->bCountsForSector ? TEXT("") : TEXT("(optional)"));
+	}
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsSector: complete=%d %s"), V->IsSectorComplete(), *Out);
+}
+
 void AGhostInTheStackPlayerController::GitsRewind()
 {
 	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsRewind: %d"), S->BeginRewind()); }

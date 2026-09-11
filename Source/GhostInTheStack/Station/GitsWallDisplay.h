@@ -32,6 +32,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
 	FString Title = TEXT("STATION LOG");
 
+	/** When set, this panel belongs to one system: it shows only that script's runs and its tests. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display")
+	TObjectPtr<class UGitsScript> Script;
+
 	/** Shown before any run. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Display", meta = (MultiLine = true))
 	FString IdleText = TEXT("no run recorded");

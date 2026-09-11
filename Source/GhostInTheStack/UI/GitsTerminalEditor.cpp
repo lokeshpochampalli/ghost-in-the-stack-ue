@@ -63,6 +63,15 @@ void SGitsTerminalEditor::Construct(const FArguments& InArgs)
 								CommitEdit();
 								if (Kind == ETextCommit::OnEnter) { RunScript(); }
 							})
+							.OnKeyDownHandler_Lambda([this](const FGeometry& G, const FKeyEvent& E) -> FReply
+							{
+								const FKey K = E.GetKey();
+								if (K == EKeys::Insert || K == EKeys::Delete || K == EKeys::Up || K == EKeys::Down || K == EKeys::F1 || K == EKeys::Escape)
+								{
+									return OnKeyDown(G, E);
+								}
+								return FReply::Unhandled();
+							})
 						]
 					]
 				]
@@ -176,9 +185,11 @@ void SGitsTerminalEditor::RefreshQuestion()
 	{
 		bool bDiscounted = false;
 		const int32 Cost = T ? T->RunCostNow(bDiscounted) : 0;
+		const bool bFree = T && T->IsFreeEdit();
 		Hint->SetText(FText::FromString(bAsking
 			? TEXT("up/down: choose   enter: commit (free)   f1: one of ilse's notes   esc: step away")
-			: FString::Printf(TEXT("up/down: pick a line   type: change it   enter: run, draws %d%s   f1: a note   esc: step away"), Cost, bDiscounted ? TEXT(" (predicted)") : TEXT(""))));
+			: FString::Printf(TEXT("up/down: pick a line   type: change it%s   enter: run, draws %d%s   f1: a note   esc: step away"),
+				bFree ? TEXT("   ins: new line   del: drop line") : TEXT(""), Cost, bDiscounted ? TEXT(" (predicted)") : TEXT(""))));
 	}
 	if (bWasAsking && !bAsking && EditBox.IsValid())
 	{
@@ -313,5 +324,23 @@ FReply SGitsTerminalEditor::OnKeyDown(const FGeometry& MyGeometry, const FKeyEve
 	if (bUp) { SelectLine(NextEditableLine(Selected, -1)); return FReply::Handled(); }
 	if (bDown) { SelectLine(NextEditableLine(Selected, +1)); return FReply::Handled(); }
 	if (Key == EKeys::Gamepad_FaceButton_Bottom) { RunScript(); return FReply::Handled(); }
+	if (Key == EKeys::Insert || Key == EKeys::Gamepad_DPad_Right)
+	{
+		if (AGitsTerminal* T = Terminal.Get())
+		{
+			CommitEdit();
+			const int32 NewLine = T->InsertLineAfter(Selected);
+			if (NewLine > 0) { SelectLine(NewLine); }
+		}
+		return FReply::Handled();
+	}
+	if (Key == EKeys::Delete || Key == EKeys::Gamepad_DPad_Left)
+	{
+		if (AGitsTerminal* T = Terminal.Get())
+		{
+			if (T->IsFreeEdit() && EditBox.IsValid() && EditBox->GetText().IsEmpty() && T->RemoveLine(Selected)) { SelectLine(FMath::Max(1, Selected - 1)); }
+		}
+		return FReply::Handled();
+	}
 	return SCompoundWidget::OnKeyDown(MyGeometry, InKeyEvent);
 }

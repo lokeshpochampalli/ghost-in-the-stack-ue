@@ -62,6 +62,12 @@ public:
 	void TerminalUsed(UGitsScript* Script);
 	/** One line per prediction, for the console. */
 	FString DescribeState(UGitsScript* Script);
+	/** The script's goal has been met at least once this session. */
+	bool IsComplete(const UGitsScript* Script) const;
+	/** Every counted terminal in the level is complete. */
+	bool IsSectorComplete() const { return bSectorComplete; }
+	/** For a Make script: which test cases the last run of it passed, by index. */
+	const TSet<int32>& PassedTests(const UGitsScript* Script);
 
 	// UWorldSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -86,6 +92,13 @@ private:
 	TMap<FString, TArray<FString>> OptionOrders;
 	TSet<FString> Introduced;
 	TSet<FString> OutroSpoken;
+	TMap<FString, TSet<int32>> Passed;
+	bool bSectorComplete = false;
+	/** True with the failure in the station's voice as Reason when not. */
+	bool EvaluateGoal(UGitsScript* Script, UGitsStationSubsystem* S, FString& Reason);
+	/** Completes the script if its goal holds now: unlock, outro, sector check. */
+	void TryComplete(UGitsScript* Script, bool bAfterRun);
+	void CheckSector();
 
 	/** The run in progress: the script and where each prediction's anchor landed in its trace. */
 	TWeakObjectPtr<UGitsScript> RunScript;

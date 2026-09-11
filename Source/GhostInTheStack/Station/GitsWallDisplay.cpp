@@ -1,5 +1,7 @@
 #include "GitsWallDisplay.h"
 #include "GitsStationSubsystem.h"
+#include "GitsScript.h"
+#include "Companion/GitsVant.h"
 #include "UI/GitsScreen.h"
 #include "Interpreter/GitsTrace.h"
 #include "Components/StaticMeshComponent.h"
@@ -137,13 +139,36 @@ void AGitsWallDisplay::Refresh()
 	UGitsScreenWidget* W = Cast<UGitsScreenWidget>(Screen->GetUserWidgetObject());
 	if (!W) { return; }
 	FGitsScreenModel M;
-	M.Title = Title;
+	M.Title = Script && !Script->PanelTitle.IsEmpty() ? Script->PanelTitle : Title;
 	UGitsStationSubsystem* S = Station();
+	UGitsVantSubsystem* Vant = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr;
+	// A panel bound to a script keeps showing that script's last run while other systems run.
+	if (Script && S && S->HasTrace() && S->GetCurrentScript() != Script) { return; }
+	if (Script && S && !S->HasTrace())
+	{
+		// Before any run: what the system is waiting for. A Make script shows its tests' labels.
+		if (Script->TestCases.Num() > 0)
+		{
+			for (const FGitsTestCase& T : Script->TestCases) { M.MessageLines.Add(TEXT("[ ] ") + T.Label); }
+			M.Status = TEXT("waiting for a script");
+		}
+		else { M.MessageLines.Add(IdleText); }
+		W->SetModel(M);
+		return;
+	}
 	if (S && S->HasTrace() && S->IsRewinding())
 	{
 		BuildRewindView(M, S);
 		W->SetModel(M);
 		return;
+	}
+	if (Script && Script->TestCases.Num() > 0 && Vant)
+	{
+		const TSet<int32>& PassedHere = Vant->PassedTests(Script);
+		for (int32 i = 0; i < Script->TestCases.Num(); ++i)
+		{
+			M.MessageLines.Add((PassedHere.Contains(i) ? TEXT("[x] ") : TEXT("[ ] ")) + Script->TestCases[i].Label);
+		}
 	}
 	if (!S || !S->HasTrace())
 	{
