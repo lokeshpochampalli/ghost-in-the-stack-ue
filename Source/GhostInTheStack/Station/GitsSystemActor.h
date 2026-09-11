@@ -109,6 +109,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
 	bool bEmergencyOnly = false;
 
+	/** A beacon: pulses slowly while its level is above zero. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
+	bool bBeacon = false;
+
+	/** When set, a switch key (valve.lamp) drives the light instead: true is full, false is off. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
+	FString SwitchKey;
+
 	virtual void PoseFromWorld(const FGitsWorldState& World, bool bInstant) override;
 	virtual void ResetPose() override;
 	virtual void Tick(float DeltaTime) override;
@@ -120,6 +128,7 @@ protected:
 private:
 	float TargetLevel = 0.f;
 	float CurrentLevel = 0.f;
+	float BeaconPhase = 0.f;
 	FDelegateHandle PowerHandle;
 	void ApplyLevel();
 };

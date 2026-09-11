@@ -13,6 +13,7 @@
 #include "UI/GitsVantCaption.h"
 #include "Station/GitsGenerator.h"
 #include "Station/GitsInstrumentTerminal.h"
+#include "Station/GitsSectorGate.h"
 #include "UI/GitsInstrumentPanel.h"
 #include "Telemetry/GitsTelemetry.h"
 #include "Engine/GameInstance.h"
@@ -313,6 +314,21 @@ void AGhostInTheStackPlayerController::GitsSector()
 		Out += FString::Printf(TEXT("%s=%d%s "), *It->Script->GetName(), V->IsComplete(It->Script), It->Script->bCountsForSector ? TEXT("") : TEXT("(optional)"));
 	}
 	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsSector: complete=%d %s"), V->IsSectorComplete(), *Out);
+}
+
+void AGhostInTheStackPlayerController::GitsGate()
+{
+	AGitsSectorGate* Nearest = nullptr;
+	float Best = TNumericLimits<float>::Max();
+	const FVector Here = GetPawn() ? GetPawn()->GetActorLocation() : FVector::ZeroVector;
+	for (TActorIterator<AGitsSectorGate> It(GetWorld()); It; ++It)
+	{
+		const float D = FVector::Dist(Here, It->GetActorLocation());
+		if (D < Best) { Best = D; Nearest = *It; }
+	}
+	if (!Nearest) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsGate: no gate in this level")); return; }
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsGate: %s released=%d next=%s"), *Nearest->Label, Nearest->IsReleased(), *Nearest->NextLevel);
+	IGitsInteractable::Execute_Interact(Nearest, GetPawn());
 }
 
 // --- the study --------------------------------------------------------------------------------

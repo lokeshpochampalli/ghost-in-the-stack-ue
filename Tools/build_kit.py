@@ -330,6 +330,83 @@ parts = [((6, 12, 12), (0, 0, 0), "copper"),
          ((3, 10, 60), (0, 0, 0), "slate")]
 make_piece("SM_Kit_VentFan", parts, bevel=0.5)
 
+# --- Sectors 2 to 4 (Phase 9) ------------------------------------------------------------
+
+# heater: a wall radiator, face at -x; slate housing, copper fins, ink grille slots, hazard foot
+parts = [((16, 120, 80), (-8, 0, 40), "slate"),
+         ((20, 124, 6), (-10, 0, 3), "hazard")]
+for i in range(7):
+    parts.append(((6, 8, 64), (-19, -48 + i * 16, 42), "copper"))
+make_piece("SM_Kit_Heater", parts, bevel=0.6)
+
+# sprinkler head: hangs from the ceiling (origin at the mount), copper stem and a bone deflector disc
+parts = [((6, 6, 16), (0, 0, -8), "copper"),
+         ((22, 22, 3), (0, 0, -17), "bone"),
+         ((10, 10, 4), (0, 0, -20), "slate")]
+make_piece("SM_Kit_Sprinkler", parts, bevel=0.4)
+
+# sprinkler spray: a translucent-looking bone column that the actor scales from the head downward
+# (origin at the top, the column hangs 200 below it); glow material so it reads as water in the dark
+make_piece("SM_Kit_SprinklerSpray", [((2, 2, 2), (0, 0, -1), "bone")], bevel=0,
+           glow_parts=[((28, 28, 200), (0, 0, -100))])
+
+# grow light: a ceiling bar (origin at the mount), slate housing, a long glow strip
+make_piece("SM_Kit_GrowLight", [((160, 20, 10), (0, 0, -5), "slate"),
+                                ((6, 6, 8), (-60, 0, -14), "copper"),
+                                ((6, 6, 8), (60, 0, -14), "copper")], bevel=0.5,
+           glow_parts=[((150, 14, 4), (0, 0, -12))])
+
+# planter: a trough on the floor, slate walls, copper rim, a grating bed
+parts = [((200, 70, 40), (0, 0, 20), "slate"),
+         ((204, 74, 4), (0, 0, 42), "copper"),
+         ((190, 60, 4), (0, 0, 40), "grating"),
+         ((204, 74, 6), (0, 0, 3), "hazard")]
+make_piece("SM_Kit_Planter", parts, bevel=0.8)
+
+# conveyor: a belt 400 long along x, origin at its centre on the floor; ink belt, slate frame, copper rollers
+parts = [((400, 80, 8), (0, 0, 36), "ink"),
+         ((400, 8, 40), (0, -44, 20), "slate"),
+         ((400, 8, 40), (0, 44, 20), "slate"),
+         ((404, 96, 6), (0, 0, 3), "hazard")]
+for i in range(-4, 5):
+    parts.append(((8, 90, 8), (i * 45, 0, 30), "copper"))
+make_piece("SM_Kit_Conveyor", parts, bevel=0.6)
+
+# shelf rack: three shelves against a wall (back at +x), slate uprights, bone shelves
+parts = [((40, 8, 220), (0, -76, 110), "slate"),
+         ((40, 8, 220), (0, 76, 110), "slate"),
+         ((40, 160, 4), (0, 0, 2), "hazard")]
+for z in (60, 130, 200):
+    parts.append(((40, 152, 4), (0, 0, z), "bone"))
+make_piece("SM_Kit_Shelf", parts, bevel=0.5)
+
+# reactor core: a tall column with copper bands and a glow ring; origin at its base
+parts = [((120, 120, 260), (0, 0, 130), "slate"),
+         ((130, 130, 14), (0, 0, 7), "hazard"),
+         ((126, 126, 8), (0, 0, 90), "copper"),
+         ((126, 126, 8), (0, 0, 170), "copper"),
+         ((60, 60, 20), (0, 0, 270), "ink")]
+make_piece("SM_Kit_ReactorCore", parts, bevel=1.0, glow_parts=[((128, 128, 10), (0, 0, 130))])
+
+# coolant pipe: 300 long along x, copper, with two slate brackets; origin at its centre
+parts = [((300, 16, 16), (0, 0, 0), "copper"),
+         ((12, 24, 24), (-100, 0, 0), "slate"),
+         ((12, 24, 24), (100, 0, 0), "slate")]
+make_piece("SM_Kit_CoolantPipe", parts, bevel=0.4)
+
+# mast: the beacon that takes the report; a tall slate pole with copper crossbars and a glow tip
+parts = [((14, 14, 280), (0, 0, 140), "slate"),
+         ((40, 40, 8), (0, 0, 4), "hazard"),
+         ((4, 90, 4), (0, 0, 200), "copper"),
+         ((4, 60, 4), (0, 0, 240), "copper")]
+make_piece("SM_Kit_Mast", parts, bevel=0.4, glow_parts=[((10, 10, 10), (0, 0, 285))])
+
+# sledge rack: the rack by the west door, empty; slate brackets and a copper rail
+parts = [((30, 8, 60), (0, -50, 30), "slate"),
+         ((30, 8, 60), (0, 50, 30), "slate"),
+         ((6, 116, 6), (-12, 0, 56), "copper")]
+make_piece("SM_Kit_SledgeRack", parts, bevel=0.4)
+
 # test cube from Phase 0 stays as the pipeline's canary
 if not bpy.data.objects.get("SM_Kit_TestCube"):
     make_piece("SM_Kit_TestCube", [((100, 100, 100), (0, 0, 50), "slate")], bevel=1.0)

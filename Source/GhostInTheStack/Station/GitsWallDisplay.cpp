@@ -112,14 +112,21 @@ void AGitsWallDisplay::BuildRewindView(FGitsScreenModel& M, UGitsStationSubsyste
 	const FGitsStep& Step = T.Steps[Head];
 	M.MessageLines.Add(FString::Printf(TEXT("line %d   %s"), Step.Span.Start.Line, *Step.Label));
 	for (const FGitsLoopContext& L : R.LoopsAt(Head)) { M.MessageLines.Add(TEXT("VANT: ") + L.Describe()); }
-	TArray<TPair<FString, FGitsValue>> Bindings = GitsTrace::BindingsAt(T, Head);
-	if (Bindings.Num() > 0)
+	// Every open room, outermost first: a call opens a room inside the last one, and the names
+	// in each are its own. One line per room; the module's names carry no room label.
+	for (int32 F = 0; F < Step.Frames.Num(); ++F)
 	{
+		const FGitsFrameSnapshot& Frame = Step.Frames[F];
 		FString Line;
-		for (const auto& B : Bindings)
+		for (const auto& B : Frame.Bindings)
 		{
 			if (B.Value.Kind == EGitsValueKind::Function) { continue; }
 			Line += (Line.IsEmpty() ? TEXT("") : TEXT("   ")) + B.Key + TEXT(" = ") + GitsValue::Repr(B.Value);
+		}
+		if (F > 0)
+		{
+			const FString Indent = FString::ChrN(F * 2, TEXT(' '));
+			Line = Indent + TEXT("room ") + Frame.FunctionName + (Line.IsEmpty() ? TEXT("") : TEXT(":  ") + Line);
 		}
 		if (!Line.IsEmpty()) { M.MessageLines.Add(Line); }
 	}
