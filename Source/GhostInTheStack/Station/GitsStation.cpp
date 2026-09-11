@@ -1,4 +1,27 @@
 #include "GitsStation.h"
+#include "GitsStationSubsystem.h"
+#include "GitsTerminal.h"
+#include "GitsScript.h"
+#include "Companion/GitsTags.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogGitsStation, Display, All);
+
+void AGitsStation::BeginPlay()
+{
+	Super::BeginPlay();
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { S->InitialisePower(PowerBudget, ReserveRestore); }
+	// The validator's power rules, on every script this level can run (PHASES-3D Phase 5).
+	for (TActorIterator<AGitsTerminal> It(GetWorld()); It; ++It)
+	{
+		if (!It->Script) { continue; }
+		for (const FString& Problem : GitsTags::ValidatePower(It->Script, PowerBudget))
+		{
+			UE_LOG(LogGitsStation, Error, TEXT("%s: %s"), *It->Script->GetName(), *Problem);
+		}
+	}
+}
 
 AGitsStation::AGitsStation()
 {

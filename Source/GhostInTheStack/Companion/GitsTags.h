@@ -17,6 +17,8 @@ namespace GitsTags
 	bool IsConcept(const FString& Tag);
 	bool IsMisconception(const FString& Tag);
 
-	/** Every problem with a script's predictions, hints and tags, in plain language. Empty means valid. */
+	/** Every problem with a script's predictions, hints, tags and costs, in plain language. Empty means valid. */
 	TArray<FString> Validate(const UGitsScript* Script);
+	/** The power rules: a run costs something, the discount is real, and the sector's budget covers a run. */
+	TArray<FString> ValidatePower(const UGitsScript* Script, int32 Budget);
 }

@@ -15,6 +15,9 @@ Source/GhostInTheStack/
     GitsTerminal.*            diegetic terminal: screen widget, line editing, run; IGitsInteractable
     GitsWallDisplay.*         VANT's wall display: what the last run actually produced
     GitsInteractable.h        UINTERFACE for anything the player can use
+    GitsPower.h               the bus as rules: stages (nominal, low, critical, out) and the light factor
+    GitsGenerator.*           AGitsGenerator: Ilse's reserve cell, used like a terminal
+    GitsPowerGauge.*          AGitsPowerGauge: the wall gauge screen
   UI/
     GitsScreen.*              SGitsScreen (Slate) + UGitsScreenWidget: the shared "phosphor screen"
     GitsTerminalEditor.*      SGitsTerminalEditor: the full-screen overlay while a terminal is in use
@@ -124,6 +127,32 @@ Telemetry names follow the reference (`session_start` with the seed, `prediction
 `prediction_unresolvable`, `scrub_gate_satisfied`, `hint_requested`, `level_complete`) and go
 to `LogGitsTelemetry` for now; Phase 8 writes the export.
 
+## Power (the bus)
+
+One bus per sector, held by `UGitsStationSubsystem` and declared by the level's `AGitsStation`
+(`PowerBudget`, `ReserveRestore`). Every script declares `RunCost` and `PredictedRunCost`
+(ADR-006). The station validates each terminal's script at BeginPlay: a run costs something,
+the discount is real, the budget covers a full-price run (`GitsTags::ValidatePower`).
+
+- **Running draws.** `AGitsTerminal::RunCurrent` asks VANT for the discount (any reading
+  committed or confirmed, the reference's `runCost`), refuses with VANT's line when the bus
+  cannot cover it, and charges after the run starts. `run_executed` is logged with the cost.
+  A wrong reading costs nothing in power; it costs the discount until it is re-answered.
+- **Notes draw.** Ilse's later notes carry a price; VANT refuses one the bus cannot pay.
+- **The rig follows the bus.** `GitsPower::StageFor` gives nominal above half, low above a
+  quarter, critical above zero, out at zero; `LightFactor` multiplies every `AGitsLight`'s
+  scripted level (1, 0.45, 0.15, 0). An `AGitsLight` marked `bEmergencyOnly` does the opposite:
+  amber, and only when the bus is out. The player's torch (a spot on the camera) lights at out.
+- **The reserve cell.** `AGitsGenerator` is interactable like a terminal; using it restores the
+  bus to `ReserveRestore` (never above), counts the draw and logs `reserve_drawn`. Running out
+  is a setback with a diegetic way out, not a game over.
+- **The gauge.** `AGitsPowerGauge` is the wall display's panel at half size showing a
+  twenty-cell bar, holding-of-budget, reserve draws and the stage; amber for critical and out,
+  which is what the palette reserves amber for.
+
+Power is not part of the world state: the trace does not carry it, and rewind does not refund
+it. It is the station's economy, not the script's physics.
+
 ## Systems
 
 `AGitsSystemActor` has a `SystemId`; its world key is `door.<id>` or `light.<id>`.
@@ -180,4 +209,5 @@ For automation and for testing without walking: `GitsUse` (open the nearest term
 `GitsSetLine <n> <text>`, `GitsRun`, `GitsReset`, `GitsStatus` (run summary, play state, world
 state, playback frame times and the slowest step change to the log), `GitsClose`, `GitsRewind`
 and `GitsResume` (hold and release without a key), `GitsVerifyRewind`, `GitsPredict <n>` (answer
-VANT with the nth shown option), `GitsHint`, `GitsVantStatus`.
+VANT with the nth shown option), `GitsHint`, `GitsVantStatus`, `GitsPower`, `GitsReserve` (use the
+generator), `GitsSetPower <n>`.

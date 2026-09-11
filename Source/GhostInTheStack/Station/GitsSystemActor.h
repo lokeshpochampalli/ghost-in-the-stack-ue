@@ -105,12 +105,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
 	float InitialLevel = 0.f;
 
+	/** Emergency lighting: on only when the bus is out, off otherwise. Ignores the power factor. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Light")
+	bool bEmergencyOnly = false;
+
 	virtual void PoseFromWorld(const FGitsWorldState& World, bool bInstant) override;
 	virtual void ResetPose() override;
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+
 private:
 	float TargetLevel = 0.f;
 	float CurrentLevel = 0.f;
+	FDelegateHandle PowerHandle;
 	void ApplyLevel();
 };

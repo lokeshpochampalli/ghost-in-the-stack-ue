@@ -174,9 +174,11 @@ void SGitsTerminalEditor::RefreshQuestion()
 	}
 	if (Hint.IsValid())
 	{
+		bool bDiscounted = false;
+		const int32 Cost = T ? T->RunCostNow(bDiscounted) : 0;
 		Hint->SetText(FText::FromString(bAsking
-			? TEXT("up/down: choose   enter: commit   f1: one of ilse's notes   esc: step away")
-			: TEXT("up/down: pick a line   type: change it   enter: run   f1: one of ilse's notes   esc: step away")));
+			? TEXT("up/down: choose   enter: commit (free)   f1: one of ilse's notes   esc: step away")
+			: FString::Printf(TEXT("up/down: pick a line   type: change it   enter: run, draws %d%s   f1: a note   esc: step away"), Cost, bDiscounted ? TEXT(" (predicted)") : TEXT(""))));
 	}
 	if (bWasAsking && !bAsking && EditBox.IsValid())
 	{

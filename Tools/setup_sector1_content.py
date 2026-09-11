@@ -196,6 +196,9 @@ def ensure_script(name, title, source, builtins, curriculum):
     script.set_editor_property("outro", curriculum["outro"])
     script.set_editor_property("goal_key", curriculum["goal_key"])
     script.set_editor_property("goal_value", curriculum["goal_value"])
+    # the power economy (ADR-006): full price, and the price once a reading is committed
+    script.set_editor_property("run_cost", curriculum.get("run_cost", 12))
+    script.set_editor_property("predicted_run_cost", curriculum.get("predicted_run_cost", 4))
     EAL.save_asset(path)
     print("script asset:", script.get_path_name(), "| lines:", len(source.splitlines()))
     return script
@@ -272,6 +275,26 @@ spec = unreal.GitsSensorSpec()
 spec.set_editor_property("id", "airlock"); spec.set_editor_property("value", 4.0); spec.set_editor_property("drift_per_tick", 0.0)
 station.set_editor_property("sensors", [spec])
 station.set_editor_property("initial_switches", {"door.inner": False})
+# the bus: one predicted run (4) and three full-price runs (12) drain it exactly; the reserve brings back two full runs
+station.set_editor_property("power_budget", 40)
+station.set_editor_property("reserve_restore", 24)
+
+# the generator at the corridor head (a cabinet from the kit until Phase 6 gives it its own piece)
+generator = spawn(unreal.GitsGenerator, (60, -105, 0), rot=(0, 180, 0), label="Generator")
+generator.body.set_static_mesh(mesh("SM_Kit_Terminal"))
+
+# the wall gauge by the lights terminal, the display panel at half size
+gauge = spawn(unreal.GitsPowerGauge, (300, 149, 170), rot=(0, 90, 0), label="PowerGauge")
+gauge.body.set_static_mesh(mesh("SM_Kit_WallDisplay"))
+gauge.set_actor_scale3d(unreal.Vector(0.5, 0.5, 0.5))
+
+# emergency lighting: amber, and only when the bus is out (the palette reserves amber for power states)
+emergency = spawn(unreal.GitsLight, (650, 0, 285), label="Light_Emergency")
+emergency.set_editor_property("system_id", "emergency")
+emergency.set_editor_property("initial_level", 10.0)
+emergency.set_editor_property("full_intensity", 1.5)
+emergency.set_editor_property("emergency_only", True)
+emergency.light.set_light_color(unreal.LinearColor(0.85, 0.60, 0.17, 1.0))
 
 # lights: warm and low, the terminal does the rest
 for i, x in enumerate((250, 650, 1050)):

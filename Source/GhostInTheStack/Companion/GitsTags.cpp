@@ -31,6 +31,16 @@ namespace GitsTags
 	bool IsConcept(const FString& Tag) { return Concepts().Contains(Tag); }
 	bool IsMisconception(const FString& Tag) { return Misconceptions().Contains(Tag); }
 
+	TArray<FString> ValidatePower(const UGitsScript* Script, int32 Budget)
+	{
+		TArray<FString> Problems;
+		if (!Script) { Problems.Add(TEXT("no script")); return Problems; }
+		if (Script->RunCost <= 0) { Problems.Add(TEXT("a run must cost something (RunCost is 0)")); }
+		if (Script->PredictedRunCost >= Script->RunCost) { Problems.Add(FString::Printf(TEXT("PredictedRunCost %d is not below RunCost %d"), Script->PredictedRunCost, Script->RunCost)); }
+		if (Budget < Script->RunCost) { Problems.Add(FString::Printf(TEXT("the sector budget %d cannot cover a full-price run of %d"), Budget, Script->RunCost)); }
+		return Problems;
+	}
+
 	TArray<FString> Validate(const UGitsScript* Script)
 	{
 		TArray<FString> Problems;
@@ -66,6 +76,9 @@ namespace GitsTags
 			}
 			if (!bCorrectFound) { Problems.Add(Where + FString::Printf(TEXT(": correct id '%s' names no option"), *P.CorrectId)); }
 		}
+		if (Script->RunCost <= 0) { Problems.Add(TEXT("a run must cost something (RunCost is 0)")); }
+		if (Script->PredictedRunCost >= Script->RunCost) { Problems.Add(FString::Printf(TEXT("PredictedRunCost %d is not below RunCost %d; the discount must be real"), Script->PredictedRunCost, Script->RunCost)); }
+		if (Script->PredictedRunCost < 0) { Problems.Add(TEXT("PredictedRunCost is negative")); }
 		TSet<int32> Tiers;
 		for (const FGitsHint& H : Script->Hints)
 		{

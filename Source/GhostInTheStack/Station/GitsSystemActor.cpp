@@ -147,7 +147,32 @@ void AGitsLight::Tick(float DeltaTime)
 	}
 }
 
+void AGitsLight::BeginPlay()
+{
+	Super::BeginPlay();
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>())
+	{
+		PowerHandle = S->OnPowerChanged.AddUObject(this, &AGitsLight::ApplyLevel);
+	}
+	ApplyLevel();
+}
+
+void AGitsLight::EndPlay(const EEndPlayReason::Type Reason)
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (UGitsStationSubsystem* S = World->GetSubsystem<UGitsStationSubsystem>()) { S->OnPowerChanged.Remove(PowerHandle); }
+	}
+	Super::EndPlay(Reason);
+}
+
 void AGitsLight::ApplyLevel()
 {
-	if (Light) { Light->SetIntensity(FullIntensity * CurrentLevel / 10.f); }
+	if (!Light) { return; }
+	// The scripted level says what the light is asked for; the bus says what it gets.
+	const UGitsStationSubsystem* S = GetWorld() ? GetWorld()->GetSubsystem<UGitsStationSubsystem>() : nullptr;
+	const GitsPower::EStage Stage = S ? S->GetPowerStage() : GitsPower::EStage::Nominal;
+	float Factor = GitsPower::LightFactor(Stage);
+	if (bEmergencyOnly) { Factor = Stage == GitsPower::EStage::Out ? 1.f : 0.f; }
+	Light->SetIntensity(FullIntensity * CurrentLevel / 10.f * Factor);
 }

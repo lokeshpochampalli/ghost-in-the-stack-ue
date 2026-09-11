@@ -48,9 +48,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Terminal") bool IsLineEditable(int32 LineNumber) const;
 	UFUNCTION(BlueprintCallable, Category = "Terminal") void ResetToScript();
 
-	/** Runs the current source through the station. */
+	/** Runs the current source through the station, if VANT allows it and the bus can pay. */
 	UFUNCTION(BlueprintCallable, Category = "Terminal")
 	FGitsRunSummary RunCurrent();
+	/** What the next run would draw: the discounted price once a reading is committed or confirmed. */
+	UFUNCTION(BlueprintPure, Category = "Terminal")
+	int32 RunCostNow(bool& bDiscounted) const;
 
 	/** The overlay's selection, mirrored on the screen. */
 	UFUNCTION(BlueprintCallable, Category = "Terminal") void SetSelectedLine(int32 LineNumber);

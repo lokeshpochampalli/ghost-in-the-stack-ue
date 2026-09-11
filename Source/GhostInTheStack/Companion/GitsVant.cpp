@@ -196,17 +196,49 @@ FString UGitsVantSubsystem::RevealNextHint(UGitsScript* Script)
 	FGitsShift& Shift = ShiftFor(Script);
 	TArray<FGitsHint> Sorted = Script->Hints;
 	Sorted.Sort([](const FGitsHint& A, const FGitsHint& B) { return A.Tier < B.Tier; });
+	UGitsStationSubsystem* S = Station();
 	for (const FGitsHint& H : Sorted)
 	{
 		if (Shift.HintsRevealed.Contains(H.Tier)) { continue; }
+		// Ilse's later notes cost power (ADR-006 in spirit: the note is a cheaper run, not a free one).
+		if (S && H.CostsPower > S->GetPower())
+		{
+			LogEvent(TEXT("hint_requested"), FString::Printf(TEXT("script=%s tier=%d costsPower=%d affordable=0"), *Script->GetName(), H.Tier, H.CostsPower));
+			Speak(FString::Printf(TEXT("That note draws %d and the bus is holding %d."), H.CostsPower, S->GetPower()));
+			return FString();
+		}
+		if (S) { S->ChargePower(H.CostsPower); }
 		Shift.HintsRevealed.Add(H.Tier);
-		LogEvent(TEXT("hint_requested"), FString::Printf(TEXT("script=%s tier=%d costsPower=%d"), *Script->GetName(), H.Tier, H.CostsPower));
+		LogEvent(TEXT("hint_requested"), FString::Printf(TEXT("script=%s tier=%d costsPower=%d affordable=1"), *Script->GetName(), H.Tier, H.CostsPower));
 		Speak(FString::Printf(TEXT("Ilse's note: %s"), *H.Text));
 		OnShiftChanged.Broadcast();
 		return H.Text;
 	}
 	Speak(TEXT("That is everything she wrote down. The rest is in the code."));
 	return FString();
+}
+
+bool UGitsVantSubsystem::IsDiscounted(UGitsScript* Script)
+{
+	if (!Script) { return false; }
+	FGitsShift& Shift = ShiftFor(Script);
+	for (const FGitsPrediction& P : Script->Predictions)
+	{
+		const FGitsPredictionState& S = Shift.StateOf(P.Id);
+		if (!S.Committed.IsEmpty() || S.bSatisfied) { return true; }
+	}
+	return false;
+}
+
+void UGitsVantSubsystem::NoteRun(UGitsScript* Script, int32 Cost, bool bDiscounted, int32 PowerAfter)
+{
+	LogEvent(TEXT("run_executed"), FString::Printf(TEXT("script=%s cost=%d discounted=%d powerAfter=%d"), Script ? *Script->GetName() : TEXT("none"), Cost, bDiscounted, PowerAfter));
+	OnShiftChanged.Broadcast();
+}
+
+void UGitsVantSubsystem::NoteReserveDrawn(int32 Before, int32 After, int32 Draws)
+{
+	LogEvent(TEXT("reserve_drawn"), FString::Printf(TEXT("before=%d after=%d draws=%d"), Before, After, Draws));
 }
 
 void UGitsVantSubsystem::NoteEdit(UGitsScript* Script, int32 Line)

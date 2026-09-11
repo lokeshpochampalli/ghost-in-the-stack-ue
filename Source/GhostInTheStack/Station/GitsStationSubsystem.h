@@ -12,6 +12,7 @@
 #include "Tickable.h"
 #include "Interpreter/GitsTypes.h"
 #include "Recorder/GitsRecorder.h"
+#include "GitsPower.h"
 #include "GitsStationSubsystem.generated.h"
 
 class UGitsScript;
@@ -37,6 +38,7 @@ enum class EGitsPlayState : uint8
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FGitsOnPlayStateChanged, EGitsPlayState);
+DECLARE_MULTICAST_DELEGATE(FGitsOnPowerChanged);
 
 /** What a run produced, for displays and tests. */
 USTRUCT(BlueprintType)
@@ -94,6 +96,21 @@ public:
 	bool IsRewinding() const { return State == EGitsPlayState::Rewinding; }
 	/** World time of the play head, in seconds of playback. */
 	float GetPlayClock() const { return PlayClock; }
+
+	// --- power (Phase 5): one bus for the sector, drawn on by runs and hints, restored by the reserve
+	/** Set by the level's AGitsStation at BeginPlay. */
+	void InitialisePower(int32 Budget, int32 Reserve);
+	UFUNCTION(BlueprintPure, Category = "Station") int32 GetPower() const { return Power; }
+	UFUNCTION(BlueprintPure, Category = "Station") int32 GetPowerBudget() const { return PowerBudget; }
+	UFUNCTION(BlueprintPure, Category = "Station") int32 GetReserveDraws() const { return ReserveDraws; }
+	GitsPower::EStage GetPowerStage() const { return GitsPower::StageFor(Power, PowerBudget); }
+	/** Draws Cost from the bus. False, and nothing drawn, when the bus cannot cover it. */
+	bool ChargePower(int32 Cost);
+	/** Restores the bus to the reserve level. Returns the new reading, or -1 when it already held that much. */
+	int32 DrawReserve();
+	/** For tests and the console. */
+	void SetPower(int32 NewPower);
+	FGitsOnPowerChanged OnPowerChanged;
 
 	// --- rewind (Phase 3): hold to scrub the clock backwards, release to resume forward
 	UFUNCTION(BlueprintCallable, Category = "Station")
@@ -173,6 +190,10 @@ private:
 	EGitsPlayState State = EGitsPlayState::Idle;
 	float PlayClock = 0.f;
 	float RewindHeldSeconds = 0.f;
+	int32 Power = 0;
+	int32 PowerBudget = 0;
+	int32 ReserveRestore = 0;
+	int32 ReserveDraws = 0;
 	/** Source of the last run per script asset path, for "nothing has changed". */
 	TMap<FString, FString> LastRunSource;
 	double FpsAccum = 0.0;

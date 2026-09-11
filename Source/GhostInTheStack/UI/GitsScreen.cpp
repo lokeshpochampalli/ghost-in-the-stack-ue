@@ -121,10 +121,7 @@ void SGitsScreen::Construct(const FArguments& InArgs)
 			]
 			+ SVerticalBox::Slot().AutoHeight().Padding(0, FontSize * 0.5f, 0, 0)
 			[
-				SAssignNew(StatusText, STextBlock)
-				.Font(GitsStyle::Mono(FontSize))
-				.ColorAndOpacity(GitsStyle::Bone)
-				.AutoWrapText(true)
+				SAssignNew(StatusBox, SVerticalBox)
 			]
 		]
 	];
@@ -220,11 +217,21 @@ void SGitsScreen::Rebuild()
 			];
 		}
 	}
-	if (StatusText.IsValid())
+	if (StatusBox.IsValid())
 	{
-		StatusText->SetText(FText::FromString(Model.Status));
-		StatusText->SetColorAndOpacity(Model.bStatusIsError ? GitsStyle::Amber : GitsStyle::Bone);
+		// A fresh text block each time: a wrapped status that shrinks left its old row behind on
+		// widget-component render targets when the same block was merely retexted.
+		StatusBox->ClearChildren();
+		StatusBox->AddSlot().AutoHeight()
+		[
+			SAssignNew(StatusText, STextBlock)
+			.Font(GitsStyle::Mono(FontSize))
+			.ColorAndOpacity(Model.bStatusIsError ? GitsStyle::Amber : GitsStyle::Bone)
+			.AutoWrapText(true)
+			.Text(FText::FromString(Model.Status))
+		];
 	}
+	Invalidate(EInvalidateWidgetReason::Layout | EInvalidateWidgetReason::Paint);
 }
 
 void SGitsScreen::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)

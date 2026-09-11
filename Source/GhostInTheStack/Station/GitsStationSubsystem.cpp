@@ -45,6 +45,42 @@ FGitsWorldState UGitsStationSubsystem::BuildInitialWorld() const
 	return FGitsWorldState();
 }
 
+// --- power ---------------------------------------------------------------------------------
+
+void UGitsStationSubsystem::InitialisePower(int32 Budget, int32 Reserve)
+{
+	PowerBudget = FMath::Max(0, Budget);
+	ReserveRestore = FMath::Max(0, Reserve);
+	Power = PowerBudget;
+	ReserveDraws = 0;
+	OnPowerChanged.Broadcast();
+}
+
+bool UGitsStationSubsystem::ChargePower(int32 Cost)
+{
+	if (Cost < 0 || Cost > Power) { return false; }
+	if (Cost == 0) { return true; }
+	Power -= Cost;
+	OnPowerChanged.Broadcast();
+	return true;
+}
+
+int32 UGitsStationSubsystem::DrawReserve()
+{
+	// Ilse's reserve cell: restores to a fixed level, never above it, and every draw counts.
+	if (Power >= ReserveRestore) { return -1; }
+	Power = ReserveRestore;
+	++ReserveDraws;
+	OnPowerChanged.Broadcast();
+	return Power;
+}
+
+void UGitsStationSubsystem::SetPower(int32 NewPower)
+{
+	Power = FMath::Clamp(NewPower, 0, FMath::Max(PowerBudget, NewPower));
+	OnPowerChanged.Broadcast();
+}
+
 // --- running -----------------------------------------------------------------------------
 
 bool UGitsStationSubsystem::HasTraceFor(const UGitsScript* Script, const FString& Source) const

@@ -11,6 +11,7 @@
 #include "Widgets/Input/SVirtualJoystick.h"
 #include "Companion/GitsVant.h"
 #include "UI/GitsVantCaption.h"
+#include "Station/GitsGenerator.h"
 #include "Engine/GameViewportClient.h"
 
 AGhostInTheStackPlayerController::AGhostInTheStackPlayerController()
@@ -249,6 +250,29 @@ void AGhostInTheStackPlayerController::GitsVantStatus()
 	{
 		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsVantStatus: session=%s last=\"%s\" %s"), *V->GetSessionId(), *V->GetLastLine(), T ? *V->DescribeState(T->Script) : TEXT("no terminal"));
 	}
+}
+
+void AGhostInTheStackPlayerController::GitsPower()
+{
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>())
+	{
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsPower: holding=%d budget=%d stage=%s reserveDraws=%d"), S->GetPower(), S->GetPowerBudget(), GitsPower::StageName(S->GetPowerStage()), S->GetReserveDraws());
+	}
+}
+
+void AGhostInTheStackPlayerController::GitsReserve()
+{
+	for (TActorIterator<AGitsGenerator> It(GetWorld()); It; ++It)
+	{
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsReserve: generator drew -> %d"), It->Draw());
+		return;
+	}
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsReserve: no generator in this level"));
+}
+
+void AGhostInTheStackPlayerController::GitsSetPower(int32 NewPower)
+{
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { S->SetPower(NewPower); GitsPower(); }
 }
 
 void AGhostInTheStackPlayerController::GitsRewind()
