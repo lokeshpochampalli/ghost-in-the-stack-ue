@@ -12,6 +12,10 @@
 #include "Companion/GitsVant.h"
 #include "UI/GitsVantCaption.h"
 #include "Station/GitsGenerator.h"
+#include "Station/GitsInstrumentTerminal.h"
+#include "UI/GitsInstrumentPanel.h"
+#include "Telemetry/GitsTelemetry.h"
+#include "Engine/GameInstance.h"
 #include "GhostInTheStackCharacter.h"
 #include "Engine/GameViewportClient.h"
 
@@ -139,6 +143,7 @@ void AGhostInTheStackPlayerController::CloseTerminal()
 void AGhostInTheStackPlayerController::EndPlay(const EEndPlayReason::Type Reason)
 {
 	CloseTerminal();
+	CloseInstrumentPanel();
 	if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->OnSpeak.Remove(SpeakHandle); }
 	if (Caption.IsValid())
 	{
@@ -308,6 +313,84 @@ void AGhostInTheStackPlayerController::GitsSector()
 		Out += FString::Printf(TEXT("%s=%d%s "), *It->Script->GetName(), V->IsComplete(It->Script), It->Script->bCountsForSector ? TEXT("") : TEXT("(optional)"));
 	}
 	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsSector: complete=%d %s"), V->IsSectorComplete(), *Out);
+}
+
+// --- the study --------------------------------------------------------------------------------
+
+void AGhostInTheStackPlayerController::UseInstrumentTerminal(AGitsInstrumentTerminal* Terminal)
+{
+	if (!IsLocalPlayerController()) { return; }
+	CloseTerminal();
+	CloseInstrumentPanel();
+	CurrentStudyTerminal = Terminal;
+	StudyPanel = SNew(SGitsInstrumentPanel).Controller(this).Occasion(Terminal ? Terminal->Occasion : TEXT("pre"));
+	if (GEngine && GEngine->GameViewport) { GEngine->GameViewport->AddViewportWidgetContent(StudyPanel.ToSharedRef(), 100); }
+	FInputModeUIOnly Mode;
+	Mode.SetWidgetToFocus(StudyPanel);
+	Mode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	SetInputMode(Mode);
+	SetShowMouseCursor(false);
+	if (APawn* P = GetPawn()) { P->DisableInput(this); }
+}
+
+void AGhostInTheStackPlayerController::CloseInstrumentPanel()
+{
+	if (StudyPanel.IsValid())
+	{
+		if (GEngine && GEngine->GameViewport) { GEngine->GameViewport->RemoveViewportWidgetContent(StudyPanel.ToSharedRef()); }
+		StudyPanel.Reset();
+		SetInputMode(FInputModeGameOnly());
+		SetShowMouseCursor(false);
+		if (APawn* P = GetPawn()) { P->EnableInput(this); }
+	}
+	if (CurrentStudyTerminal) { CurrentStudyTerminal->Refresh(); }
+	CurrentStudyTerminal = nullptr;
+}
+
+void AGhostInTheStackPlayerController::GitsStudy(const FString& Occasion)
+{
+	AGitsInstrumentTerminal* Found = nullptr;
+	for (TActorIterator<AGitsInstrumentTerminal> It(GetWorld()); It; ++It) { if (It->Occasion == Occasion) { Found = *It; break; } }
+	if (Found) { UseInstrumentTerminal(Found); }
+	else
+	{
+		CloseTerminal(); CloseInstrumentPanel();
+		StudyPanel = SNew(SGitsInstrumentPanel).Controller(this).Occasion(Occasion);
+		if (GEngine && GEngine->GameViewport) { GEngine->GameViewport->AddViewportWidgetContent(StudyPanel.ToSharedRef(), 100); }
+	}
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsStudy: %s -> %s"), *Occasion, StudyPanel.IsValid() ? *StudyPanel->Describe() : TEXT("no panel"));
+}
+
+void AGhostInTheStackPlayerController::GitsAnswer(int32 Index)
+{
+	if (!StudyPanel.IsValid()) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsAnswer: no study panel")); return; }
+	const bool bOk = StudyPanel->Answer(Index);
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsAnswer: %d -> %d %s"), Index, bOk, StudyPanel.IsValid() ? *StudyPanel->Describe() : TEXT("closed"));
+}
+
+void AGhostInTheStackPlayerController::GitsSkip()
+{
+	if (!StudyPanel.IsValid()) { return; }
+	StudyPanel->Skip();
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsSkip: %s"), StudyPanel.IsValid() ? *StudyPanel->Describe() : TEXT("closed"));
+}
+
+void AGhostInTheStackPlayerController::GitsExport()
+{
+	if (UGitsTelemetrySubsystem* T = GetGameInstance() ? GetGameInstance()->GetSubsystem<UGitsTelemetrySubsystem>() : nullptr)
+	{
+		FString Path, Error;
+		const bool bOk = T->Export(Path, Error);
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsExport: ok=%d path=%s %s"), bOk, *Path, *Error);
+	}
+}
+
+void AGhostInTheStackPlayerController::GitsTelemetry()
+{
+	if (UGitsTelemetrySubsystem* T = GetGameInstance() ? GetGameInstance()->GetSubsystem<UGitsTelemetrySubsystem>() : nullptr)
+	{
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsTelemetry: participant=%s session=%s consent=%d codeCapture=%d events=%d"), *T->GetParticipantCode(), *T->GetSessionId(), T->HasConsent(), T->HasCodeCaptureConsent(), T->GetEvents().Num());
+	}
 }
 
 void AGhostInTheStackPlayerController::GitsRewind()

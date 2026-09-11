@@ -18,7 +18,7 @@ public class GhostInTheStack : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate",
+			"Slate", "Json",
 			"SlateCore"
 		});
 
@@ -35,7 +35,8 @@ public class GhostInTheStack : ModuleRules
 			"GhostInTheStack/Station",
 			"GhostInTheStack/UI",
 			"GhostInTheStack/Recorder",
-			"GhostInTheStack/Companion"
+			"GhostInTheStack/Companion",
+			"GhostInTheStack/Telemetry"
 		});
 
 		// Uncomment if you are using Slate UI

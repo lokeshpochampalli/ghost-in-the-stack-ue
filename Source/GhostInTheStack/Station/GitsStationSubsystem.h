@@ -54,6 +54,9 @@ struct FGitsRunSummary
 	UPROPERTY(BlueprintReadOnly, Category = "Station") TArray<FString> Output;
 	UPROPERTY(BlueprintReadOnly, Category = "Station") int32 Steps = 0;
 	UPROPERTY(BlueprintReadOnly, Category = "Station") int32 Statements = 0;
+	/** The diagnostic's code name and line when the run did not complete, for error_shown. */
+	UPROPERTY(BlueprintReadOnly, Category = "Station") FString DiagnosticCode;
+	UPROPERTY(BlueprintReadOnly, Category = "Station") int32 DiagnosticLine = 0;
 };
 
 UCLASS()
@@ -204,6 +207,7 @@ private:
 	EGitsPlayState State = EGitsPlayState::Idle;
 	float PlayClock = 0.f;
 	float RewindHeldSeconds = 0.f;
+	int32 RewindFromIndex = -1;
 	float SampleRemaining = 0.f;
 	double SampleAccum = 0.0;
 	bool bSampleSkipFirst = false;

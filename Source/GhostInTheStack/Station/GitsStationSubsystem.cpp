@@ -7,6 +7,8 @@
 #include "Interpreter/GitsDiagnostics.h"
 #include "EngineUtils.h"
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
+#include "Telemetry/GitsTelemetry.h"
 
 bool UGitsStationSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
@@ -136,6 +138,8 @@ bool UGitsStationSubsystem::Run(UGitsScript* Script, const FString& Source, FGit
 	if (Parsed.Diagnostics.Num() > 0)
 	{
 		Summary.bParseFailed = true;
+		Summary.DiagnosticCode = GitsDiagnostics::CodeName(Parsed.Diagnostics[0].Code);
+		Summary.DiagnosticLine = Parsed.Diagnostics[0].Span.Start.Line;
 		Summary.Message = GitsDiagnostics::Format(Parsed.Diagnostics[0]);
 		Summary.Outcome = TEXT("did not run: ") + GitsDiagnostics::CodeName(Parsed.Diagnostics[0].Code);
 		LastMessage = Summary.Message;
@@ -191,7 +195,11 @@ bool UGitsStationSubsystem::Run(UGitsScript* Script, const FString& Source, FGit
 	switch (Trace.Outcome.Kind)
 	{
 	case EGitsOutcomeKind::Completed: Summary.Message = TEXT("Run complete."); break;
-	default: Summary.Message = GitsDiagnostics::Format(Trace.Outcome.Diagnostic); break;
+	default:
+		Summary.Message = GitsDiagnostics::Format(Trace.Outcome.Diagnostic);
+		Summary.DiagnosticCode = GitsDiagnostics::CodeName(Trace.Outcome.Diagnostic.Code);
+		Summary.DiagnosticLine = Trace.Outcome.Diagnostic.Span.Start.Line;
+		break;
 	}
 	LastMessage = Summary.Message;
 	LastSummary = Summary;
@@ -298,6 +306,7 @@ bool UGitsStationSubsystem::BeginRewind()
 	if (State == EGitsPlayState::Rewinding) { return true; }
 	if (State == EGitsPlayState::Finished) { PlayClock = Recorder.TotalTime(); }
 	RewindHeldSeconds = 0.f;
+	RewindFromIndex = PlayIndex;
 	SetState(EGitsPlayState::Rewinding);
 	OnStepChanged.Broadcast(PlayIndex);
 	return true;
@@ -306,7 +315,22 @@ bool UGitsStationSubsystem::BeginRewind()
 void UGitsStationSubsystem::EndRewind()
 {
 	if (State != EGitsPlayState::Rewinding) { return; }
-	// Release to resume: the clock runs forward again from wherever it got to.
+	// Release to resume: the clock runs forward again from wherever it got to. The sweep is one
+	// scrub event, from the head where the key went down to the head where it came up.
+	if (const UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UGitsTelemetrySubsystem* T = GI->GetSubsystem<UGitsTelemetrySubsystem>())
+		{
+			if (T->HasConsent())
+			{
+				TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+				P->SetNumberField(TEXT("from"), RewindFromIndex);
+				P->SetNumberField(TEXT("to"), PlayIndex);
+				P->SetStringField(TEXT("method"), TEXT("key"));
+				T->Record(TEXT("scrub"), P);
+			}
+		}
+	}
 	SetState(EGitsPlayState::Playing);
 	OnStepChanged.Broadcast(PlayIndex);
 }

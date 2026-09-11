@@ -5,6 +5,11 @@
 #include "Station/GitsStation.h"
 #include "Station/GitsTerminal.h"
 #include "Interpreter/GitsRng.h"
+#include "Telemetry/GitsTelemetry.h"
+#include "Engine/GameInstance.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
+#include "Policies/CondensedJsonPrintPolicy.h"
 #include "EngineUtils.h"
 #include "Interpreter/GitsTrace.h"
 #include "Engine/World.h"
@@ -59,6 +64,30 @@ FString UGitsVantSubsystem::KeyOf(const UGitsScript* Script) const
 void UGitsVantSubsystem::LogEvent(const FString& Event, const FString& Fields)
 {
 	UE_LOG(LogGitsTelemetry, Display, TEXT("event=%s session=%s %s"), *Event, *SessionId, *Fields);
+}
+
+UGitsTelemetrySubsystem* UGitsVantSubsystem::Telemetry() const
+{
+	const UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr;
+	return GI ? GI->GetSubsystem<UGitsTelemetrySubsystem>() : nullptr;
+}
+
+void UGitsVantSubsystem::Emit(const FString& Type, TSharedPtr<FJsonObject> Payload)
+{
+	FString Text;
+	TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> W = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Text);
+	FJsonSerializer::Serialize(Payload.ToSharedRef(), W);
+	LogEvent(Type, Text);
+	// Before consent the gate refuses and the log line above is all that happens: not silent.
+	if (UGitsTelemetrySubsystem* T = Telemetry()) { if (T->HasConsent()) { T->Record(Type, Payload); } }
+}
+
+void UGitsVantSubsystem::NoteError(UGitsScript* Script, const FString& Code, int32 Line)
+{
+	TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+	P->SetStringField(TEXT("code"), Code);
+	P->SetNumberField(TEXT("line"), Line);
+	Emit(TEXT("error_shown"), P);
 }
 
 // --- voice ----------------------------------------------------------------------------------
@@ -116,7 +145,15 @@ TArray<FGitsPredictionOption> UGitsVantSubsystem::Show(UGitsScript* Script, cons
 	{
 		if (const FGitsPredictionOption* O = P->Options.FindByPredicate([&Id](const FGitsPredictionOption& C) { return C.Id == Id; })) { Out.Add(*O); }
 	}
-	LogEvent(TEXT("prediction_shown"), FString::Printf(TEXT("script=%s prediction=%s seed=%u order=%s"), *Script->GetName(), *PredictionId, OutSeed, *FString::Join(*Order, TEXT(","))));
+	{
+		TSharedPtr<FJsonObject> J = UGitsTelemetrySubsystem::Payload();
+		J->SetStringField(TEXT("predictionId"), PredictionId);
+		J->SetNumberField(TEXT("seed"), (double)OutSeed);
+		TArray<TSharedPtr<FJsonValue>> Arr;
+		for (const FString& Id : *Order) { Arr.Add(MakeShared<FJsonValueString>(Id)); }
+		J->SetArrayField(TEXT("order"), Arr);
+		Emit(TEXT("prediction_shown"), J);
+	}
 	return Out;
 }
 
@@ -163,14 +200,29 @@ void UGitsVantSubsystem::Settle(UGitsScript* Script, const FGitsPrediction& Pred
 	{
 		// The line it was about never ran that often. Skipped, logged, never a blocker (ADR-005).
 		Shift.MarkSkipped(Prediction.Id, true);
-		LogEvent(TEXT("prediction_unresolvable"), FString::Printf(TEXT("script=%s prediction=%s line=%d occurrence=%d found=%d"), *Script->GetName(), *Prediction.Id, Prediction.AnchorLine, Prediction.AnchorOccurrence, Found));
+		{
+			TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+			P->SetStringField(TEXT("predictionId"), Prediction.Id);
+			P->SetNumberField(TEXT("line"), Prediction.AnchorLine);
+			P->SetNumberField(TEXT("occurrence"), Prediction.AnchorOccurrence);
+			P->SetNumberField(TEXT("occurrencesFound"), Found);
+			Emit(TEXT("prediction_unresolvable"), P);
+		}
 		Speak(FString::Printf(TEXT("Line %d never ran, so that question is moot. It does not hold you up."), Prediction.AnchorLine));
 		return;
 	}
 	FGitsResolvedCommitment R;
 	if (!Shift.Resolve(Prediction, FPlatformTime::Seconds(), R)) { return; }
-	LogEvent(TEXT("prediction_submitted"), FString::Printf(TEXT("script=%s prediction=%s option=%s correct=%d attempt=%d misconception=%s settledBy=%s"),
-		*Script->GetName(), *R.PredictionId, *R.OptionId, R.bCorrect, R.Attempt, *R.Misconception, bAtTheRun ? TEXT("run") : TEXT("trace")));
+	{
+		TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+		P->SetStringField(TEXT("predictionId"), R.PredictionId);
+		P->SetStringField(TEXT("optionId"), R.OptionId);
+		P->SetBoolField(TEXT("correct"), R.bCorrect);
+		P->SetNumberField(TEXT("attempt"), R.Attempt);
+		if (R.Misconception.IsEmpty()) { P->SetField(TEXT("misconception"), MakeShared<FJsonValueNull>()); } else { P->SetStringField(TEXT("misconception"), R.Misconception); }
+		P->SetStringField(TEXT("settledBy"), bAtTheRun ? TEXT("run") : TEXT("trace"));
+		Emit(TEXT("prediction_submitted"), P);
+	}
 	if (R.bCorrect)
 	{
 		Speak(bAtTheRun ? TEXT("That is what happened. You read it right.") : TEXT("Right. That is what it did. Reading confirmed."));
@@ -210,13 +262,21 @@ FString UGitsVantSubsystem::RevealNextHint(UGitsScript* Script)
 		// Ilse's later notes cost power (ADR-006 in spirit: the note is a cheaper run, not a free one).
 		if (S && H.CostsPower > S->GetPower())
 		{
-			LogEvent(TEXT("hint_requested"), FString::Printf(TEXT("script=%s tier=%d costsPower=%d affordable=0"), *Script->GetName(), H.Tier, H.CostsPower));
+			{
+				TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+				P->SetNumberField(TEXT("tier"), H.Tier); P->SetNumberField(TEXT("costsPower"), H.CostsPower); P->SetBoolField(TEXT("affordable"), false);
+				Emit(TEXT("hint_requested"), P);
+			}
 			Speak(FString::Printf(TEXT("That note draws %d and the bus is holding %d."), H.CostsPower, S->GetPower()));
 			return FString();
 		}
 		if (S) { S->ChargePower(H.CostsPower); }
 		Shift.HintsRevealed.Add(H.Tier);
-		LogEvent(TEXT("hint_requested"), FString::Printf(TEXT("script=%s tier=%d costsPower=%d affordable=1"), *Script->GetName(), H.Tier, H.CostsPower));
+		{
+			TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+			P->SetNumberField(TEXT("tier"), H.Tier); P->SetNumberField(TEXT("costsPower"), H.CostsPower); P->SetBoolField(TEXT("affordable"), true);
+			Emit(TEXT("hint_requested"), P);
+		}
 		Speak(FString::Printf(TEXT("Ilse's note: %s"), *H.Text));
 		OnShiftChanged.Broadcast();
 		return H.Text;
@@ -239,13 +299,27 @@ bool UGitsVantSubsystem::IsDiscounted(UGitsScript* Script)
 
 void UGitsVantSubsystem::NoteRun(UGitsScript* Script, int32 Cost, bool bDiscounted, int32 PowerAfter)
 {
-	LogEvent(TEXT("run_executed"), FString::Printf(TEXT("script=%s cost=%d discounted=%d powerAfter=%d"), Script ? *Script->GetName() : TEXT("none"), Cost, bDiscounted, PowerAfter));
+	const UGitsStationSubsystem* S = Station();
+	const FGitsRunSummary Sum = S ? S->GetLastSummary() : FGitsRunSummary();
+	TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+	P->SetNumberField(TEXT("powerBefore"), PowerAfter + Cost);
+	P->SetNumberField(TEXT("powerAfter"), PowerAfter);
+	P->SetBoolField(TEXT("discounted"), bDiscounted);
+	P->SetNumberField(TEXT("traceLength"), Sum.Steps);
+	P->SetBoolField(TEXT("terminatedNormally"), Sum.Outcome == TEXT("completed"));
+	if (Sum.Outcome.Contains(TEXT("statement"))) { P->SetStringField(TEXT("capHit"), TEXT("statement")); }
+	else if (Sum.Outcome.Contains(TEXT("safety"))) { P->SetStringField(TEXT("capHit"), TEXT("safety")); }
+	else { P->SetField(TEXT("capHit"), MakeShared<FJsonValueNull>()); }
+	Emit(TEXT("run_executed"), P);
+	if (Sum.Outcome != TEXT("completed") && !Sum.DiagnosticCode.IsEmpty()) { NoteError(Script, Sum.DiagnosticCode, Sum.DiagnosticLine); }
 	OnShiftChanged.Broadcast();
 }
 
 void UGitsVantSubsystem::NoteReserveDrawn(int32 Before, int32 After, int32 Draws)
 {
-	LogEvent(TEXT("reserve_drawn"), FString::Printf(TEXT("before=%d after=%d draws=%d"), Before, After, Draws));
+	TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+	P->SetNumberField(TEXT("before"), Before); P->SetNumberField(TEXT("after"), After); P->SetNumberField(TEXT("draws"), Draws);
+	Emit(TEXT("reserve_drawn"), P);
 }
 
 void UGitsVantSubsystem::NoteEdit(UGitsScript* Script, int32 Line)
@@ -258,10 +332,16 @@ void UGitsVantSubsystem::NoteEdit(UGitsScript* Script, int32 Line)
 void UGitsVantSubsystem::TerminalUsed(UGitsScript* Script)
 {
 	if (!Script) { return; }
+	if (UGitsTelemetrySubsystem* T = Telemetry()) { T->SetLevel(Script->LevelId); }
 	const FString Key = KeyOf(Script);
 	if (Introduced.Contains(Key)) { return; }
 	Introduced.Add(Key);
 	ShiftFor(Script);
+	{
+		TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+		P->SetStringField(TEXT("levelId"), Script->LevelId); P->SetNumberField(TEXT("act"), Script->Act); P->SetNumberField(TEXT("tier"), Script->Tier);
+		Emit(TEXT("level_start"), P);
+	}
 	if (!Script->Intro.IsEmpty()) { Speak(Script->Intro); }
 }
 
@@ -306,7 +386,11 @@ void UGitsVantSubsystem::HandleRunStarted()
 		{
 			// Anchors resolve only once there is a trace; a line that never ran is skipped, not a blocker.
 			Shift.MarkSkipped(P.Id, true);
-			LogEvent(TEXT("prediction_unresolvable"), FString::Printf(TEXT("script=%s prediction=%s line=%d occurrence=%d found=%d"), *Script->GetName(), *P.Id, P.AnchorLine, P.AnchorOccurrence, Found));
+			{
+				TSharedPtr<FJsonObject> J = UGitsTelemetrySubsystem::Payload();
+				J->SetStringField(TEXT("predictionId"), P.Id); J->SetNumberField(TEXT("line"), P.AnchorLine); J->SetNumberField(TEXT("occurrence"), P.AnchorOccurrence); J->SetNumberField(TEXT("occurrencesFound"), Found);
+				Emit(TEXT("prediction_unresolvable"), J);
+			}
 			if (!Shift.StateOf(P.Id).Committed.IsEmpty()) { Speak(FString::Printf(TEXT("Line %d never ran this time, so that reading is moot."), P.AnchorLine)); }
 		}
 	}
@@ -334,9 +418,14 @@ void UGitsVantSubsystem::HandleStep(int32 StepIndex)
 		}
 		else if (State.bLocked)
 		{
+			const double LockedAt = State.LockedAt;
 			if (Shift.RecordHead(P.Id, StepIndex, RunFirstBoundary, *Anchor, bForward))
 			{
-				LogEvent(TEXT("scrub_gate_satisfied"), FString::Printf(TEXT("script=%s prediction=%s"), *Script->GetName(), *P.Id));
+				TSharedPtr<FJsonObject> J = UGitsTelemetrySubsystem::Payload();
+				J->SetStringField(TEXT("predictionId"), P.Id);
+				J->SetNumberField(TEXT("stepsScrubbed"), *Anchor - RunFirstBoundary + 1);
+				J->SetNumberField(TEXT("durationMs"), LockedAt > 0.0 ? FMath::RoundToDouble((FPlatformTime::Seconds() - LockedAt) * 1000.0) : 0.0);
+				Emit(TEXT("scrub_gate_satisfied"), J);
 				Speak(TEXT("You watched it. Now tell me again what that line does."));
 				bChanged = true;
 			}
@@ -463,7 +552,11 @@ void UGitsVantSubsystem::TryComplete(UGitsScript* Script, bool bAfterRun)
 		return;
 	}
 	OutroSpoken.Add(Key);
-	LogEvent(TEXT("level_complete"), FString::Printf(TEXT("script=%s"), *Script->GetName()));
+	{
+		TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
+		P->SetStringField(TEXT("levelId"), Script->LevelId);
+		Emit(TEXT("level_complete"), P);
+	}
 	FString K, V;
 	if (Script->GoalUnlocks.Split(TEXT("="), &K, &V)) { S->SetWorldValue(K, V); }
 	if (!Script->Outro.IsEmpty()) { Speak(Script->Outro); }

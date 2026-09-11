@@ -2,6 +2,8 @@
 #include "GitsScript.h"
 #include "GitsStationSubsystem.h"
 #include "Companion/GitsVant.h"
+#include "Telemetry/GitsTelemetry.h"
+#include "Engine/GameInstance.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/World.h"
@@ -98,10 +100,16 @@ bool AGitsTerminal::SetLine(int32 LineNumber, const FString& Text)
 	if (!IsLineEditable(LineNumber)) { return false; }
 	const FString Clean = Text.Replace(TEXT("\t"), TEXT("    ")).TrimEnd();
 	const bool bChanged = Lines[LineNumber - 1] != Clean;
+	const FString Before = Lines[LineNumber - 1];
 	Lines[LineNumber - 1] = Clean;
 	if (bChanged)
 	{
 		if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->NoteEdit(Script, LineNumber); }
+		// The log decides whether the text is kept (ADR-014); the terminal passes it unconditionally.
+		if (const UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+		{
+			if (UGitsTelemetrySubsystem* T = GI->GetSubsystem<UGitsTelemetrySubsystem>()) { if (T->HasConsent()) { T->Edit(LineNumber, Before, Clean); } }
+		}
 	}
 	RefreshScreen();
 	return true;
@@ -190,6 +198,7 @@ FGitsRunSummary AGitsTerminal::RunCurrent()
 			S->ChargePower(Cost);
 			if (V) { V->NoteRun(Script, Cost, bDiscounted, S->GetPower()); }
 		}
+		else if (Summary.bParseFailed && V) { V->NoteError(Script, Summary.DiagnosticCode, Summary.DiagnosticLine); }
 		if (!Summary.bRan)
 		{
 			Status = Summary.Message;

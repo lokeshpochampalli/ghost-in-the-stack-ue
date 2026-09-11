@@ -83,6 +83,13 @@ private:
 	/** Settles a committed prediction against the current trace at its anchor, and speaks. */
 	void Settle(UGitsScript* Script, const FGitsPrediction& Prediction, bool bAtTheRun);
 	void LogEvent(const FString& Event, const FString& Fields);
+	/** Records an event through the telemetry gate, and logs it. */
+	void Emit(const FString& Type, TSharedPtr<class FJsonObject> Payload);
+	class UGitsTelemetrySubsystem* Telemetry() const;
+public:
+	/** A script did not run or did not complete: error_shown. */
+	void NoteError(UGitsScript* Script, const FString& Code, int32 Line);
+private:
 
 	FString SessionId;
 	uint32 SessionSeed = 0;

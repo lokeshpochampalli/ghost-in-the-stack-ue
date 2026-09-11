@@ -209,6 +209,67 @@ The screens are unlit emissive surfaces with no intensity control, so the level'
 pinned at EV100 0 (`PostProcessVolume`, min = max brightness) and the corridor lamps are weak on
 purpose (24 cd full, 2.5/10 lit). Brighter lamps blow the walls out before the screens dim.
 
+## Telemetry and the study (Phase 8)
+
+`Telemetry/GitsTelemetry` is `UGitsTelemetrySubsystem`, a game-instance subsystem, so it outlives
+a map load. It is the reference's `telemetry/` ported with the same shape:
+
+- **The gate.** `Record(type, payload)` refuses, returning false and logging an error to
+  `LogGitsTelemetry`, until `RecordConsent` has been called; it also refuses any type not in the
+  reference's eighteen. Nothing touches disk before consent. `Erase()` forgets the session and
+  deletes the store. VANT's `Emit` logs every event as a `LogGitsTelemetry` line regardless and
+  only calls `Record` once consent is on file, so a pre-consent event is visible in the log but
+  never stored.
+- **The participant.** A code of the form `word-word-NN` from the reference's 22-word list,
+  generated from a clock seed at start-up, shown on the consent screen, and the only identifier
+  in the bundle. The session id is a GUID.
+- **The bundle** is byte-compatible with the reference: `{formatVersion: 1, participantCode,
+  exportedAt, consent: {version, codeCapture, recordedAt}, events: [{sessionId,
+  participantCode, levelId | null, timestamp, sequence, type, payload}]}`. `Export` writes it to
+  `Saved/Telemetry/exports/gits-<code>-<date>.json`; the running store is a JSON-lines file under
+  `Saved/Telemetry/` so a crash keeps what was recorded. `npm run analyse -- --in <dir>` in the
+  reference repo reads the exports unchanged.
+- **Edits.** `Edit(line, before, after)` hashes both texts (FNV-1a, the interpreter's
+  `GitsRng::HashToken`) and keeps the text only under code-capture consent (ADR-014). A PII
+  tripwire (`FindPii`: email, phone, URL, long digit runs) refuses captured text that matches.
+- **Which level.** `UGitsScript::LevelId` and `Act` carry the reference's level ids
+  (`a1-l01` … `a1-l08`) so the analysis's level axis still works; `SetLevel` is called on
+  every terminal use and cleared while an instrument is open.
+
+What is recorded, by whom:
+
+| event | from | payload |
+|---|---|---|
+| `session_start` | `RecordConsent` | `experience` band, `seed` |
+| `level_start` / `level_complete` | VANT `TerminalUsed` / `TryComplete` | `levelId`, `act`, `tier` |
+| `prediction_shown` / `_submitted` / `_unresolvable` | VANT | `predictionId`, `order`+`seed`; `optionId`, `correct`, `attempt`, `misconception`, `settledBy` |
+| `scrub` | station `EndRewind` | `from`, `to`, `method: "key"` |
+| `scrub_gate_satisfied` | VANT `HandleStep` | `predictionId`, `stepsScrubbed`, `durationMs` since the lock |
+| `run_executed` | VANT `NoteRun` | `powerBefore`, `powerAfter`, `discounted`, `traceLength`, `terminatedNormally`, `capHit` |
+| `error_shown` | VANT `NoteError` (parse and runtime) | `code`, `line` |
+| `hint_requested` | VANT `RevealNextHint` | `tier`, `costsPower`, `affordable` |
+| `reserve_drawn` | generator via VANT | `before`, `after`, `draws` |
+| `edit` | terminal `SetLine` | `line`, `beforeHash`, `afterHash`, text only with capture consent |
+| `instrument_started` / `_response` / `_completed` | the study panel | `instrumentId`, `occasion`, `itemId`, `value` or `skipped`, `latencyMs`; `score` |
+| `session_end` | the post panel | `durationMs` |
+
+`prediction_committed`, `goal_missed` and `sector_complete` stay log-only: they are not in the
+reference's type list and the analysis does not read them.
+
+**The instruments** (`Telemetry/GitsInstruments`) are the reference's four, ported item for item:
+the tracing test (11 A/B pairs, form chosen by the code's hash parity and swapped between
+occasions, options shuffled per participant and item), MEEGA+ (33 items, 13 dimensions, -2..2,
+median overall), SUS (10 items, 0–100, null if incomplete) and IMI (22 items, four subscales, no
+overall). Every tracing item's correct option is checked against the interpreter in
+`Telemetry/Tests`. Scoring produces the same JSON the reference's `scoring.ts` does.
+
+**In the world.** Two `AGitsInstrumentTerminal`s: the *pre* one by the entry (consent, the
+experience band, the pre-test) and the *post* one beyond the airlock (the post-test, MEEGA+, SUS,
+IMI, then `session_end` and the export, with the file path on the screen). `SGitsInstrumentPanel`
+is one generic panel for consent and every instrument: up and down choose, Enter answers, S skips
+(a skip is recorded; an item never reached is not), Escape only works at the consent screen and at
+the end. Declining consent closes the panel and the game plays with nothing recorded.
+
 ## Divergences from the design docs
 
 - **UI is C++ Slate, not Blueprint UMG.** `3D-REDESIGN.md` §4 and `CLAUDE.md` say the terminal
@@ -239,4 +300,6 @@ state, playback frame times and the slowest step change to the log), `GitsClose`
 and `GitsResume` (hold and release without a key), `GitsVerifyRewind`, `GitsPredict <n>` (answer
 VANT with the nth shown option), `GitsHint`, `GitsVantStatus`, `GitsPower`, `GitsReserve` (use the
 generator), `GitsSetPower <n>`, `GitsInsertLine <after> <text>` (Make scripts), `GitsSector`,
-`GitsFrameSample <s>`, `GitsWalkTo <x> <y>`.
+`GitsFrameSample <s>`, `GitsWalkTo <x> <y>`. The study: `GitsStudy pre|post` (open the study
+panel, at the terminal if there is one), `GitsAnswer <n>` (the nth shown option, also the consent
+choice and the experience band), `GitsSkip`, `GitsExport`, `GitsTelemetry` (code, consent, count).
