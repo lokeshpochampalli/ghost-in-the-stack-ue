@@ -21,7 +21,7 @@ Rules that hold throughout:
   includes screenshots. This is the lesson of the isometric view that was blank for a month.
 - **Blender assets go through one pipeline.** One scale, one export preset, one naming scheme,
   collision on everything. Fix the pipeline, not individual assets.
-- `docs/DECISIONS.md` continues from ADR-026. Append-only, human-written. Say when one is needed.
+- `docs/DECISIONS.md` continues from ADR-030. Append-only. Say when one is needed, unless delegated.
 
 ---
 
@@ -33,7 +33,7 @@ Rules that hold throughout:
 | 1 — Interpreter port | done 10 Sep 2026: all 30 golden traces byte for byte, 45 automation tests green, run headless and through the MCP. See `docs/INTERPRETER-PORT.md` |
 | 2 — First system: a door | done 10 Sep 2026: `L_Sector1_Airlock` with one corridor, one door, one terminal and one wall display; the interpreter's trace drives the door through the station subsystem's play head; single-line editing and the ADR-020 refusal on the terminal; 60 fps (vsync-capped, min 59.5) while the door animates. Screenshots in `docs/screenshots/phase-2`. See `docs/STATION-LAYER.md` for the divergences (C++ Slate screens, trace player built early, door/light builtins) |
 | 3 — Recorder and rewind | done 11 Sep 2026: `FGitsRecorder` maps the clock to statement beats and computes loop contexts; hold R scrubs the same play head backwards (door reverses, lights dim, terminal highlights the line, wall display shows `for notch: iteration 3 of 9` and the bindings); release resumes. `GitsVerifyRewind`: door script 5 boundaries and the 224-step lights loop 93 boundaries, zero mismatches, slowest step change 5.2 ms (target 16). 47 automation tests green. Screenshots in `docs/screenshots/phase-3` |
-| 4 — VANT and prediction | not started |
+| 4 — VANT and prediction | done 11 Sep 2026: `UGitsVantSubsystem` asks before the first run (options shuffled by the ported mulberry32/FNV-1a, seed logged), commits free, reveals at the anchored line during playback, locks a wrong reading until the player has rewound to the start and watched the line run (ADR-030), settles the re-answer against the existing trace, refuses to run with a reading pending, hints in tiers, intro and outro, caption HUD. Full predict-run-rewind-fix loop on the door in PIE; telemetry names as in the reference. 51 automation tests green. ADR-027 to 030 decided by delegation. Screenshots in `docs/screenshots/phase-4` |
 | 5 — Power | not started |
 | 6 — Blender kit and Sector 1 blockout | not started |
 | 7 — Sector 1 complete: the vertical slice | not started |

@@ -34,7 +34,8 @@ public class GhostInTheStack : ModuleRules
 			"GhostInTheStack/Variant_Shooter/Weapons",
 			"GhostInTheStack/Station",
 			"GhostInTheStack/UI",
-			"GhostInTheStack/Recorder"
+			"GhostInTheStack/Recorder",
+			"GhostInTheStack/Companion"
 		});
 
 		// Uncomment if you are using Slate UI

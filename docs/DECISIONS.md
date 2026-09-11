@@ -591,3 +591,33 @@ Considered. Embedding the TypeScript interpreter via Puerts or a web view, which
 Why Unreal now, having rejected it in August. The August objection was that an agent could not author Blueprints, see the editor, or iterate. Epic now ships an official in-editor MCP plugin and Claude Code plugin covering all three. The objection is gone; the engine's strength — a lit, physical, atmospheric place — is what the evaluation asked for.
 
 The design principle for the cycle. Every line of code moves something you can see, and every bug does something you can laugh at. This is both the fun principle and the pedagogy principle.
+
+ADR-027 — Diegetic screens are Slate widgets driven from C++, not Blueprint UMG
+
+Decided by Claude at the developer's delegation on 11 September 2026, after building Phases 2 and 3 both ways were weighed. The terminal screen, the wall display and the terminal overlay are Slate widgets (Source/GhostInTheStack/UI) owned and fed from C++. Widget Blueprints may wrap UGitsScreenWidget for layout and decoration; they do not build the model.
+
+Why. CLAUDE.md's rule is "C++ for anything with a loop in it". Every screen is rebuilt from the trace at every play-head change — a loop over steps, effects and bindings — and doing that in a Blueprint graph would put the loop in the wrong place. Keyword tinting asks the lexer's keyword table directly, so the terminal and the language cannot disagree. The cost is that a designer restyles the screens in C++ rather than in the UMG designer; the visual direction is a monospace phosphor screen, which is a palette and a font, not a layout problem.
+
+Considered. UMG RichText with a Blueprint binding per screen (the 3D-REDESIGN §4 wording); rejected for the loop reason and because RichText decorators would duplicate the lexer.
+
+ADR-028 — The world carries over between runs
+
+Decided by Claude at the developer's delegation. A run starts from the world the previous run left behind, with the station's initial values filling in only what no run has set. The trace records that starting world, so replay and rewind are unchanged. ADR-020's refusal still compares source only: a changed world does not make an unchanged script runnable.
+
+Why. The reference had one script per level and the question never arose. With two systems in one corridor, resetting to the level's initial world on every run slammed the airlock door shut whenever the lights script ran, which reads as the station undoing the player's work. The station is one place; what a script did stays done until a script undoes it.
+
+Considered. Per-script worlds, so each terminal owns its keys. Rejected: a door script that dims a corridor to save power must be able to touch the lights, and Sector 4's automation runs everything from one terminal.
+
+ADR-029 — Doors and lights are station builtins
+
+Decided by Claude at the developer's delegation. open_door(id), close_door(id) and set_light(id, level) join the language spec's station builtins, writing door.<id> (bool) and light.<id> (0 to 10). Valves and heaters stay for the cold store and the greenhouse.
+
+Why. Sector 1 is a corridor with doors and lights. The spec said "extend as levels demand", and these are the two systems every sector has. They are effect builtins in the ADR-003 sense: the evaluator records the effect and the world reducer applies it; the actors only animate.
+
+ADR-030 — The scrub gate in a time-based player asks for the start, then the anchor
+
+Decided by Claude at the developer's delegation, refining ADR-006 for Phase 4. A wrong reading locks its prediction until, since the lock, the play head has been at or before the first statement and has then passed the anchor while playing forward. Releasing rewind at the start and watching the run reach the anchored line satisfies it; so does watching a new run of the same script from its start. The re-answer is settled against the existing trace with no run and no power, as the reference resolved ADR-006 against ADR-020.
+
+Why. The reference gate recorded the lowest and highest scrub positions since the lock, which sufficed for a ribbon the player drags. In a player where the run plays itself and rewind is held, the head is already past the anchor when the lock lands, so "lowest at the start" alone would release the gate the moment the player finished rewinding, without their having watched anything. Requiring the start first and the anchor afterwards makes the consequence of a wrong answer exactly ADR-006's intent: watching the line run.
+
+Correctness is revealed the moment the anchored statement executes during playback, not when the run is submitted, because in this game the run is something the player watches happen.

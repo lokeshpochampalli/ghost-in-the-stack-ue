@@ -20,6 +20,11 @@ Source/GhostInTheStack/
     GitsTerminalEditor.*      SGitsTerminalEditor: the full-screen overlay while a terminal is in use
   Recorder/
     GitsRecorder.*            FGitsRecorder: step index <-> world time, loop contexts for the display
+  Companion/
+    GitsTags.*                the curriculum map: concept and misconception tags, script validation
+    GitsShift.*               the prediction gate as plain rules (select, commit, resolve, lock, release)
+    GitsVant.*                UGitsVantSubsystem: asks, settles at the anchor, locks, hints, speaks
+    Tests/GitsShiftTests.cpp  the gate, anchors and tag validation
 ```
 
 `CLAUDE.md`'s planned `World/` and `Systems/` folders collapsed into `Station/`: the effect
@@ -77,6 +82,48 @@ The terminal keeps highlighting the executing line with `rewind  line n`.
 and the current line against `GitsTrace::WorldAt` and the step's span, and reports the slowest
 step change in ms; that is the acceptance evidence for Phase 3.
 
+## VANT (the companion)
+
+`UGitsVantSubsystem` is one per world and listens to the station. The script asset carries the
+curriculum (`Concepts`, `Predictions` with misconception-tagged distractors, tiered `Hints`,
+`Intro`, `Outro`, a `GoalKey`/`GoalValue` world assertion); `GitsTags::Validate` checks it
+against the tag lists and logs any problem when the script is first touched.
+
+The loop, for one prediction:
+
+1. **Ask.** Using a terminal with a pending prediction opens the overlay in question mode:
+   VANT's prompt and the options in shuffled order. The order comes from
+   `mulberry32(fnv1a(sessionId + scriptName + predictionId))` (`Interpreter/GitsRng`,
+   byte-for-byte with the reference `rng.ts`; `Interpreter.Rng.Parity` proves it) and the seed
+   is logged with `prediction_shown`. The script name is in the seed, which ADR-011's formula
+   lacks: prediction ids repeat across scripts (`p1`), and two scripts sharing a permutation
+   would seat the correct answer in the same place twice. Up and down choose, Enter commits. Committing is free and reveals
+   nothing (ADR-006). Running with a pending prediction is refused with VANT's reason.
+2. **Reveal at the run.** The anchor `{line, occurrence}` resolves against the trace's statement
+   boundaries when the run starts (ADR-005; unresolvable means skipped and logged, never a
+   blocker). When the play head reaches the anchored step during forward playback the
+   commitment is settled: right satisfies it, wrong locks it and VANT says so.
+3. **The gate.** A locked prediction releases when the head has been at or before the first
+   statement and then passes the anchor playing forward (ADR-030): hold rewind to the start,
+   release, watch. `scrub_gate_satisfied` is logged.
+4. **Re-answer.** The prediction is pending again. A commitment made while a trace for this
+   exact source exists is settled against that trace at once, with no run (ADR-020: there is
+   nothing to re-run).
+5. **Fix, run, outro.** An edit on the anchored line drops the commitment; other edits do not.
+   When a run finishes with the goal met, VANT speaks the outro (`level_complete`).
+
+Hints are Ilse's notes, revealed in tier order with F1 (gamepad Y) in the overlay or the
+`GitsHint` console command; `hint_requested` is logged with the tier and its Phase 5 power cost.
+
+VANT speaks through `OnSpeak`: the overlay shows the line under the screen, the wall display
+carries it, and `SGitsVantCaption` shows it at the bottom of the viewport wherever the player
+looks, fading after it has been readable. Text only until the dialogue is final.
+
+Telemetry names follow the reference (`session_start` with the seed, `prediction_shown`,
+`prediction_committed`, `prediction_submitted` with attempt and misconception,
+`prediction_unresolvable`, `scrub_gate_satisfied`, `hint_requested`, `level_complete`) and go
+to `LogGitsTelemetry` for now; Phase 8 writes the export.
+
 ## Systems
 
 `AGitsSystemActor` has a `SystemId`; its world key is `door.<id>` or `light.<id>`.
@@ -132,4 +179,5 @@ purpose (24 cd full, 2.5/10 lit). Brighter lamps blow the walls out before the s
 For automation and for testing without walking: `GitsUse` (open the nearest terminal's overlay),
 `GitsSetLine <n> <text>`, `GitsRun`, `GitsReset`, `GitsStatus` (run summary, play state, world
 state, playback frame times and the slowest step change to the log), `GitsClose`, `GitsRewind`
-and `GitsResume` (hold and release without a key), `GitsVerifyRewind`.
+and `GitsResume` (hold and release without a key), `GitsVerifyRewind`, `GitsPredict <n>` (answer
+VANT with the nth shown option), `GitsHint`, `GitsVantStatus`.

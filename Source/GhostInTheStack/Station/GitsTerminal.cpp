@@ -1,6 +1,7 @@
 #include "GitsTerminal.h"
 #include "GitsScript.h"
 #include "GitsStationSubsystem.h"
+#include "Companion/GitsVant.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/World.h"
@@ -95,7 +96,13 @@ bool AGitsTerminal::IsLineEditable(int32 LineNumber) const
 bool AGitsTerminal::SetLine(int32 LineNumber, const FString& Text)
 {
 	if (!IsLineEditable(LineNumber)) { return false; }
-	Lines[LineNumber - 1] = Text.Replace(TEXT("\t"), TEXT("    ")).TrimEnd();
+	const FString Clean = Text.Replace(TEXT("\t"), TEXT("    ")).TrimEnd();
+	const bool bChanged = Lines[LineNumber - 1] != Clean;
+	Lines[LineNumber - 1] = Clean;
+	if (bChanged)
+	{
+		if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->NoteEdit(Script, LineNumber); }
+	}
 	RefreshScreen();
 	return true;
 }
@@ -109,6 +116,10 @@ void AGitsTerminal::SetSelectedLine(int32 LineNumber)
 void AGitsTerminal::SetInUse(bool bNewInUse)
 {
 	bInUse = bNewInUse;
+	if (bInUse)
+	{
+		if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->TerminalUsed(Script); }
+	}
 	if (!bInUse) { SelectedLine = 0; }
 	if (!bInUse && !bStatusIsError && Status.IsEmpty()) { Status = IdlePrompt; }
 	RefreshScreen();
@@ -117,6 +128,21 @@ void AGitsTerminal::SetInUse(bool bNewInUse)
 FGitsRunSummary AGitsTerminal::RunCurrent()
 {
 	FGitsRunSummary Summary;
+	// VANT will not spend the power before the player has said what they expect (ADR-006).
+	if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr)
+	{
+		FString Reason;
+		if (!V->CanRun(Script, Reason))
+		{
+			Summary.bRefused = true;
+			Summary.Message = Reason;
+			Status = TEXT("VANT: ") + Reason;
+			bStatusIsError = true;
+			RefreshScreen();
+			V->Speak(Reason);
+			return Summary;
+		}
+	}
 	if (UGitsStationSubsystem* S = Station())
 	{
 		bThisTerminalRan = true;

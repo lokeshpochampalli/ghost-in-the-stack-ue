@@ -198,6 +198,9 @@ set_heater(level)       effect  — 0-10
 log(message)            effect  — writes to the station log, visible in the UI
 wait(ticks)             effect  — advance the world clock
 read_sensor(id) -> int  read    — current reading, deterministic per world state
+open_door(id)           effect  — set door.<id> true            (ADR-029, Unreal cycle)
+close_door(id)          effect  — set door.<id> false
+set_light(id, level)    effect  — set light.<id>, 0-10
 ```
 
 `wait(ticks)` is an effect, not a read. It advances the folded world, so the next `read_sensor` sees
