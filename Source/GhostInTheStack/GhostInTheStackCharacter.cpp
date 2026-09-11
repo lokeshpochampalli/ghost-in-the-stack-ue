@@ -11,6 +11,7 @@
 #include "GhostInTheStack.h"
 #include "Station/GitsInteractable.h"
 #include "Station/GitsStationSubsystem.h"
+#include "Components/SpotLightComponent.h"
 #include "Engine/World.h"
 
 AGhostInTheStackCharacter::AGhostInTheStackCharacter()
@@ -28,6 +29,15 @@ AGhostInTheStackCharacter::AGhostInTheStackCharacter()
 
 	// Create the Camera Component	
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
+	Torch = CreateDefaultSubobject<USpotLightComponent>(TEXT("Torch"));
+	Torch->SetupAttachment(FirstPersonCameraComponent);
+	Torch->SetMobility(EComponentMobility::Movable);
+	Torch->SetIntensityUnits(ELightUnits::Candelas);
+	Torch->SetIntensity(0.f);
+	Torch->SetInnerConeAngle(14.f);
+	Torch->SetOuterConeAngle(30.f);
+	Torch->SetAttenuationRadius(1400.f);
+	Torch->SetLightColor(FLinearColor(1.f, 0.93f, 0.82f));
 	FirstPersonCameraComponent->SetupAttachment(FirstPersonMesh, FName("head"));
 	FirstPersonCameraComponent->SetRelativeLocationAndRotation(FVector(-2.8f, 5.89f, 0.0f), FRotator(0.0f, 90.0f, -90.0f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
@@ -134,6 +144,33 @@ void AGhostInTheStackCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AGhostInTheStackCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	if (UGitsStationSubsystem* S = GetWorld() ? GetWorld()->GetSubsystem<UGitsStationSubsystem>() : nullptr)
+	{
+		PowerHandle = S->OnPowerChanged.AddUObject(this, &AGhostInTheStackCharacter::UpdateTorch);
+	}
+	UpdateTorch();
+}
+
+void AGhostInTheStackCharacter::EndPlay(const EEndPlayReason::Type Reason)
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (UGitsStationSubsystem* S = World->GetSubsystem<UGitsStationSubsystem>()) { S->OnPowerChanged.Remove(PowerHandle); }
+	}
+	Super::EndPlay(Reason);
+}
+
+void AGhostInTheStackCharacter::UpdateTorch()
+{
+	if (!Torch) { return; }
+	const UGitsStationSubsystem* S = GetWorld() ? GetWorld()->GetSubsystem<UGitsStationSubsystem>() : nullptr;
+	const bool bOut = S && S->GetPowerStage() == GitsPower::EStage::Out;
+	Torch->SetIntensity(bOut ? TorchIntensity : 0.f);
 }
 
 void AGhostInTheStackCharacter::DoRewindStart()

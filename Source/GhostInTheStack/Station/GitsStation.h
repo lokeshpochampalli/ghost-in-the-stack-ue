@@ -42,11 +42,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station")
 	TMap<FString, float> InitialLevels;
 
+	/** The sector's power bus at full, in the units scripts declare their costs in. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+	int32 PowerBudget = 40;
+
+	/** What the reserve cell restores the bus to. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+	int32 ReserveRestore = 24;
+
 	/** VANT's refusal when nothing changed since the last run. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station", meta = (MultiLine = true))
 	FString UnchangedSourceMessage = TEXT("Nothing has changed, so nothing new will happen. Change a line, then run it again.");
 
 	FGitsWorldState InitialWorld() const;
+
+protected:
+	/** Hands the budget to the station subsystem and checks every terminal's script against it. */
+	virtual void BeginPlay() override;
+
+public:
 	/** Answers read_sensor(id) from the folded world: declared value plus drift times the clock. */
 	FGitsValue Read(const FGitsWorldState& World, const FGitsQuery& Query) const;
 };

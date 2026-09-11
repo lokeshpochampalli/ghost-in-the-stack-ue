@@ -105,6 +105,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Script")
 	TArray<FString> DeclaredBuiltins;
 
+	/** What a run draws from the bus at full price (ADR-006). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power")
+	int32 RunCost = 12;
+
+	/** What a run draws once a reading is committed or confirmed. Must be below RunCost. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Power")
+	int32 PredictedRunCost = 4;
+
 	/** Concept tags (Companion/GitsTags), for the curriculum table. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Curriculum")
 	TArray<FString> Concepts;

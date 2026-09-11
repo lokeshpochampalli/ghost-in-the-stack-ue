@@ -53,6 +53,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* InteractAction;
 
+	/** The torch: a spot on the camera, lit only when the bus is out */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	class USpotLightComponent* Torch;
+
+	/** Torch brightness in candela when the bus is out */
+	UPROPERTY(EditAnywhere, Category ="Power")
+	float TorchIntensity = 6.f;
+
 	/** Rewind Input Action: hold to scrub the last run backwards, release to resume */
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* RewindAction;
@@ -95,6 +103,12 @@ protected:
 	/** Handles rewind hold and release */
 	virtual void DoRewindStart();
 	virtual void DoRewindEnd();
+
+	/** Lights the torch when the bus is out */
+	void UpdateTorch();
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+	FDelegateHandle PowerHandle;
 
 protected:
 

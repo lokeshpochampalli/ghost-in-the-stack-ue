@@ -83,6 +83,7 @@ private:
 	TSharedPtr<STextBlock> TitleText;
 	TSharedPtr<SVerticalBox> Body;
 	TSharedPtr<STextBlock> StatusText;
+	TSharedPtr<SVerticalBox> StatusBox;
 };
 
 /** The UMG wrapper a widget component needs. Holds one SGitsScreen. */

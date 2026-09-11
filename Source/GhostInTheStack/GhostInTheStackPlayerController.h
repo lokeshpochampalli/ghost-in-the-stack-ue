@@ -70,6 +70,12 @@ public:
 	UFUNCTION(Exec) void GitsHint();
 	/** Logs where every prediction of the current or nearest terminal's script stands. */
 	UFUNCTION(Exec) void GitsVantStatus();
+	/** Logs the bus: holding, budget, stage, reserve draws. */
+	UFUNCTION(Exec) void GitsPower();
+	/** Uses the generator: draws the reserve cell. */
+	UFUNCTION(Exec) void GitsReserve();
+	/** Sets the bus reading, for testing the stages. */
+	UFUNCTION(Exec) void GitsSetPower(int32 NewPower);
 
 protected:
 

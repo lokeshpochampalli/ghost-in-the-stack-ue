@@ -125,28 +125,48 @@ void AGitsTerminal::SetInUse(bool bNewInUse)
 	RefreshScreen();
 }
 
+int32 AGitsTerminal::RunCostNow(bool& bDiscounted) const
+{
+	UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr;
+	bDiscounted = V && Script && V->IsDiscounted(Script);
+	if (!Script) { return 0; }
+	return bDiscounted ? Script->PredictedRunCost : Script->RunCost;
+}
+
 FGitsRunSummary AGitsTerminal::RunCurrent()
 {
 	FGitsRunSummary Summary;
-	// VANT will not spend the power before the player has said what they expect (ADR-006).
-	if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr)
+	UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr;
+	UGitsStationSubsystem* S = Station();
+	auto Refuse = [this, &Summary, V](const FString& Reason)
 	{
-		FString Reason;
-		if (!V->CanRun(Script, Reason))
-		{
-			Summary.bRefused = true;
-			Summary.Message = Reason;
-			Status = TEXT("VANT: ") + Reason;
-			bStatusIsError = true;
-			RefreshScreen();
-			V->Speak(Reason);
-			return Summary;
-		}
+		Summary.bRefused = true;
+		Summary.Message = Reason;
+		Status = TEXT("VANT: ") + Reason;
+		bStatusIsError = true;
+		RefreshScreen();
+		if (V) { V->Speak(Reason); }
+	};
+	// VANT will not spend the power before the player has said what they expect (ADR-006)...
+	FString Reason;
+	if (V && !V->CanRun(Script, Reason)) { Refuse(Reason); return Summary; }
+	// ...and the bus has to cover the run. A committed or confirmed reading buys the discount.
+	bool bDiscounted = false;
+	const int32 Cost = RunCostNow(bDiscounted);
+	if (S && Cost > S->GetPower())
+	{
+		Refuse(FString::Printf(TEXT("This run draws %d and the bus is holding %d. Ilse left a reserve cell on the generator."), Cost, S->GetPower()));
+		return Summary;
 	}
-	if (UGitsStationSubsystem* S = Station())
+	if (S)
 	{
 		bThisTerminalRan = true;
 		S->Run(Script, GetSourceText(), Summary);
+		if (Summary.bRan)
+		{
+			S->ChargePower(Cost);
+			if (V) { V->NoteRun(Script, Cost, bDiscounted, S->GetPower()); }
+		}
 		if (!Summary.bRan)
 		{
 			Status = Summary.Message;

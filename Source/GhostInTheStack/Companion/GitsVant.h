@@ -49,8 +49,13 @@ public:
 	FString Commit(UGitsScript* Script, const FString& PredictionId, const FString& CurrentSource);
 	/** False, with VANT's reason, when a prediction is still pending. */
 	bool CanRun(UGitsScript* Script, FString& Reason);
-	/** Reveals the next unrevealed hint tier and speaks it; empty when Ilse left nothing more. */
+	/** Reveals the next unrevealed hint tier and speaks it, if the bus can pay for it; empty otherwise. */
 	FString RevealNextHint(UGitsScript* Script);
+	/** A committed or confirmed reading buys the discounted run (reference runCost). */
+	bool IsDiscounted(UGitsScript* Script);
+	/** Telemetry for a run that was charged, and for the reserve cell. */
+	void NoteRun(UGitsScript* Script, int32 Cost, bool bDiscounted, int32 PowerAfter);
+	void NoteReserveDrawn(int32 Before, int32 After, int32 Draws);
 	/** The player changed a line; a prediction anchored on it needs a fresh commitment. */
 	void NoteEdit(UGitsScript* Script, int32 Line);
 	/** The intro, the first time a terminal is used. */
