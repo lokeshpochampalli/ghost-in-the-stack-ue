@@ -28,11 +28,22 @@ void SGitsInstrumentPanel::Construct(const FArguments& InArgs)
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot().AutoHeight()
 				[
-					SAssignNew(Screen, SGitsScreen).FontSize(20)
+					// A fixed height: the screen fits its rows to what it is given, and a
+					// height that followed the content would chase its own tail.
+					SNew(SBox).HeightOverride(620.f)
+					[
+						SAssignNew(Screen, SGitsScreen).FontSize(20)
+					]
 				]
 				+ SVerticalBox::Slot().AutoHeight().Padding(0, 6, 0, 0)
 				[
-					SAssignNew(Hint, STextBlock).Font(GitsStyle::Mono(16)).ColorAndOpacity(GitsStyle::Bone)
+					SNew(SBorder)
+					.BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush"))
+					.BorderBackgroundColor(FLinearColor(0.f, 0.f, 0.f, 0.85f))
+					.Padding(FMargin(10.f, 6.f))
+					[
+						SAssignNew(Hint, STextBlock).Font(GitsStyle::Mono(16)).ColorAndOpacity(GitsStyle::Bone)
+					]
 				]
 			]
 		]

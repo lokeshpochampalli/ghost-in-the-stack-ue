@@ -1,0 +1,2978 @@
+{
+	"formatVersion": 1,
+	"participantCode": "slate-slate-82",
+	"exportedAt": 1789129469574,
+	"consent":
+	{
+		"version": "2026-08-1",
+		"codeCapture": true,
+		"recordedAt": 1789129041630
+	},
+	"events": [
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129041668,
+			"sequence": 0,
+			"type": "session_start",
+			"payload":
+			{
+				"consentVersion": "2026-08-1",
+				"codeCapture": true,
+				"seed": 2377262485,
+				"experience": "some"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129043305,
+			"sequence": 1,
+			"type": "instrument_started",
+			"payload":
+			{
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"items": 11
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129048040,
+			"sequence": 2,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-01-d2",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-01",
+				"skipped": false,
+				"latencyMs": 4724
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129050603,
+			"sequence": 3,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-02-d1",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-02",
+				"skipped": false,
+				"latencyMs": 2562
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129053324,
+			"sequence": 4,
+			"type": "instrument_response",
+			"payload":
+			{
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-03",
+				"value": null,
+				"skipped": true,
+				"latencyMs": 2719
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129055243,
+			"sequence": 5,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-04-d1",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-04",
+				"skipped": false,
+				"latencyMs": 1918
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129057639,
+			"sequence": 6,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-05-d3",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-05",
+				"skipped": false,
+				"latencyMs": 2394
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129060384,
+			"sequence": 7,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-06-d2",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-06",
+				"skipped": false,
+				"latencyMs": 2744
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129062998,
+			"sequence": 8,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-07-d2",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-07",
+				"skipped": false,
+				"latencyMs": 2613
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129065908,
+			"sequence": 9,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-08-d2",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-08",
+				"skipped": false,
+				"latencyMs": 2908
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129068363,
+			"sequence": 10,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-09-d1",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-09",
+				"skipped": false,
+				"latencyMs": 2455
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129071297,
+			"sequence": 11,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-10-c",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-10",
+				"skipped": false,
+				"latencyMs": 2931
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129073123,
+			"sequence": 12,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-B-11-c",
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"itemId": "trace-B-11",
+				"skipped": false,
+				"latencyMs": 1824
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129073124,
+			"sequence": 13,
+			"type": "instrument_completed",
+			"payload":
+			{
+				"instrumentId": "tracing-B",
+				"occasion": "pre",
+				"answered": 10,
+				"total": 11,
+				"score":
+				{
+					"instrumentId": "tracing-B",
+					"form": "B",
+					"correct": 2,
+					"answered": 10,
+					"total": 11,
+					"byConcept": [
+						{
+							"tag": "accumulator",
+							"correct": 0,
+							"answered": 1,
+							"total": 2
+						},
+						{
+							"tag": "arithmetic",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "conditional",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "for-loop",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "local-scope",
+							"correct": 1,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "reassignment",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "return-value",
+							"correct": 1,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "string-ops",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "type-coercion",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "variable-assignment",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						}
+					],
+					"byMisconception": [
+						{
+							"tag": "assignment-as-equality",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "branch-both",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "fencepost",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "loop-runs-once",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "operator-confusion",
+							"correct": 0,
+							"answered": 3,
+							"total": 3
+						},
+						{
+							"tag": "parallel-assignment",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						}
+					]
+				}
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129086308,
+			"sequence": 14,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l01",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129091940,
+			"sequence": 15,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 60,
+				"powerAfter": 57,
+				"discounted": true,
+				"traceLength": 5,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129092511,
+			"sequence": 16,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "c",
+				"correct": false,
+				"attempt": 1,
+				"misconception": "sequence-ignored",
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129102905,
+			"sequence": 17,
+			"type": "scrub",
+			"payload":
+			{
+				"from": 4,
+				"to": -1,
+				"method": "key"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129103704,
+			"sequence": 18,
+			"type": "scrub_gate_satisfied",
+			"payload":
+			{
+				"predictionId": "p1",
+				"stepsScrubbed": 4,
+				"durationMs": 11192
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129109152,
+			"sequence": 19,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 2923108377,
+				"order": [
+					"c",
+					"b",
+					"a"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129112218,
+			"sequence": 20,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 2,
+				"misconception": null,
+				"settledBy": "trace"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129112220,
+			"sequence": 21,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l01"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l01",
+			"timestamp": 1789129122693,
+			"sequence": 22,
+			"type": "hint_requested",
+			"payload":
+			{
+				"tier": 1,
+				"costsPower": 0,
+				"affordable": true
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l02",
+			"timestamp": 1789129129152,
+			"sequence": 23,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l02",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l02",
+			"timestamp": 1789129129159,
+			"sequence": 24,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 2192162471,
+				"order": [
+					"b",
+					"c",
+					"a",
+					"d"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l02",
+			"timestamp": 1789129139698,
+			"sequence": 25,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 57,
+				"powerAfter": 54,
+				"discounted": true,
+				"traceLength": 9,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l02",
+			"timestamp": 1789129141299,
+			"sequence": 26,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l02",
+			"timestamp": 1789129141699,
+			"sequence": 27,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l02"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129148830,
+			"sequence": 28,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l05",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129148836,
+			"sequence": 29,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 3304806769,
+				"order": [
+					"a",
+					"c",
+					"b"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129152132,
+			"sequence": 30,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 3254473912,
+				"order": [
+					"c",
+					"d",
+					"b",
+					"a"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129154303,
+			"sequence": 31,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 3254473912,
+				"order": [
+					"c",
+					"d",
+					"b",
+					"a"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129164758,
+			"sequence": 32,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 54,
+				"powerAfter": 51,
+				"discounted": true,
+				"traceLength": 14,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129165951,
+			"sequence": 33,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129166353,
+			"sequence": 34,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p2",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129166752,
+			"sequence": 35,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l05"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l05",
+			"timestamp": 1789129174615,
+			"sequence": 36,
+			"type": "reserve_drawn",
+			"payload":
+			{
+				"before": 4,
+				"after": 30,
+				"draws": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129180718,
+			"sequence": 37,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l04",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129180724,
+			"sequence": 38,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 2412440655,
+				"order": [
+					"c",
+					"d",
+					"a",
+					"b"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129183768,
+			"sequence": 39,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 2429218274,
+				"order": [
+					"a",
+					"c",
+					"b"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129186178,
+			"sequence": 40,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 2429218274,
+				"order": [
+					"a",
+					"c",
+					"b"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129196398,
+			"sequence": 41,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 40,
+				"powerAfter": 37,
+				"discounted": true,
+				"traceLength": 15,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129198000,
+			"sequence": 42,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129198802,
+			"sequence": 43,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p2",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l04",
+			"timestamp": 1789129199202,
+			"sequence": 44,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l04"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129206094,
+			"sequence": 45,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l06",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129206100,
+			"sequence": 46,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 639492131,
+				"order": [
+					"c",
+					"a",
+					"b",
+					"d"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129209498,
+			"sequence": 47,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 656269750,
+				"order": [
+					"b",
+					"a",
+					"c"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129211871,
+			"sequence": 48,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 656269750,
+				"order": [
+					"b",
+					"a",
+					"c"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129221564,
+			"sequence": 49,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 37,
+				"powerAfter": 34,
+				"discounted": true,
+				"traceLength": 16,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129223169,
+			"sequence": 50,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129223569,
+			"sequence": 51,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p2",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l06",
+			"timestamp": 1789129223970,
+			"sequence": 52,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l06"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l03",
+			"timestamp": 1789129230952,
+			"sequence": 53,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l03",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l03",
+			"timestamp": 1789129230958,
+			"sequence": 54,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 1199459140,
+				"order": [
+					"b",
+					"a",
+					"d",
+					"c"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l03",
+			"timestamp": 1789129241662,
+			"sequence": 55,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 34,
+				"powerAfter": 30,
+				"discounted": true,
+				"traceLength": 11,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l03",
+			"timestamp": 1789129243265,
+			"sequence": 56,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l03",
+			"timestamp": 1789129243665,
+			"sequence": 57,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l03"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129250193,
+			"sequence": 58,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l07",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129250200,
+			"sequence": 59,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p1",
+				"seed": 2382032222,
+				"order": [
+					"c",
+					"b",
+					"a",
+					"d"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129253363,
+			"sequence": 60,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 2365254603,
+				"order": [
+					"a",
+					"b",
+					"c"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129255506,
+			"sequence": 61,
+			"type": "prediction_shown",
+			"payload":
+			{
+				"predictionId": "p2",
+				"seed": 2365254603,
+				"order": [
+					"a",
+					"b",
+					"c"
+				]
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129266016,
+			"sequence": 62,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 30,
+				"powerAfter": 27,
+				"discounted": true,
+				"traceLength": 17,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129267614,
+			"sequence": 63,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p1",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129268012,
+			"sequence": 64,
+			"type": "prediction_submitted",
+			"payload":
+			{
+				"predictionId": "p2",
+				"optionId": "a",
+				"correct": true,
+				"attempt": 1,
+				"misconception": null,
+				"settledBy": "run"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l07",
+			"timestamp": 1789129268415,
+			"sequence": 65,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l07"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129274638,
+			"sequence": 66,
+			"type": "level_start",
+			"payload":
+			{
+				"levelId": "a1-l08",
+				"act": 1,
+				"tier": 1
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129277118,
+			"sequence": 67,
+			"type": "edit",
+			"payload":
+			{
+				"line": 6,
+				"before": "",
+				"after": "set_light(\"approach\", level",
+				"hashed": false
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129278663,
+			"sequence": 68,
+			"type": "error_shown",
+			"payload":
+			{
+				"code": "unclosed-bracket",
+				"line": 6
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129281397,
+			"sequence": 69,
+			"type": "edit",
+			"payload":
+			{
+				"line": 6,
+				"before": "set_light(\"approach\", level",
+				"after": "set_light(\"approach\", level)",
+				"hashed": false
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129283310,
+			"sequence": 70,
+			"type": "edit",
+			"payload":
+			{
+				"line": 7,
+				"before": "",
+				"after": "print(\"READY\")",
+				"hashed": false
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129284874,
+			"sequence": 71,
+			"type": "run_executed",
+			"payload":
+			{
+				"powerBefore": 27,
+				"powerAfter": 19,
+				"discounted": false,
+				"traceLength": 9,
+				"terminatedNormally": true,
+				"capHit": null
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": "a1-l08",
+			"timestamp": 1789129286466,
+			"sequence": 72,
+			"type": "level_complete",
+			"payload":
+			{
+				"levelId": "a1-l08"
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129302388,
+			"sequence": 73,
+			"type": "instrument_started",
+			"payload":
+			{
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"items": 11
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129305323,
+			"sequence": 74,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-01-d2",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-01",
+				"skipped": false,
+				"latencyMs": 2935
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129307489,
+			"sequence": 75,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-02-d1",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-02",
+				"skipped": false,
+				"latencyMs": 2165
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129309272,
+			"sequence": 76,
+			"type": "instrument_response",
+			"payload":
+			{
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-03",
+				"value": null,
+				"skipped": true,
+				"latencyMs": 1781
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129311006,
+			"sequence": 77,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-04-c",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-04",
+				"skipped": false,
+				"latencyMs": 1733
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129312531,
+			"sequence": 78,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-05-d2",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-05",
+				"skipped": false,
+				"latencyMs": 1524
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129314288,
+			"sequence": 79,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-06-c",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-06",
+				"skipped": false,
+				"latencyMs": 1755
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129316080,
+			"sequence": 80,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-07-d1",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-07",
+				"skipped": false,
+				"latencyMs": 1791
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129318016,
+			"sequence": 81,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-08-d1",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-08",
+				"skipped": false,
+				"latencyMs": 1936
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129319979,
+			"sequence": 82,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-09-d2",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-09",
+				"skipped": false,
+				"latencyMs": 1959
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129323003,
+			"sequence": 83,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-10-d2",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-10",
+				"skipped": false,
+				"latencyMs": 3022
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129327335,
+			"sequence": 84,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": "trace-A-11-c",
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"itemId": "trace-A-11",
+				"skipped": false,
+				"latencyMs": 4329
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129327336,
+			"sequence": 85,
+			"type": "instrument_completed",
+			"payload":
+			{
+				"instrumentId": "tracing-A",
+				"occasion": "post",
+				"answered": 10,
+				"total": 11,
+				"score":
+				{
+					"instrumentId": "tracing-A",
+					"form": "A",
+					"correct": 3,
+					"answered": 10,
+					"total": 11,
+					"byConcept": [
+						{
+							"tag": "accumulator",
+							"correct": 0,
+							"answered": 1,
+							"total": 2
+						},
+						{
+							"tag": "arithmetic",
+							"correct": 1,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "conditional",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "for-loop",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "local-scope",
+							"correct": 1,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "reassignment",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "return-value",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "string-ops",
+							"correct": 1,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "type-coercion",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "variable-assignment",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						}
+					],
+					"byMisconception": [
+						{
+							"tag": "accumulator-reset",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "arg-param-identity",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "assignment-as-equality",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "fencepost",
+							"correct": 0,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"tag": "inverted-comparison",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						},
+						{
+							"tag": "parallel-assignment",
+							"correct": 0,
+							"answered": 1,
+							"total": 1
+						}
+					]
+				}
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129327338,
+			"sequence": 86,
+			"type": "instrument_started",
+			"payload":
+			{
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"items": 33
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129331986,
+			"sequence": 87,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-1",
+				"skipped": false,
+				"latencyMs": 4647
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129334337,
+			"sequence": 88,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-2",
+				"skipped": false,
+				"latencyMs": 2350
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129336374,
+			"sequence": 89,
+			"type": "instrument_response",
+			"payload":
+			{
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-3",
+				"value": null,
+				"skipped": true,
+				"latencyMs": 2035
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129338334,
+			"sequence": 90,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-4",
+				"skipped": false,
+				"latencyMs": 1959
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129340556,
+			"sequence": 91,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-5",
+				"skipped": false,
+				"latencyMs": 2220
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129342481,
+			"sequence": 92,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-6",
+				"skipped": false,
+				"latencyMs": 1923
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129344495,
+			"sequence": 93,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-7",
+				"skipped": false,
+				"latencyMs": 2013
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129346432,
+			"sequence": 94,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-8",
+				"skipped": false,
+				"latencyMs": 1935
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129348035,
+			"sequence": 95,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-9",
+				"skipped": false,
+				"latencyMs": 1602
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129350221,
+			"sequence": 96,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-10",
+				"skipped": false,
+				"latencyMs": 2184
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129352664,
+			"sequence": 97,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-11",
+				"skipped": false,
+				"latencyMs": 2442
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129354431,
+			"sequence": 98,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-12",
+				"skipped": false,
+				"latencyMs": 1766
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129356198,
+			"sequence": 99,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-13",
+				"skipped": false,
+				"latencyMs": 1765
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129357978,
+			"sequence": 100,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-14",
+				"skipped": false,
+				"latencyMs": 1778
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129359740,
+			"sequence": 101,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-15",
+				"skipped": false,
+				"latencyMs": 1760
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129361554,
+			"sequence": 102,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-16",
+				"skipped": false,
+				"latencyMs": 1813
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129364158,
+			"sequence": 103,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-17",
+				"skipped": false,
+				"latencyMs": 2601
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129366225,
+			"sequence": 104,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-18",
+				"skipped": false,
+				"latencyMs": 2066
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129368631,
+			"sequence": 105,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-19",
+				"skipped": false,
+				"latencyMs": 2405
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129370543,
+			"sequence": 106,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-20",
+				"skipped": false,
+				"latencyMs": 1907
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129372276,
+			"sequence": 107,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-21",
+				"skipped": false,
+				"latencyMs": 1704
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129374485,
+			"sequence": 108,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-22",
+				"skipped": false,
+				"latencyMs": 2207
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129376262,
+			"sequence": 109,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-23",
+				"skipped": false,
+				"latencyMs": 1774
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129378066,
+			"sequence": 110,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-24",
+				"skipped": false,
+				"latencyMs": 1803
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129379855,
+			"sequence": 111,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-25",
+				"skipped": false,
+				"latencyMs": 1786
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129381693,
+			"sequence": 112,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-26",
+				"skipped": false,
+				"latencyMs": 1822
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129383540,
+			"sequence": 113,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-27",
+				"skipped": false,
+				"latencyMs": 1845
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129385266,
+			"sequence": 114,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-28",
+				"skipped": false,
+				"latencyMs": 1714
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129387634,
+			"sequence": 115,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-29",
+				"skipped": false,
+				"latencyMs": 2367
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129390198,
+			"sequence": 116,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-30",
+				"skipped": false,
+				"latencyMs": 2563
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129391937,
+			"sequence": 117,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-31",
+				"skipped": false,
+				"latencyMs": 1738
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129393669,
+			"sequence": 118,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -2,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-32",
+				"skipped": false,
+				"latencyMs": 1731
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129396060,
+			"sequence": 119,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": -1,
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"itemId": "meega-33",
+				"skipped": false,
+				"latencyMs": 2389
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129396061,
+			"sequence": 120,
+			"type": "instrument_completed",
+			"payload":
+			{
+				"instrumentId": "meega-plus",
+				"occasion": "post",
+				"answered": 32,
+				"total": 33,
+				"score":
+				{
+					"instrumentId": "meega-plus",
+					"dimensions": [
+						{
+							"dimension": "aesthetics",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"dimension": "learnability",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 3
+						},
+						{
+							"dimension": "operability",
+							"mean": -0.33000000000000002,
+							"median": -1,
+							"answered": 3,
+							"total": 3
+						},
+						{
+							"dimension": "accessibility",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"dimension": "user error protection",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"dimension": "focused attention",
+							"mean": -1.3300000000000001,
+							"median": -1,
+							"answered": 3,
+							"total": 3
+						},
+						{
+							"dimension": "fun",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"dimension": "challenge",
+							"mean": -1.6699999999999999,
+							"median": -2,
+							"answered": 3,
+							"total": 3
+						},
+						{
+							"dimension": "social interaction",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"dimension": "confidence",
+							"mean": -1.3300000000000001,
+							"median": -1,
+							"answered": 3,
+							"total": 3
+						},
+						{
+							"dimension": "relevance",
+							"mean": -1.6699999999999999,
+							"median": -2,
+							"answered": 3,
+							"total": 3
+						},
+						{
+							"dimension": "satisfaction",
+							"mean": -1.5,
+							"median": -1.5,
+							"answered": 2,
+							"total": 2
+						},
+						{
+							"dimension": "perceived learning",
+							"mean": -1.3300000000000001,
+							"median": -1,
+							"answered": 3,
+							"total": 3
+						}
+					],
+					"overall": -1,
+					"overallLabel": "median item score, -2 to +2; report the per-dimension distributions too",
+					"answered": 32,
+					"total": 33,
+					"complete": false
+				}
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129396062,
+			"sequence": 121,
+			"type": "instrument_started",
+			"payload":
+			{
+				"instrumentId": "sus",
+				"occasion": "post",
+				"items": 10
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129398662,
+			"sequence": 122,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-1",
+				"skipped": false,
+				"latencyMs": 2598
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129400405,
+			"sequence": 123,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-2",
+				"skipped": false,
+				"latencyMs": 1742
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129402171,
+			"sequence": 124,
+			"type": "instrument_response",
+			"payload":
+			{
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-3",
+				"value": null,
+				"skipped": true,
+				"latencyMs": 1765
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129404308,
+			"sequence": 125,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-4",
+				"skipped": false,
+				"latencyMs": 2128
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129406051,
+			"sequence": 126,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-5",
+				"skipped": false,
+				"latencyMs": 1741
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129408437,
+			"sequence": 127,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-6",
+				"skipped": false,
+				"latencyMs": 2385
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129411031,
+			"sequence": 128,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-7",
+				"skipped": false,
+				"latencyMs": 2593
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129412834,
+			"sequence": 129,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-8",
+				"skipped": false,
+				"latencyMs": 1801
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129414979,
+			"sequence": 130,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-9",
+				"skipped": false,
+				"latencyMs": 2144
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129417134,
+			"sequence": 131,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "sus",
+				"occasion": "post",
+				"itemId": "sus-10",
+				"skipped": false,
+				"latencyMs": 2104
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129417136,
+			"sequence": 132,
+			"type": "instrument_completed",
+			"payload":
+			{
+				"instrumentId": "sus",
+				"occasion": "post",
+				"answered": 9,
+				"total": 10,
+				"score":
+				{
+					"instrumentId": "sus",
+					"dimensions": [
+						{
+							"dimension": "usability",
+							"mean": 3.6699999999999999,
+							"median": 5,
+							"answered": 9,
+							"total": 10
+						}
+					],
+					"overall": null,
+					"overallLabel": "SUS score, 0 to 100, benchmark mean 68",
+					"answered": 9,
+					"total": 10,
+					"complete": false
+				}
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129417136,
+			"sequence": 133,
+			"type": "instrument_started",
+			"payload":
+			{
+				"instrumentId": "imi",
+				"occasion": "post",
+				"items": 22
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129420853,
+			"sequence": 134,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-1",
+				"skipped": false,
+				"latencyMs": 3715
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129423904,
+			"sequence": 135,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-2",
+				"skipped": false,
+				"latencyMs": 3049
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129425673,
+			"sequence": 136,
+			"type": "instrument_response",
+			"payload":
+			{
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-3",
+				"value": null,
+				"skipped": true,
+				"latencyMs": 1768
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129427493,
+			"sequence": 137,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-4",
+				"skipped": false,
+				"latencyMs": 1819
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129430517,
+			"sequence": 138,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-5",
+				"skipped": false,
+				"latencyMs": 3024
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129432508,
+			"sequence": 139,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-6",
+				"skipped": false,
+				"latencyMs": 1989
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129434316,
+			"sequence": 140,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-7",
+				"skipped": false,
+				"latencyMs": 1806
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129437276,
+			"sequence": 141,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-8",
+				"skipped": false,
+				"latencyMs": 2959
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129439018,
+			"sequence": 142,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-9",
+				"skipped": false,
+				"latencyMs": 1741
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129440792,
+			"sequence": 143,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-10",
+				"skipped": false,
+				"latencyMs": 1773
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129442520,
+			"sequence": 144,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-11",
+				"skipped": false,
+				"latencyMs": 1726
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129445601,
+			"sequence": 145,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-12",
+				"skipped": false,
+				"latencyMs": 3080
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129447315,
+			"sequence": 146,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-13",
+				"skipped": false,
+				"latencyMs": 1713
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129449746,
+			"sequence": 147,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-14",
+				"skipped": false,
+				"latencyMs": 2429
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129452336,
+			"sequence": 148,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-15",
+				"skipped": false,
+				"latencyMs": 2588
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129454040,
+			"sequence": 149,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-16",
+				"skipped": false,
+				"latencyMs": 1703
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129457308,
+			"sequence": 150,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-17",
+				"skipped": false,
+				"latencyMs": 3265
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129459463,
+			"sequence": 151,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-18",
+				"skipped": false,
+				"latencyMs": 2153
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129462719,
+			"sequence": 152,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-19",
+				"skipped": false,
+				"latencyMs": 3255
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129464553,
+			"sequence": 153,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-20",
+				"skipped": false,
+				"latencyMs": 1832
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129466422,
+			"sequence": 154,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 2,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-21",
+				"skipped": false,
+				"latencyMs": 1868
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129469206,
+			"sequence": 155,
+			"type": "instrument_response",
+			"payload":
+			{
+				"value": 1,
+				"instrumentId": "imi",
+				"occasion": "post",
+				"itemId": "imi-22",
+				"skipped": false,
+				"latencyMs": 2781
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129469207,
+			"sequence": 156,
+			"type": "instrument_completed",
+			"payload":
+			{
+				"instrumentId": "imi",
+				"occasion": "post",
+				"answered": 21,
+				"total": 22,
+				"score":
+				{
+					"instrumentId": "imi",
+					"dimensions": [
+						{
+							"dimension": "interest/enjoyment",
+							"mean": 2.5,
+							"median": 2,
+							"answered": 6,
+							"total": 7
+						},
+						{
+							"dimension": "perceived competence",
+							"mean": 2.1699999999999999,
+							"median": 1.5,
+							"answered": 6,
+							"total": 6
+						},
+						{
+							"dimension": "effort/importance",
+							"mean": 3.3999999999999999,
+							"median": 2,
+							"answered": 5,
+							"total": 5
+						},
+						{
+							"dimension": "pressure/tension",
+							"mean": 3.5,
+							"median": 3.5,
+							"answered": 4,
+							"total": 4
+						}
+					],
+					"overall": null,
+					"overallLabel": "no overall score; report the four subscale means separately",
+					"answered": 21,
+					"total": 22,
+					"complete": false
+				}
+			}
+		},
+		{
+			"sessionId": "91b481e5409497622d2d68a75a480619",
+			"participantCode": "slate-slate-82",
+			"levelId": null,
+			"timestamp": 1789129469569,
+			"sequence": 157,
+			"type": "session_end",
+			"payload":
+			{
+				"durationMs": 427901
+			}
+		}
+	]
+}
