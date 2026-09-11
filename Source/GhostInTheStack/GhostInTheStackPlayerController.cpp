@@ -9,6 +9,9 @@
 #include "Blueprint/UserWidget.h"
 #include "GhostInTheStack.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+#include "Companion/GitsVant.h"
+#include "UI/GitsVantCaption.h"
+#include "Engine/GameViewportClient.h"
 
 AGhostInTheStackPlayerController::AGhostInTheStackPlayerController()
 {
@@ -19,6 +22,17 @@ AGhostInTheStackPlayerController::AGhostInTheStackPlayerController()
 void AGhostInTheStackPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	// VANT's caption: whatever the station says, wherever the player is looking.
+	if (IsLocalPlayerController() && GEngine && GEngine->GameViewport)
+	{
+		Caption = SNew(SGitsVantCaption);
+		GEngine->GameViewport->AddViewportWidgetContent(Caption.ToSharedRef(), 90);
+		if (UGitsVantSubsystem* V = GetWorld()->GetSubsystem<UGitsVantSubsystem>())
+		{
+			TWeakPtr<SGitsVantCaption> WeakCaption = Caption;
+			SpeakHandle = V->OnSpeak.AddLambda([WeakCaption](const FString& Line) { if (TSharedPtr<SGitsVantCaption> C = WeakCaption.Pin()) { C->SetLine(Line); } });
+		}
+	}
 
 	
 	// only spawn touch controls on local player controllers
@@ -123,6 +137,12 @@ void AGhostInTheStackPlayerController::CloseTerminal()
 void AGhostInTheStackPlayerController::EndPlay(const EEndPlayReason::Type Reason)
 {
 	CloseTerminal();
+	if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->OnSpeak.Remove(SpeakHandle); }
+	if (Caption.IsValid())
+	{
+		if (GEngine && GEngine->GameViewport) { GEngine->GameViewport->RemoveViewportWidgetContent(Caption.ToSharedRef()); }
+		Caption.Reset();
+	}
 	Super::EndPlay(Reason);
 }
 
@@ -192,6 +212,43 @@ void AGhostInTheStackPlayerController::GitsReset()
 void AGhostInTheStackPlayerController::GitsClose()
 {
 	CloseTerminal();
+}
+
+void AGhostInTheStackPlayerController::GitsPredict(int32 Index)
+{
+	if (Overlay.IsValid() && Overlay->IsAsking())
+	{
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsPredict: overlay option %d -> %d"), Index, Overlay->ChooseOption(Index));
+		return;
+	}
+	AGitsTerminal* T = TerminalForCommands();
+	UGitsVantSubsystem* V = GetWorld()->GetSubsystem<UGitsVantSubsystem>();
+	if (!T || !V || !T->Script) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsPredict: no terminal")); return; }
+	const TArray<FString> Pending = V->Pending(T->Script);
+	if (Pending.Num() == 0) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsPredict: nothing pending")); return; }
+	uint32 Seed = 0;
+	const TArray<FGitsPredictionOption> Options = V->Show(T->Script, Pending[0], Seed);
+	if (!Options.IsValidIndex(Index - 1)) { UE_LOG(LogGhostInTheStack, Display, TEXT("GitsPredict: no option %d"), Index); return; }
+	V->Select(T->Script, Pending[0], Options[Index - 1].Id);
+	const FString Line = V->Commit(T->Script, Pending[0], T->GetSourceText());
+	UE_LOG(LogGhostInTheStack, Display, TEXT("GitsPredict: %s option %d (%s) seed=%u -> %s"), *Pending[0], Index, *Options[Index - 1].Id, Seed, *Line);
+	if (Overlay.IsValid()) { Overlay->Refresh(); }
+}
+
+void AGhostInTheStackPlayerController::GitsHint()
+{
+	if (Overlay.IsValid()) { Overlay->RequestHint(); return; }
+	AGitsTerminal* T = TerminalForCommands();
+	if (UGitsVantSubsystem* V = GetWorld()->GetSubsystem<UGitsVantSubsystem>()) { if (T) { V->RevealNextHint(T->Script); } }
+}
+
+void AGhostInTheStackPlayerController::GitsVantStatus()
+{
+	AGitsTerminal* T = TerminalForCommands();
+	if (UGitsVantSubsystem* V = GetWorld()->GetSubsystem<UGitsVantSubsystem>())
+	{
+		UE_LOG(LogGhostInTheStack, Display, TEXT("GitsVantStatus: session=%s last=\"%s\" %s"), *V->GetSessionId(), *V->GetLastLine(), T ? *V->DescribeState(T->Script) : TEXT("no terminal"));
+	}
 }
 
 void AGhostInTheStackPlayerController::GitsRewind()

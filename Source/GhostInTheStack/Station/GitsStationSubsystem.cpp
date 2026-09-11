@@ -47,6 +47,13 @@ FGitsWorldState UGitsStationSubsystem::BuildInitialWorld() const
 
 // --- running -----------------------------------------------------------------------------
 
+bool UGitsStationSubsystem::HasTraceFor(const UGitsScript* Script, const FString& Source) const
+{
+	if (!HasTrace() || !Script || CurrentScript.Get() != Script) { return false; }
+	const FString* Last = LastRunSource.Find(Script->GetPathName());
+	return Last && *Last == Source.Replace(TEXT("\r\n"), TEXT("\n"));
+}
+
 FGitsRunSummary UGitsStationSubsystem::RunSource(UGitsScript* Script, const FString& Source)
 {
 	FGitsRunSummary Summary;

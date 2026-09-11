@@ -62,9 +62,9 @@ Source/GhostInTheStack/
   Interpreter/     C++ port — lexer, parser, recognition pass, evaluator, trace, oracle, errors
   Station/         station subsystem (run, trace playback, pose), system actors (Door, Light…),
                    station data (sensors, initial world), terminal and wall display actors
-  UI/              Slate screens: the phosphor screen widget and the terminal overlay
+  UI/              Slate screens: the phosphor screen widget, the terminal overlay, VANT's caption
   Recorder/        trace ↔ world-time mapping, rewind
-  Companion/       VANT — prompts, hints, dialogue hooks
+  Companion/       VANT — the prediction gate (shift), tags, the VANT subsystem, hints
   Telemetry/       event log, consent gate, JSON export
 Content/
   Kit/             Blender-authored modular meshes (SM_Kit_*)
@@ -86,9 +86,10 @@ docs/              LANGUAGE-SPEC, DECISIONS, 3D-REDESIGN, INTERPRETER-PORT, STAT
 - **Commit before every MCP-driven editing session.** MCP tools mutate live editor state and can
   move or delete assets in one call. A clean working copy is the undo.
 - **Update `docs/` in the same commit when implementation diverges from spec.**
-- **`docs/DECISIONS.md` is append-only and human-written.** ADR-026 records this cycle's
-  redesign; continue from ADR-027. Say when a
-  decision is needed and stop; do not write entries.
+- **`docs/DECISIONS.md` is append-only.** ADR-026 records this cycle's redesign; ADR-027 to
+  030 were decided by Claude at the developer's delegation (11 Sep 2026); continue from ADR-031.
+  Say when a decision is needed and stop, unless the developer has delegated it; then decide,
+  record it, and say so in the report.
 - **Commits:** `phase-N: short imperative summary`.
 
 ## Definition of done for any phase

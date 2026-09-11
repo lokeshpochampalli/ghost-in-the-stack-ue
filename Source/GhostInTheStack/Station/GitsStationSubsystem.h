@@ -85,6 +85,8 @@ public:
 	const FGitsRecorder& GetRecorder() const { return Recorder; }
 	/** The script asset the current trace came from, so a terminal knows whether the run is its own. */
 	UGitsScript* GetCurrentScript() const { return CurrentScript.Get(); }
+	/** True when the current trace is the run of exactly this source of this script (ADR-020: it cannot change). */
+	bool HasTraceFor(const UGitsScript* Script, const FString& Source) const;
 	int32 GetPlayIndex() const { return PlayIndex; }
 	UFUNCTION(BlueprintPure, Category = "Station")
 	EGitsPlayState GetPlayState() const { return State; }

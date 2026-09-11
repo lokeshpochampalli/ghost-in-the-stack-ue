@@ -10,6 +10,7 @@ class UInputMappingContext;
 class UUserWidget;
 class AGitsTerminal;
 class SGitsTerminalEditor;
+class SGitsVantCaption;
 
 /**
  *  Simple first person Player Controller
@@ -63,6 +64,12 @@ public:
 	UFUNCTION(Exec) void GitsResume();
 	/** Seeks backwards through every statement, checking world and line at each, and logs the timing. */
 	UFUNCTION(Exec) void GitsVerifyRewind();
+	/** Answers VANT's question with the Nth shown option (1-based) and commits it. */
+	UFUNCTION(Exec) void GitsPredict(int32 Index);
+	/** Asks for the next of Ilse's notes. */
+	UFUNCTION(Exec) void GitsHint();
+	/** Logs where every prediction of the current or nearest terminal's script stands. */
+	UFUNCTION(Exec) void GitsVantStatus();
 
 protected:
 
@@ -81,6 +88,10 @@ protected:
 	/** Pointer to the mobile controls widget */
 	UPROPERTY()
 	TObjectPtr<UUserWidget> MobileControlsWidget;
+
+	/** VANT's caption over the viewport. */
+	TSharedPtr<SGitsVantCaption> Caption;
+	FDelegateHandle SpeakHandle;
 
 	/** If true, the player will use UMG touch controls even if not playing on mobile platforms */
 	UPROPERTY(EditAnywhere, Config, Category = "Input|Touch Controls")

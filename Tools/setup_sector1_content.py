@@ -1,7 +1,8 @@
 # Runs inside Unreal's Python (Tools/ue_remote_python.py Tools/setup_sector1_content.py).
-# Sector 1 content, Phases 2 and 3: binds the Interact and Rewind actions on the player
-# Blueprint, creates the script assets, and builds the Sector 1 corridor level with two
-# terminals (the airlock door, the corridor lights), one door, one wall display.
+# Sector 1 content, Phases 2 to 4: binds the Interact and Rewind actions on the player
+# Blueprint, creates the script assets with VANT's predictions, Ilse's hints and the goals,
+# and builds the Sector 1 corridor level with two terminals (the airlock door, the corridor
+# lights), one door, one wall display.
 # Safe to re-run: existing assets are updated, the level is rebuilt.
 import unreal
 
@@ -65,12 +66,14 @@ EAL.save_loaded_asset(bp, only_if_is_dirty=False)
 print("character actions:", cdo.get_editor_property("interact_action").get_name(), cdo.get_editor_property("rewind_action").get_name())
 
 # --- 2. the scripts --------------------------------------------------------------------------
+# Ilse's door script ships with her bug: the hab side was re-trimmed to 4 after she wrote 5,
+# so the comparison on line 8 holds the door. The player reads it, predicts, watches, fixes line 6.
 DOOR_SOURCE = """# airlock, inner door
 # ilse: the pressure has to match the hab side before this
 # will open. it does now. if it ever doesn't, DON'T force it.
 
 pressure = read_sensor("airlock")
-target = 4
+target = 5
 
 if pressure == target:
     log("pressure matched, opening")
@@ -93,7 +96,84 @@ log("corridor lit")
 """
 
 
-def ensure_script(name, title, source, builtins):
+def option(oid, label, misconception=""):
+    o = unreal.GitsPredictionOption()
+    o.set_editor_property("id", oid)
+    o.set_editor_property("label", label)
+    o.set_editor_property("misconception", misconception)
+    return o
+
+
+def prediction(pid, prompt, line, occurrence, kind, options, correct):
+    p = unreal.GitsPrediction()
+    p.set_editor_property("id", pid)
+    p.set_editor_property("prompt", prompt)
+    p.set_editor_property("anchor_line", line)
+    p.set_editor_property("anchor_occurrence", occurrence)
+    p.set_editor_property("kind", kind)
+    p.set_editor_property("options", options)
+    p.set_editor_property("correct_id", correct)
+    return p
+
+
+def hint(tier, text, costs=0):
+    h = unreal.GitsHint()
+    h.set_editor_property("tier", tier)
+    h.set_editor_property("text", text)
+    h.set_editor_property("costs_power", costs)
+    return h
+
+
+DOOR_CURRICULUM = dict(
+    concepts=["variable-assignment", "comparison", "conditional"],
+    predictions=[prediction(
+        "p1",
+        "Before you run that. Line 8 compares them. Which way does it go?",
+        8, 1, "branch",
+        [
+            option("a", "To line 12. The sensor says 4, target says 5, so it holds."),
+            option("b", "To line 9. read_sensor sets target to match the pressure.", "parallel-assignment"),
+            option("c", "To line 9. == makes pressure equal to target, so they match.", "assignment-as-equality"),
+            option("d", "Both. It opens on line 10, then logs the hold on line 12.", "branch-both"),
+        ],
+        "a",
+    )],
+    hints=[
+        hint(1, "the hab side got re-trimmed in august. check what the sensor actually reads."),
+        hint(2, "line 6 is a number I typed. line 5 is a number the station measures. they have to agree, and only one of them is mine to change.", 3),
+        hint(3, "target = 4.", 6),
+    ],
+    intro="Airlock one. Ilse's script, her comment, her bug. Read it before you spend the power; I have been alone with this door for eleven months.",
+    outro="Inner door released. That is the first thing to work in this corridor since she left.",
+    goal_key="door.inner",
+    goal_value="true",
+)
+
+LIGHTS_CURRICULUM = dict(
+    concepts=["for-loop", "range", "nested-loop", "accumulator"],
+    predictions=[prediction(
+        "p1",
+        "Line 10, the wait. How many times does it run before the log on line 11?",
+        11, 1, "count",
+        [
+            option("a", "27. Three waits for each of nine notches."),
+            option("b", "9. Once per notch; the inner loop runs once.", "loop-runs-once"),
+            option("c", "30. range(9) counts to nine inclusive, three each.", "fencepost"),
+        ],
+        "a",
+    )],
+    hints=[
+        hint(1, "two loops. the inner one runs to the end every time the outer one comes round."),
+        hint(2, "range(9) gives 0 to 8, nine notches. range(3) gives three ticks inside each. count them up.", 3),
+    ],
+    intro="Corridor lights. She wrote this one gently; the ballasts are older than both of us.",
+    outro="Corridor lit, all nine notches. The ballasts held.",
+    goal_key="light.corridor",
+    goal_value="9",
+)
+
+
+def ensure_script(name, title, source, builtins, curriculum):
     if not EAL.does_directory_exist("/Game/Scripts"):
         EAL.make_directory("/Game/Scripts")
     path = "/Game/Scripts/" + name
@@ -109,15 +189,22 @@ def ensure_script(name, title, source, builtins):
     script.set_editor_property("statement_cap", 2000)
     script.set_editor_property("editable_lines", [])
     script.set_editor_property("declared_builtins", builtins)
+    script.set_editor_property("concepts", curriculum["concepts"])
+    script.set_editor_property("predictions", curriculum["predictions"])
+    script.set_editor_property("hints", curriculum["hints"])
+    script.set_editor_property("intro", curriculum["intro"])
+    script.set_editor_property("outro", curriculum["outro"])
+    script.set_editor_property("goal_key", curriculum["goal_key"])
+    script.set_editor_property("goal_value", curriculum["goal_value"])
     EAL.save_asset(path)
     print("script asset:", script.get_path_name(), "| lines:", len(source.splitlines()))
     return script
 
 
 door_script = ensure_script("DA_Airlock_InnerDoor", "AIRLOCK 1  inner door", DOOR_SOURCE,
-                            ["read_sensor", "log", "open_door", "close_door", "wait"])
+                            ["read_sensor", "log", "open_door", "close_door", "wait"], DOOR_CURRICULUM)
 lights_script = ensure_script("DA_Corridor_Lights", "CORRIDOR 1  lights", LIGHTS_SOURCE,
-                              ["log", "set_light", "wait", "range"])
+                              ["log", "set_light", "wait", "range"], LIGHTS_CURRICULUM)
 
 # --- 3. the level ----------------------------------------------------------------------------
 LEVEL = "/Game/Sectors/L_Sector1_Airlock"
