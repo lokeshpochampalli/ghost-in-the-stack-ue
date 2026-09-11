@@ -165,6 +165,26 @@ void AGhostInTheStackCharacter::EndPlay(const EEndPlayReason::Type Reason)
 	Super::EndPlay(Reason);
 }
 
+void AGhostInTheStackCharacter::WalkTo(const FVector& Target)
+{
+	WalkTarget = Target;
+	bWalking = true;
+	PrimaryActorTick.bCanEverTick = true;
+	SetActorTickEnabled(true);
+}
+
+void AGhostInTheStackCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (!bWalking) { return; }
+	FVector To = WalkTarget - GetActorLocation();
+	To.Z = 0.f;
+	if (To.Size() < 30.f) { bWalking = false; return; }
+	To.Normalize();
+	AddMovementInput(To, 1.f);
+	if (AController* C = GetController()) { C->SetControlRotation(FRotator(C->GetControlRotation().Pitch, To.Rotation().Yaw, 0.f)); }
+}
+
 void AGhostInTheStackCharacter::UpdateTorch()
 {
 	if (!Torch) { return; }

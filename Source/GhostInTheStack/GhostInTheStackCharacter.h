@@ -106,6 +106,14 @@ protected:
 
 	/** Lights the torch when the bus is out */
 	void UpdateTorch();
+
+public:
+	/** Walks to a point at walking speed, facing the way; for the walk-through acceptance. */
+	void WalkTo(const FVector& Target);
+	virtual void Tick(float DeltaSeconds) override;
+	bool bWalking = false;
+	FVector WalkTarget = FVector::ZeroVector;
+protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 	FDelegateHandle PowerHandle;

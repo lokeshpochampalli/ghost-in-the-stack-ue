@@ -12,6 +12,7 @@
 #include "Companion/GitsVant.h"
 #include "UI/GitsVantCaption.h"
 #include "Station/GitsGenerator.h"
+#include "GhostInTheStackCharacter.h"
 #include "Engine/GameViewportClient.h"
 
 AGhostInTheStackPlayerController::AGhostInTheStackPlayerController()
@@ -273,6 +274,16 @@ void AGhostInTheStackPlayerController::GitsReserve()
 void AGhostInTheStackPlayerController::GitsSetPower(int32 NewPower)
 {
 	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { S->SetPower(NewPower); GitsPower(); }
+}
+
+void AGhostInTheStackPlayerController::GitsFrameSample(float Seconds)
+{
+	if (UGitsStationSubsystem* S = GetWorld()->GetSubsystem<UGitsStationSubsystem>()) { S->StartFrameSample(Seconds); }
+}
+
+void AGhostInTheStackPlayerController::GitsWalkTo(float X, float Y)
+{
+	if (AGhostInTheStackCharacter* C = Cast<AGhostInTheStackCharacter>(GetPawn())) { C->WalkTo(FVector(X, Y, C->GetActorLocation().Z)); }
 }
 
 void AGhostInTheStackPlayerController::GitsRewind()

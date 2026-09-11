@@ -210,6 +210,9 @@ lights_script = ensure_script("DA_Corridor_Lights", "CORRIDOR 1  lights", LIGHTS
                               ["log", "set_light", "wait", "range"], LIGHTS_CURRICULUM)
 
 # --- 3. the level ----------------------------------------------------------------------------
+# Sector 1, Habitation (Phase 6 blockout): the entry airlock, a main corridor with two side rooms
+# (the generator room, the cold store), a corner, the airlock to Sector 2 and the sealed door
+# beyond it. Kit pieces are 400 x 300 x 300 corridor segments; rotations turn them into rooms.
 LEVEL = "/Game/Sectors/L_Sector1_Airlock"
 if not EAL.does_directory_exist("/Game/Sectors"):
     EAL.make_directory("/Game/Sectors")
@@ -240,35 +243,60 @@ def spawn(cls, loc, rot=(0, 0, 0), label=None):
     return a
 
 
-# corridor: three segments then the airlock, then one more segment beyond the door
-for i in range(3):
-    place_mesh("SM_Kit_CorridorSegment", (i * 400, 0, 0), label=f"Corridor_{i+1}")
-place_mesh("SM_Kit_CorridorSegment", (1230, 0, 0), label="Corridor_Beyond")
-# a wall closing the far end so the beyond stays dark, not void
-place_mesh("SM_Kit_DoorFrame", (1645, 0, 0), label="EndWall_Frame")
-place_mesh("SM_Kit_DoorPanel", (1645, 0, 0), label="EndWall_Panel")
-# and one closing the start behind the player
-place_mesh("SM_Kit_DoorFrame", (-15, 0, 0), label="StartWall_Frame")
-place_mesh("SM_Kit_DoorPanel", (-15, 0, 0), label="StartWall_Panel")
+def sealed_door(loc, yaw, label):
+    place_mesh("SM_Kit_DoorFrame", loc, rot=(0, yaw, 0), label=label + "_Frame")
+    place_mesh("SM_Kit_DoorPanel", loc, rot=(0, yaw, 0), label=label + "_Panel")
 
-door = spawn(unreal.GitsDoor, (1215, 0, 0), label="Door_Inner")
+
+# the main run: entry hall, two doorway segments (one opening each side), the corner, the leg to the airlock
+place_mesh("SM_Kit_CorridorSegment", (0, 0, 0), label="Corridor_A")
+place_mesh("SM_Kit_CorridorDoorway", (400, 0, 0), label="Corridor_B_DoorwayNorth")
+place_mesh("SM_Kit_CorridorDoorway", (1200, 0, 0), rot=(0, 180, 0), label="Corridor_C_DoorwaySouth")
+place_mesh("SM_Kit_CorridorCorner", (1200, 0, 0), label="Corner")
+place_mesh("SM_Kit_CorridorSegment", (1350, 150, 0), rot=(0, 90, 0), label="Corridor_D_ToAirlock")
+place_mesh("SM_Kit_CorridorSegment", (1350, 580, 0), rot=(0, 90, 0), label="Corridor_E_Beyond")
+sealed_door((-15, 0, 0), 0, "EntryAirlock_Outer")
+sealed_door((1350, 995, 0), 90, "Sector2_Sealed")
+
+# side rooms: a segment turned across the corridor, capped at the far end
+place_mesh("SM_Kit_CorridorSegment", (600, 150, 0), rot=(0, 90, 0), label="Room_Generator")
+place_mesh("SM_Kit_WallCap", (600, 550, 0), rot=(0, 90, 0), label="Room_Generator_Cap")
+place_mesh("SM_Kit_CorridorSegment", (1000, -150, 0), rot=(0, -90, 0), label="Room_ColdStore")
+place_mesh("SM_Kit_WallCap", (1000, -550, 0), rot=(0, -90, 0), label="Room_ColdStore_Cap")
+
+# the airlock door into Sector 2's approach, driven by the door script
+door = spawn(unreal.GitsDoor, (1350, 565, 0), rot=(0, 90, 0), label="Door_Inner")
 door.frame.set_static_mesh(mesh("SM_Kit_DoorFrame"))
 door.panel.set_static_mesh(mesh("SM_Kit_DoorPanel"))
 door.set_editor_property("system_id", "inner")
 door.set_editor_property("open_height", 215.0)
 door.set_editor_property("speed", 140.0)
 
-terminal = spawn(unreal.GitsTerminal, (1120, 105, 0), label="Terminal_Airlock")
+terminal = spawn(unreal.GitsTerminal, (1480, 400, 0), label="Terminal_Airlock")
 terminal.body.set_static_mesh(mesh("SM_Kit_Terminal"))
 terminal.set_editor_property("script", door_script)
 
-# the lights terminal sits a segment back, same wall, so the corridor it lights is in view
-lights_terminal = spawn(unreal.GitsTerminal, (520, 105, 0), label="Terminal_Lights")
+lights_terminal = spawn(unreal.GitsTerminal, (320, 128, 0), rot=(0, 90, 0), label="Terminal_Lights")
 lights_terminal.body.set_static_mesh(mesh("SM_Kit_Terminal"))
 lights_terminal.set_editor_property("script", lights_script)
 
-display = spawn(unreal.GitsWallDisplay, (980, 149, 150), rot=(0, 90, 0), label="WallDisplay_Airlock")
+display = spawn(unreal.GitsWallDisplay, (1494, 300, 150), label="WallDisplay_Airlock")
 display.body.set_static_mesh(mesh("SM_Kit_WallDisplay"))
+
+gauge = spawn(unreal.GitsPowerGauge, (150, 149, 170), rot=(0, 90, 0), label="PowerGauge")
+gauge.body.set_static_mesh(mesh("SM_Kit_WallGauge"))
+gauge.set_actor_scale3d(unreal.Vector(0.5, 0.5, 0.5))
+
+generator = spawn(unreal.GitsGenerator, (600, 520, 0), rot=(0, 90, 0), label="Generator")
+generator.body.set_static_mesh(mesh("SM_Kit_Generator"))
+
+# dressing: the cold store unit, crates, and the drone that will fly in Sector 3, parked
+place_mesh("SM_Kit_ColdStoreUnit", (1000, -515, 0), rot=(0, -90, 0), label="ColdStoreUnit")
+place_mesh("SM_Kit_Crate", (890, -430, 0), rot=(0, 8, 0), label="Crate_1")
+place_mesh("SM_Kit_Crate", (890, -365, 0), rot=(0, -5, 0), label="Crate_2")
+place_mesh("SM_Kit_Crate", (890, -430, 60), rot=(0, 20, 0), label="Crate_3")
+place_mesh("SM_Kit_Crate", (1110, -300, 0), rot=(0, 3, 0), label="Crate_4")
+place_mesh("SM_Kit_Drone", (700, 330, 0), rot=(0, 25, 0), label="Drone_Parked")
 
 station = spawn(unreal.GitsStation, (0, 0, 0), label="Station")
 spec = unreal.GitsSensorSpec()
@@ -279,41 +307,46 @@ station.set_editor_property("initial_switches", {"door.inner": False})
 station.set_editor_property("power_budget", 40)
 station.set_editor_property("reserve_restore", 24)
 
-# the generator at the corridor head (a cabinet from the kit until Phase 6 gives it its own piece)
-generator = spawn(unreal.GitsGenerator, (60, -105, 0), rot=(0, 180, 0), label="Generator")
-generator.body.set_static_mesh(mesh("SM_Kit_Terminal"))
 
-# the wall gauge by the lights terminal, the display panel at half size
-gauge = spawn(unreal.GitsPowerGauge, (300, 149, 170), rot=(0, 90, 0), label="PowerGauge")
-gauge.body.set_static_mesh(mesh("SM_Kit_WallDisplay"))
-gauge.set_actor_scale3d(unreal.Vector(0.5, 0.5, 0.5))
+def ceiling_light(loc, system_id, level, label, full=12.0):
+    light = spawn(unreal.GitsLight, loc, label=label)
+    light.fitting.set_static_mesh(mesh("SM_Kit_CeilingLight"))
+    light.set_editor_property("system_id", system_id)
+    light.set_editor_property("initial_level", level)
+    light.set_editor_property("full_intensity", full)
+    return light
 
-# emergency lighting: amber, and only when the bus is out (the palette reserves amber for power states)
-emergency = spawn(unreal.GitsLight, (650, 0, 285), label="Light_Emergency")
-emergency.set_editor_property("system_id", "emergency")
-emergency.set_editor_property("initial_level", 10.0)
-emergency.set_editor_property("full_intensity", 1.5)
-emergency.set_editor_property("emergency_only", True)
-emergency.light.set_light_color(unreal.LinearColor(0.85, 0.60, 0.17, 1.0))
 
-# lights: warm and low, the terminal does the rest
-for i, x in enumerate((250, 650, 1050)):
-    light = spawn(unreal.GitsLight, (x, 0, 292), label=f"Light_Corridor_{i+1}")
-    light.set_editor_property("system_id", "corridor")
-    light.set_editor_property("initial_level", 2.5)
-    # 12 cd at level 10: the corridor starts dim and the lights script is what brightens it
-    light.set_editor_property("full_intensity", 12.0)
-beyond = spawn(unreal.GitsLight, (1430, 0, 292), label="Light_Beyond")
-beyond.set_editor_property("system_id", "beyond")
-beyond.set_editor_property("initial_level", 1.0)
-beyond.set_editor_property("full_intensity", 24.0)
+# the rig: fittings hang from the ceiling (origin at the mount), warm and low; the lights script brings the corridor up
+for i, loc in enumerate(((200, 0, 299), (600, 0, 299), (1000, 0, 299), (1350, 0, 299), (1350, 350, 299))):
+    ceiling_light(loc, "corridor", 2.5, f"Light_Corridor_{i+1}")
+ceiling_light((600, 380, 299), "hab", 4.5, "Light_GeneratorRoom")
+ceiling_light((1000, -380, 299), "cold", 2.5, "Light_ColdStore")
+ceiling_light((1350, 780, 299), "beyond", 1.0, "Light_Beyond")
 
-# a cold fill near the door so the copper panel reads
-fill = spawn(unreal.PointLight, (1150, -120, 40), label="Fill_Cold")
-fill.point_light_component.set_intensity(0.8)
-fill.point_light_component.set_light_color(unreal.LinearColor(0.55, 0.7, 0.9, 1.0))
-fill.point_light_component.set_attenuation_radius(500.0)
-fill.point_light_component.set_mobility(unreal.ComponentMobility.STATIONARY)
+# emergency lighting: amber, and only when the bus is out
+for i, loc in enumerate(((400, 0, 285), (1350, 200, 285), (1000, -300, 285))):
+    e = spawn(unreal.GitsLight, loc, label=f"Light_Emergency_{i+1}")
+    e.set_editor_property("system_id", "emergency")
+    e.set_editor_property("initial_level", 10.0)
+    e.set_editor_property("full_intensity", 1.5)
+    e.set_editor_property("emergency_only", True)
+    e.light.set_light_color(unreal.LinearColor(0.85, 0.60, 0.17, 1.0))
+
+
+def cold_fill(loc, intensity, radius, label):
+    fill = spawn(unreal.PointLight, loc, label=label)
+    fill.point_light_component.set_intensity(intensity)
+    fill.point_light_component.set_light_color(unreal.LinearColor(0.55, 0.7, 0.9, 1.0))
+    fill.point_light_component.set_attenuation_radius(radius)
+    fill.point_light_component.set_mobility(unreal.ComponentMobility.STATIONARY)
+    return fill
+
+
+# cold fills: the frost in the cold store, the dark beyond the airlock, the entry door
+cold_fill((1000, -420, 200), 2.5, 500.0, "Fill_ColdStore")
+cold_fill((1350, 900, 140), 1.2, 500.0, "Fill_Beyond")
+cold_fill((60, -110, 40), 0.8, 400.0, "Fill_Entry")
 
 # exposure pinned at EV100 0 so the screens (unlit widgets, emissive 1.0) render at full
 # brightness and the corridor is lit by deliberately weak lamps (candela values above).

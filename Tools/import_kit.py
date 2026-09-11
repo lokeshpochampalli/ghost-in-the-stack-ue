@@ -56,8 +56,12 @@ def import_one(glb_path):
         target = f"{DEST}/{base}"
         if obj_path != target:
             if EAL.does_asset_exist(target):
-                EAL.delete_asset(target)
-            EAL.rename_asset(obj_path, target)
+                # The same material or texture came in with an earlier piece. Point this piece at
+                # that one and drop the duplicate; deleting the existing asset would clear the
+                # slots of every mesh already using it.
+                EAL.consolidate_assets(EAL.load_asset(target), [EAL.load_asset(obj_path)])
+            else:
+                EAL.rename_asset(obj_path, target)
             moved.append((obj_path, target))
     sub = f"{DEST}/{name}"
     if EAL.does_directory_exist(sub) and not EAL.does_asset_exist(sub):
@@ -90,6 +94,57 @@ def import_one(glb_path):
     return mesh_path
 
 
+def fix_material_slots():
+    """Binds every slot to the kit material of the slot's imported name.
+
+    A re-import over an existing mesh keeps the old slot bindings, and a slot whose material
+    was deleted falls back to WorldGridMaterial; both show up as the engine's grid.
+    """
+    fixed = 0
+    for a in EAL.list_assets(DEST, recursive=False):
+        o = EAL.load_asset(a.split(".")[0])
+        if not isinstance(o, unreal.StaticMesh):
+            continue
+        mats = list(o.static_materials)
+        changed = False
+        for i, sm in enumerate(mats):
+            # the slot name is the Blender material name on a fresh import; a stale slot keeps an
+            # old name, and then the kit's rule applies: slot 0 is the trim sheet, slot 1 the glow
+            want = str(sm.material_slot_name)
+            if not EAL.does_asset_exist(f"{DEST}/{want}"):
+                want = "M_Kit_Trim" if i == 0 else "M_Kit_Glow"
+            current = sm.material_interface
+            if current and current.get_name() == want:
+                continue
+            path = f"{DEST}/{want}"
+            if EAL.does_asset_exist(path):
+                sm.material_interface = EAL.load_asset(path)
+                mats[i] = sm
+                changed = True
+        if changed:
+            o.set_editor_property("static_materials", mats)
+            EAL.save_loaded_asset(o, only_if_is_dirty=False)
+            fixed += 1
+    print(f"material slots fixed on {fixed} mesh(es)")
+    # Interchange's instances point at the texture that came in beside them; if that texture was a
+    # duplicate that got consolidated away, the parameter falls back to a white default. The kit's
+    # rule: M_Kit_<Name> reads T_Kit_<Name> when that texture exists.
+    MEL = unreal.MaterialEditingLibrary
+    for a in EAL.list_assets(DEST, recursive=False):
+        o = EAL.load_asset(a.split(".")[0])
+        if not isinstance(o, unreal.MaterialInstanceConstant):
+            continue
+        tex_path = f"{DEST}/T_{o.get_name()[2:]}"
+        if not EAL.does_asset_exist(tex_path):
+            continue
+        current = MEL.get_material_instance_texture_parameter_value(o, "BaseColorTexture")
+        if not current or current.get_path_name() != EAL.load_asset(tex_path).get_path_name():
+            MEL.set_material_instance_texture_parameter_value(o, "BaseColorTexture", EAL.load_asset(tex_path))
+            MEL.update_material_instance(o)
+            EAL.save_loaded_asset(o, only_if_is_dirty=False)
+            print(f"{o.get_name()}: BaseColorTexture -> {tex_path}")
+
+
 def main():
     files = sorted(f for f in os.listdir(KIT_DIR) if f.startswith("SM_Kit_") and f.lower().endswith(".glb"))
     if not files:
@@ -98,6 +153,7 @@ def main():
     print(f"importing {len(files)} kit piece(s) from {KIT_DIR}")
     for f in files:
         import_one(os.path.join(KIT_DIR, f))
+    fix_material_slots()
     print("kit assets:", EAL.list_assets(DEST, recursive=True))
 
 

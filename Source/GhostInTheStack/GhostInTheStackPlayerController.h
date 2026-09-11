@@ -76,6 +76,10 @@ public:
 	UFUNCTION(Exec) void GitsReserve();
 	/** Sets the bus reading, for testing the stages. */
 	UFUNCTION(Exec) void GitsSetPower(int32 NewPower);
+	/** Samples frame times for a window and logs min, average and frames under 60. */
+	UFUNCTION(Exec) void GitsFrameSample(float Seconds);
+	/** Walks the player to a point at walking speed (for the walk-through). */
+	UFUNCTION(Exec) void GitsWalkTo(float X, float Y);
 
 protected:
 

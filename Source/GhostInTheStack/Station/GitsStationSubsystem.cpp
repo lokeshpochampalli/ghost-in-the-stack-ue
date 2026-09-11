@@ -336,8 +336,34 @@ void UGitsStationSubsystem::SampleFrame(float DeltaTime)
 	++PlaybackFrames;
 }
 
+void UGitsStationSubsystem::StartFrameSample(float Seconds)
+{
+	SampleRemaining = FMath::Max(0.1f, Seconds);
+	SampleMinFps = 0.f; SampleAvgFps = 0.f; SampleFrames = 0; SampleFramesUnder60 = 0; SampleAccum = 0.0;
+	bSampleSkipFirst = true;
+}
+
 void UGitsStationSubsystem::Tick(float DeltaTime)
 {
+	if (SampleRemaining > 0.f)
+	{
+		// The frame that started the sample ran the console command; it is not a walking frame.
+		if (bSampleSkipFirst) { bSampleSkipFirst = false; }
+		else if (DeltaTime > 0.f)
+		{
+			const float Fps = 1.f / DeltaTime;
+			SampleMinFps = SampleFrames == 0 ? Fps : FMath::Min(SampleMinFps, Fps);
+			if (Fps < 59.f) { ++SampleFramesUnder60; }
+			SampleAccum += DeltaTime;
+			++SampleFrames;
+			SampleRemaining -= DeltaTime;
+			if (SampleRemaining <= 0.f)
+			{
+				SampleAvgFps = SampleFrames > 0 ? (float)(SampleFrames / SampleAccum) : 0.f;
+				UE_LOG(LogTemp, Display, TEXT("GitsFrameSample: frames=%d avgFps=%.1f minFps=%.1f under60=%d"), SampleFrames, SampleAvgFps, SampleMinFps, SampleFramesUnder60);
+			}
+		}
+	}
 	if (!HasTrace() || !Recorder.IsBuilt()) { return; }
 	if (State == EGitsPlayState::Playing)
 	{
