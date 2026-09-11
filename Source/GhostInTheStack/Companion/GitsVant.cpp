@@ -77,9 +77,10 @@ void UGitsVantSubsystem::Emit(const FString& Type, TSharedPtr<FJsonObject> Paylo
 	FString Text;
 	TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> W = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Text);
 	FJsonSerializer::Serialize(Payload.ToSharedRef(), W);
-	LogEvent(Type, Text);
-	// Before consent the gate refuses and the log line above is all that happens: not silent.
-	if (UGitsTelemetrySubsystem* T = Telemetry()) { if (T->HasConsent()) { T->Record(Type, Payload); } }
+	UGitsTelemetrySubsystem* T = Telemetry();
+	UE_LOG(LogGitsTelemetry, Display, TEXT("event=%s session=%s %s"), *Type, T ? *T->GetSessionId() : *SessionId, *Text);
+	// Before consent the log line above is all that happens: visible, never stored.
+	if (T && T->HasConsent()) { T->Record(Type, Payload); }
 }
 
 void UGitsVantSubsystem::NoteError(UGitsScript* Script, const FString& Code, int32 Line)
@@ -332,16 +333,21 @@ void UGitsVantSubsystem::NoteEdit(UGitsScript* Script, int32 Line)
 void UGitsVantSubsystem::TerminalUsed(UGitsScript* Script)
 {
 	if (!Script) { return; }
-	if (UGitsTelemetrySubsystem* T = Telemetry()) { T->SetLevel(Script->LevelId); }
+	UGitsTelemetrySubsystem* T = Telemetry();
+	if (T) { T->SetLevel(Script->LevelId); }
 	const FString Key = KeyOf(Script);
-	if (Introduced.Contains(Key)) { return; }
-	Introduced.Add(Key);
-	ShiftFor(Script);
+	if (!LevelStarted.Contains(Key))
 	{
+		// A terminal used before consent logs its start but stores nothing; the level starts,
+		// for the record, at its first use after consent.
 		TSharedPtr<FJsonObject> P = UGitsTelemetrySubsystem::Payload();
 		P->SetStringField(TEXT("levelId"), Script->LevelId); P->SetNumberField(TEXT("act"), Script->Act); P->SetNumberField(TEXT("tier"), Script->Tier);
 		Emit(TEXT("level_start"), P);
+		if (T && T->HasConsent()) { LevelStarted.Add(Key); }
 	}
+	if (Introduced.Contains(Key)) { return; }
+	Introduced.Add(Key);
+	ShiftFor(Script);
 	if (!Script->Intro.IsEmpty()) { Speak(Script->Intro); }
 }
 

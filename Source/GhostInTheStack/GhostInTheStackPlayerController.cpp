@@ -343,7 +343,8 @@ void AGhostInTheStackPlayerController::CloseInstrumentPanel()
 		SetShowMouseCursor(false);
 		if (APawn* P = GetPawn()) { P->EnableInput(this); }
 	}
-	if (CurrentStudyTerminal) { CurrentStudyTerminal->Refresh(); }
+	// Every study terminal shows whether consent is on file, so all of them refresh.
+	for (TActorIterator<AGitsInstrumentTerminal> It(GetWorld()); It; ++It) { It->Refresh(); }
 	CurrentStudyTerminal = nullptr;
 }
 

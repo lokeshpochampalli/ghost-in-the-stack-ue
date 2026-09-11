@@ -98,6 +98,8 @@ private:
 	/** Option order per session and prediction, keyed script|prediction. */
 	TMap<FString, TArray<FString>> OptionOrders;
 	TSet<FString> Introduced;
+	/** Levels whose level_start went through the gate; one used before consent starts at its next use. */
+	TSet<FString> LevelStarted;
 	TSet<FString> OutroSpoken;
 	TMap<FString, TSet<int32>> Passed;
 	bool bSectorComplete = false;
