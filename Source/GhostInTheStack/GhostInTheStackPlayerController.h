@@ -80,6 +80,10 @@ public:
 	UFUNCTION(Exec) void GitsFrameSample(float Seconds);
 	/** Walks the player to a point at walking speed (for the walk-through). */
 	UFUNCTION(Exec) void GitsWalkTo(float X, float Y);
+	/** Inserts a new line after Line on a Make script's terminal and fills it. */
+	UFUNCTION(Exec) void GitsInsertLine(int32 Line, const FString& Text);
+	/** Logs which systems are complete and whether the sector is. */
+	UFUNCTION(Exec) void GitsSector();
 
 protected:
 

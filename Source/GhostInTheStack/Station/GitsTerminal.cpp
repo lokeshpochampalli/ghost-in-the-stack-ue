@@ -107,6 +107,29 @@ bool AGitsTerminal::SetLine(int32 LineNumber, const FString& Text)
 	return true;
 }
 
+bool AGitsTerminal::IsFreeEdit() const
+{
+	return Script && Script->bFreeEdit;
+}
+
+int32 AGitsTerminal::InsertLineAfter(int32 LineNumber)
+{
+	if (!IsFreeEdit() || LineNumber < 0 || LineNumber > Lines.Num() || Lines.Num() >= 40) { return 0; }
+	Lines.Insert(FString(), LineNumber);
+	if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->NoteEdit(Script, LineNumber + 1); }
+	RefreshScreen();
+	return LineNumber + 1;
+}
+
+bool AGitsTerminal::RemoveLine(int32 LineNumber)
+{
+	if (!IsFreeEdit() || LineNumber < 1 || LineNumber > Lines.Num() || Lines.Num() <= 1) { return false; }
+	Lines.RemoveAt(LineNumber - 1);
+	if (UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr) { V->NoteEdit(Script, LineNumber); }
+	RefreshScreen();
+	return true;
+}
+
 void AGitsTerminal::SetSelectedLine(int32 LineNumber)
 {
 	SelectedLine = FMath::Clamp(LineNumber, 0, Lines.Num());
@@ -244,6 +267,18 @@ FGitsScreenModel AGitsTerminal::BuildModel(bool bForOverlay) const
 	if (Script) { M.EditableLines = Script->EditableLines; }
 	M.Status = bForOverlay ? Status : (bInUse ? TEXT("in use") : Status);
 	M.bStatusIsError = bStatusIsError;
+	// Once the system works, the idle screen carries Ilse's journal entry: her logs live in the world.
+	if (!bForOverlay && !bInUse && Script && !Script->LogEntry.IsEmpty())
+	{
+		if (const UGitsVantSubsystem* V = GetWorld() ? GetWorld()->GetSubsystem<UGitsVantSubsystem>() : nullptr)
+		{
+			if (V->IsComplete(Script))
+			{
+				M.MessageLines.Add(TEXT("VANT: her log, from the terminal's memory:"));
+				M.MessageLines.Add(Script->LogEntry);
+			}
+		}
+	}
 	return M;
 }
 

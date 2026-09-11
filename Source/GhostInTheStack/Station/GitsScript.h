@@ -20,6 +20,28 @@ struct FGitsPredictionOption
 	/** Empty on the correct answer, a misconception tag (Companion/GitsTags) on every distractor. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Prediction")
 	FString Misconception;
+
+	/** What VANT says when this wrong reading is revealed at the run: the failure, named. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Prediction", meta = (MultiLine = true))
+	FString Reveal;
+};
+
+/** A Make script's hidden expectation (ADR-012): the label is shown before writing, the values are not. */
+USTRUCT(BlueprintType)
+struct FGitsTestCase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	FString Label;
+
+	/** Everything the run must print, in order. Empty means output is not checked. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	TArray<FString> ExpectedOutput;
+
+	/** World keys and the text of the value they must hold (light.approach -> 9). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	TMap<FString, FString> ExpectedWorld;
 };
 
 /** A question VANT asks before the first run, anchored to a source line (ADR-005). */
@@ -134,11 +156,41 @@ public:
 	FString Outro;
 
 	/** The goal as a world assertion: the key (door.inner) and the value it must hold (true). Empty key means no goal. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Narrative")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Goal")
 	FString GoalKey;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Narrative")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Goal")
 	FString GoalValue;
+
+	/** The goal as output: everything the run must print, in order. Empty means not checked. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Goal")
+	TArray<FString> GoalOutput;
+
+	/** A Make script's tests (ADR-012). All must pass. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Goal")
+	TArray<FGitsTestCase> TestCases;
+
+	/** What the station does when the goal is met: a world key and value, "door.entry=true" or "light.coldstore=8". */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Goal")
+	FString GoalUnlocks;
+
+	/** Counts towards the sector's completion. Off for an optional terminal. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Goal")
+	bool bCountsForSector = true;
+
+	/** Ilse's journal entry, shown on the terminal once the system works. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Narrative", meta = (MultiLine = true))
+	FString LogEntry;
+
+	/** A Make script: lines may be added and removed, not only changed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Script")
+	bool bFreeEdit = false;
+
+	/** Title of the panel bound to this script; empty uses the panel's own. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Narrative")
+	FString PanelTitle;
+
+	bool HasGoal() const { return !GoalKey.IsEmpty() || GoalOutput.Num() > 0 || TestCases.Num() > 0; }
 
 	/** The source split into lines, without trailing newline handling surprises. */
 	TArray<FString> Lines() const

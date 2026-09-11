@@ -18,6 +18,8 @@ Source/GhostInTheStack/
     GitsPower.h               the bus as rules: stages (nominal, low, critical, out) and the light factor
     GitsGenerator.*           AGitsGenerator: Ilse's reserve cell, used like a terminal
     GitsPowerGauge.*          AGitsPowerGauge: the wall gauge screen
+    GitsVent.*                AGitsVent: a grille whose fan spins on vent.<id>
+    GitsClock.*               AGitsClock: the shift clock panel, ticking on clock.<id>
   UI/
     GitsScreen.*              SGitsScreen (Slate) + UGitsScreenWidget: the shared "phosphor screen"
     GitsTerminalEditor.*      SGitsTerminalEditor: the full-screen overlay while a terminal is in use
@@ -127,6 +129,32 @@ Telemetry names follow the reference (`session_start` with the seed, `prediction
 `prediction_unresolvable`, `scrub_gate_satisfied`, `hint_requested`, `level_complete`) and go
 to `LogGitsTelemetry` for now; Phase 8 writes the export.
 
+## Goals, unlocks and the sector (Phase 7)
+
+A script's goal is any of: a world assertion (`GoalKey`/`GoalValue`), the exact output
+(`GoalOutput`), or a Make script's `TestCases` (ADR-012: labels shown before writing, values
+hidden, failures spoken in the station's voice). A reading script also requires every reading
+to be confirmed: the panel can show the right number while the player still holds the wrong
+belief about how it got there, so the system holds "until the reading is yours". A confirmed
+re-answer against the existing trace completes it with no run.
+
+Completion speaks the outro, logs `level_complete`, and applies `GoalUnlocks` (`door.entry=true`,
+`light.coldstore=8`) through `UGitsStationSubsystem::SetWorldValue`: a level interlock, not a
+script effect; it lands in the world now and in the next run's initial world. Once every
+counted terminal's script is complete, `AGitsStation::SectorUnlocks` is applied and
+`SectorCompleteLine` spoken (`sector_complete`): the airlock to Sector 2 opens. Ilse's
+`LogEntry` appears on the terminal's idle screen once its system works: her logs live in the
+world. A wall display bound to a `Script` shows only that system's runs, and a Make script's
+test checklist.
+
+Sector 1's eight systems come from the reference's Act 1 levels, re-authored in
+`Tools/setup_sector1_content.py`: the door log (entry interlock), the gauge mirror (pressure
+display), the cold store setpoint (frost light), the reclaimer panel (vent), the shift clock (the
+mixer's two divisions, re-themed), the door plate (cold store door), the manifest, and the Make
+task (the approach rig: `set_light` then `print("READY")`, written by the player). Every wrong
+option carries its misconception tag and a `Reveal` line VANT speaks at the run. The Phase 3
+loops script stays as an optional engineer's terminal that does not count.
+
 ## Power (the bus)
 
 One bus per sector, held by `UGitsStationSubsystem` and declared by the level's `AGitsStation`
@@ -210,4 +238,5 @@ For automation and for testing without walking: `GitsUse` (open the nearest term
 state, playback frame times and the slowest step change to the log), `GitsClose`, `GitsRewind`
 and `GitsResume` (hold and release without a key), `GitsVerifyRewind`, `GitsPredict <n>` (answer
 VANT with the nth shown option), `GitsHint`, `GitsVantStatus`, `GitsPower`, `GitsReserve` (use the
-generator), `GitsSetPower <n>`.
+generator), `GitsSetPower <n>`, `GitsInsertLine <after> <text>` (Make scripts), `GitsSector`,
+`GitsFrameSample <s>`, `GitsWalkTo <x> <y>`.

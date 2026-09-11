@@ -2,7 +2,10 @@
 #include "GitsTags.h"
 #include "Station/GitsScript.h"
 #include "Station/GitsStationSubsystem.h"
+#include "Station/GitsStation.h"
+#include "Station/GitsTerminal.h"
 #include "Interpreter/GitsRng.h"
+#include "EngineUtils.h"
 #include "Interpreter/GitsTrace.h"
 #include "Engine/World.h"
 #include "Misc/Guid.h"
@@ -171,12 +174,16 @@ void UGitsVantSubsystem::Settle(UGitsScript* Script, const FGitsPrediction& Pred
 	if (R.bCorrect)
 	{
 		Speak(bAtTheRun ? TEXT("That is what happened. You read it right.") : TEXT("Right. That is what it did. Reading confirmed."));
+		if (!bAtTheRun) { TryComplete(Script, false); }
 	}
 	else
 	{
-		Speak(bAtTheRun
-			? TEXT("Not what happened. Take it back to the start and watch it through before you answer again.")
-			: TEXT("Still not it. Back to the start; watch the line, then tell me again."));
+		// The failure, named, when the content names it; the physical failure is on the panel.
+		const FGitsPredictionOption* Chosen = Prediction.Options.FindByPredicate([&R](const FGitsPredictionOption& O) { return O.Id == R.OptionId; });
+		const FString Named = Chosen && !Chosen->Reveal.IsEmpty() ? Chosen->Reveal + TEXT(" ") : FString();
+		Speak(Named + (bAtTheRun
+			? TEXT("Take it back to the start and watch it through before you answer again.")
+			: TEXT("Still not it. Back to the start; watch the line, then tell me again.")));
 	}
 }
 
@@ -338,18 +345,132 @@ void UGitsVantSubsystem::HandleStep(int32 StepIndex)
 	if (bChanged) { OnShiftChanged.Broadcast(); }
 }
 
+bool UGitsVantSubsystem::IsComplete(const UGitsScript* Script) const
+{
+	return Script && OutroSpoken.Contains(KeyOf(Script));
+}
+
+const TSet<int32>& UGitsVantSubsystem::PassedTests(const UGitsScript* Script)
+{
+	return Passed.FindOrAdd(KeyOf(Script));
+}
+
+bool UGitsVantSubsystem::EvaluateGoal(UGitsScript* Script, UGitsStationSubsystem* S, FString& Reason)
+{
+	const FGitsRunSummary& Sum = S->GetLastSummary();
+	const FGitsWorldState& World = S->GetCurrentWorld();
+	// A reading script's system waits for the reading, not just the output: the panel can show
+	// the right number while the player still holds the wrong belief about how it got there.
+	if (Script->Predictions.Num() > 0 && !ShiftFor(Script).AllSatisfied(Script->Predictions))
+	{
+		Reason = TEXT("The reading is not yours yet.");
+		return false;
+	}
+	if (!Script->GoalKey.IsEmpty())
+	{
+		const FGitsWorldValue* V = World.Find(Script->GoalKey);
+		if (!V || V->ToText() != Script->GoalValue)
+		{
+			Reason = FString::Printf(TEXT("%s reads %s; the station wanted %s."), *Script->GoalKey, V ? *V->ToText() : TEXT("nothing"), *Script->GoalValue);
+			return false;
+		}
+	}
+	if (Script->GoalOutput.Num() > 0 && Sum.Output != Script->GoalOutput)
+	{
+		Reason = FString::Printf(TEXT("The panel read %s. It wanted %s."),
+			Sum.Output.Num() ? *FString::Join(Sum.Output, TEXT(" / ")) : TEXT("nothing"), *FString::Join(Script->GoalOutput, TEXT(" / ")));
+		return false;
+	}
+	TSet<int32>& PassedHere = Passed.FindOrAdd(KeyOf(Script));
+	PassedHere.Reset();
+	bool bAll = true;
+	for (int32 i = 0; i < Script->TestCases.Num(); ++i)
+	{
+		const FGitsTestCase& T = Script->TestCases[i];
+		bool bOk = true;
+		FString Why;
+		if (T.ExpectedOutput.Num() > 0 && Sum.Output != T.ExpectedOutput)
+		{
+			bOk = false;
+			Why = FString::Printf(TEXT("got %s"), Sum.Output.Num() ? *FString::Join(Sum.Output, TEXT(" then ")) : TEXT("nothing at all"));
+		}
+		for (const auto& P : T.ExpectedWorld)
+		{
+			const FGitsWorldValue* V = World.Find(P.Key);
+			if (!V || V->ToText() != P.Value)
+			{
+				bOk = false;
+				Why = FString::Printf(TEXT("%s reads %s"), *P.Key, V ? *V->ToText() : TEXT("nothing"));
+				break;
+			}
+		}
+		if (bOk) { PassedHere.Add(i); }
+		else if (bAll)
+		{
+			// Failures in the station's voice, never as assertion output (ADR-012).
+			bAll = false;
+			Reason = FString::Printf(TEXT("%s: %s."), *T.Label, *Why);
+		}
+	}
+	return bAll;
+}
+
+void UGitsVantSubsystem::CheckSector()
+{
+	if (bSectorComplete) { return; }
+	UGitsStationSubsystem* S = Station();
+	if (!S) { return; }
+	int32 Counted = 0;
+	for (TActorIterator<AGitsTerminal> It(GetWorld()); It; ++It)
+	{
+		if (!It->Script || !It->Script->bCountsForSector || !It->Script->HasGoal()) { continue; }
+		++Counted;
+		if (!IsComplete(It->Script)) { return; }
+	}
+	if (Counted == 0) { return; }
+	bSectorComplete = true;
+	LogEvent(TEXT("sector_complete"), FString::Printf(TEXT("systems=%d"), Counted));
+	for (TActorIterator<AGitsStation> It(GetWorld()); It; ++It)
+	{
+		FString K, V;
+		if (It->SectorUnlocks.Split(TEXT("="), &K, &V)) { S->SetWorldValue(K, V); }
+		if (!It->SectorCompleteLine.IsEmpty()) { Speak(It->SectorCompleteLine); }
+		break;
+	}
+}
+
+void UGitsVantSubsystem::TryComplete(UGitsScript* Script, bool bAfterRun)
+{
+	UGitsStationSubsystem* S = Station();
+	if (!S || !Script || !Script->HasGoal() || !S->HasTrace() || S->GetCurrentScript() != Script) { return; }
+	const FString Key = KeyOf(Script);
+	if (OutroSpoken.Contains(Key)) { return; }
+	FString Reason;
+	const bool bMet = EvaluateGoal(Script, S, Reason);
+	OnShiftChanged.Broadcast();
+	if (!bMet)
+	{
+		LogEvent(TEXT("goal_missed"), FString::Printf(TEXT("script=%s reason=\"%s\""), *Script->GetName(), *Reason));
+		if (!bAfterRun) { return; }
+		// A Make script gets the station's verdict. A reading script whose output was right but
+		// whose reading was wrong is told the system is waiting on the reading.
+		if (Script->TestCases.Num() > 0) { Speak(Reason); }
+		else if (Reason == TEXT("The reading is not yours yet."))
+		{
+			const FGitsRunSummary& Sum = S->GetLastSummary();
+			Speak(FString::Printf(TEXT("The panel reads %s. The system holds until the reading is yours."), Sum.Output.Num() ? *FString::Join(Sum.Output, TEXT(" / ")) : TEXT("nothing")));
+		}
+		return;
+	}
+	OutroSpoken.Add(Key);
+	LogEvent(TEXT("level_complete"), FString::Printf(TEXT("script=%s"), *Script->GetName()));
+	FString K, V;
+	if (Script->GoalUnlocks.Split(TEXT("="), &K, &V)) { S->SetWorldValue(K, V); }
+	if (!Script->Outro.IsEmpty()) { Speak(Script->Outro); }
+	CheckSector();
+}
+
 void UGitsVantSubsystem::HandleRunFinished()
 {
-	UGitsScript* Script = RunScript.Get();
-	UGitsStationSubsystem* S = Station();
-	if (!S || !Script || Script->GoalKey.IsEmpty()) { return; }
-	const FGitsWorldValue* V = S->GetCurrentWorld().Find(Script->GoalKey);
-	const bool bMet = V && V->ToText() == Script->GoalValue;
-	const FString Key = KeyOf(Script);
-	if (bMet && !OutroSpoken.Contains(Key))
-	{
-		OutroSpoken.Add(Key);
-		LogEvent(TEXT("level_complete"), FString::Printf(TEXT("script=%s"), *Script->GetName()));
-		if (!Script->Outro.IsEmpty()) { Speak(Script->Outro); }
-	}
+	TryComplete(RunScript.Get(), true);
 }

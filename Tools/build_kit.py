@@ -314,6 +314,22 @@ parts = [((60, 60, 60), (0, 0, 30), "slate"),
          ((62, 62, 12), (0, 0, 30), "signage")]
 make_piece("SM_Kit_Crate", parts, bevel=1.5)
 
+# vent: a wall grille (face at x=-7, 80 x 80) with a hollow behind it; the fan is its own piece
+parts = [((14, 80, 6), (-7, 0, 3), "slate"),
+         ((14, 80, 6), (-7, 0, 77), "slate"),
+         ((14, 6, 68), (-7, -37, 40), "slate"),
+         ((14, 6, 68), (-7, 37, 40), "slate"),
+         ((2, 68, 68), (-13, 0, 40), "ink"),
+         ((4, 84, 4), (-14, 0, 2), "copper"),
+         ((4, 84, 4), (-14, 0, 78), "copper")]
+make_piece("SM_Kit_Vent", parts, bevel=0.8)
+
+# vent fan: four blades and a hub, spinning about x; origin at the hub
+parts = [((6, 12, 12), (0, 0, 0), "copper"),
+         ((3, 60, 10), (0, 0, 0), "slate"),
+         ((3, 10, 60), (0, 0, 0), "slate")]
+make_piece("SM_Kit_VentFan", parts, bevel=0.5)
+
 # test cube from Phase 0 stays as the pipeline's canary
 if not bpy.data.objects.get("SM_Kit_TestCube"):
     make_piece("SM_Kit_TestCube", [((100, 100, 100), (0, 0, 50), "slate")], bevel=1.0)

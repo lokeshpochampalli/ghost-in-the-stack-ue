@@ -78,6 +78,14 @@ namespace GitsTags
 		}
 		if (Script->RunCost <= 0) { Problems.Add(TEXT("a run must cost something (RunCost is 0)")); }
 		if (Script->PredictedRunCost >= Script->RunCost) { Problems.Add(FString::Printf(TEXT("PredictedRunCost %d is not below RunCost %d; the discount must be real"), Script->PredictedRunCost, Script->RunCost)); }
+		if (Script->TestCases.Num() > 0 && Script->Predictions.Num() > 0) { Problems.Add(TEXT("a Make script has tests and no predictions (ADR-012)")); }
+		if (Script->TestCases.Num() > 0 && !Script->bFreeEdit) { Problems.Add(TEXT("a Make script must allow free editing")); }
+		for (const FGitsTestCase& T : Script->TestCases)
+		{
+			if (T.Label.IsEmpty()) { Problems.Add(TEXT("a test case has no label; the label is what the player sees")); }
+			if (T.ExpectedOutput.Num() == 0 && T.ExpectedWorld.Num() == 0) { Problems.Add(FString::Printf(TEXT("test '%s' expects nothing"), *T.Label)); }
+		}
+		if (!Script->GoalUnlocks.IsEmpty() && !Script->GoalUnlocks.Contains(TEXT("="))) { Problems.Add(TEXT("GoalUnlocks must be key=value")); }
 		if (Script->PredictedRunCost < 0) { Problems.Add(TEXT("PredictedRunCost is negative")); }
 		TSet<int32> Tiers;
 		for (const FGitsHint& H : Script->Hints)

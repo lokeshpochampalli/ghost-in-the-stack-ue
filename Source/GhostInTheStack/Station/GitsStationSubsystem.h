@@ -89,6 +89,12 @@ public:
 	UGitsScript* GetCurrentScript() const { return CurrentScript.Get(); }
 	/** True when the current trace is the run of exactly this source of this script (ADR-020: it cannot change). */
 	bool HasTraceFor(const UGitsScript* Script, const FString& Source) const;
+	/**
+	 * Sets a world key from the level (an interlock releasing when a log reports), not from a
+	 * script. Applied to the world now and carried into the next run's initial world. The value
+	 * text is "true", "false" or a number.
+	 */
+	void SetWorldValue(const FString& Key, const FString& ValueText);
 	int32 GetPlayIndex() const { return PlayIndex; }
 	UFUNCTION(BlueprintPure, Category = "Station")
 	EGitsPlayState GetPlayState() const { return State; }
@@ -207,6 +213,8 @@ private:
 	int32 ReserveDraws = 0;
 	/** Source of the last run per script asset path, for "nothing has changed". */
 	TMap<FString, FString> LastRunSource;
+	/** Keys the level set since the last run started; merged into the next run's initial world. */
+	FGitsWorldState LevelOverrides;
 	double FpsAccum = 0.0;
 	bool bSkipNextFrameSample = false;
 };

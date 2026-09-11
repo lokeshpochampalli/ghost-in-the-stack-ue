@@ -81,6 +81,18 @@ void UGitsStationSubsystem::SetPower(int32 NewPower)
 	OnPowerChanged.Broadcast();
 }
 
+void UGitsStationSubsystem::SetWorldValue(const FString& Key, const FString& ValueText)
+{
+	FGitsWorldValue V;
+	if (ValueText.Equals(TEXT("true"), ESearchCase::IgnoreCase)) { V = FGitsWorldValue::MakeBool(true); }
+	else if (ValueText.Equals(TEXT("false"), ESearchCase::IgnoreCase)) { V = FGitsWorldValue::MakeBool(false); }
+	else if (ValueText.IsNumeric()) { V = FGitsWorldValue::MakeNumber(FCString::Atod(*ValueText)); }
+	else { V = FGitsWorldValue::MakeString(ValueText); }
+	LevelOverrides.Add(Key, V);
+	CurrentWorld.Add(Key, V);
+	PoseSystems(false);
+}
+
 // --- running -----------------------------------------------------------------------------
 
 bool UGitsStationSubsystem::HasTraceFor(const UGitsScript* Script, const FString& Source) const
@@ -151,6 +163,8 @@ bool UGitsStationSubsystem::Run(UGitsScript* Script, const FString& Source, FGit
 		const FGitsWorldState Carried = GitsTrace::WorldAt(Trace, Trace.Steps.Num() - 1);
 		for (const auto& P : Carried) { Initial.Add(P.Key, P.Value); }
 	}
+	for (const auto& P : LevelOverrides) { Initial.Add(P.Key, P.Value); }
+	LevelOverrides.Reset();
 	FGitsWorldOracle Oracle;
 	if (Station)
 	{

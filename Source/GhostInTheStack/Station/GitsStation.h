@@ -50,6 +50,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
 	int32 ReserveRestore = 24;
 
+	/** VANT's line when every counted system in the sector works. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sector", meta = (MultiLine = true))
+	FString SectorCompleteLine;
+
+	/** What the sector's completion sets: "door.inner=true". */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sector")
+	FString SectorUnlocks;
+
 	/** VANT's refusal when nothing changed since the last run. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Station", meta = (MultiLine = true))
 	FString UnchangedSourceMessage = TEXT("Nothing has changed, so nothing new will happen. Change a line, then run it again.");

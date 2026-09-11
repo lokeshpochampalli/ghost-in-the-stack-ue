@@ -47,6 +47,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Terminal") bool SetLine(int32 LineNumber, const FString& Text);
 	UFUNCTION(BlueprintPure, Category = "Terminal") bool IsLineEditable(int32 LineNumber) const;
 	UFUNCTION(BlueprintCallable, Category = "Terminal") void ResetToScript();
+	/** Make scripts only: a new empty line after LineNumber (0 = at the top). Returns the new line's number, 0 if refused. */
+	UFUNCTION(BlueprintCallable, Category = "Terminal") int32 InsertLineAfter(int32 LineNumber);
+	UFUNCTION(BlueprintCallable, Category = "Terminal") bool RemoveLine(int32 LineNumber);
+	UFUNCTION(BlueprintPure, Category = "Terminal") bool IsFreeEdit() const;
 
 	/** Runs the current source through the station, if VANT allows it and the bus can pay. */
 	UFUNCTION(BlueprintCallable, Category = "Terminal")
