@@ -86,6 +86,8 @@ public:
 	UFUNCTION(Exec) void GitsInsertLine(int32 Line, const FString& Text);
 	/** Logs which systems are complete and whether the sector is. */
 	UFUNCTION(Exec) void GitsSector();
+	/** Uses the nearest sector gate: through to the next map if released. */
+	UFUNCTION(Exec) void GitsGate();
 
 	// --- the study (Phase 8)
 	/** Opens the study terminal's panel: consent and instruments. */

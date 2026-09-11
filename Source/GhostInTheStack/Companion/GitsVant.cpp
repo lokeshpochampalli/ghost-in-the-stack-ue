@@ -6,6 +6,7 @@
 #include "Station/GitsTerminal.h"
 #include "Interpreter/GitsRng.h"
 #include "Telemetry/GitsTelemetry.h"
+#include "Station/GitsProgress.h"
 #include "Engine/GameInstance.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
@@ -525,6 +526,10 @@ void UGitsVantSubsystem::CheckSector()
 	if (Counted == 0) { return; }
 	bSectorComplete = true;
 	LogEvent(TEXT("sector_complete"), FString::Printf(TEXT("systems=%d"), Counted));
+	if (const UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		if (UGitsProgressSubsystem* Progress = GI->GetSubsystem<UGitsProgressSubsystem>()) { Progress->MarkSectorComplete(UGitsProgressSubsystem::MapNameOf(GetWorld())); }
+	}
 	for (TActorIterator<AGitsStation> It(GetWorld()); It; ++It)
 	{
 		FString K, V;

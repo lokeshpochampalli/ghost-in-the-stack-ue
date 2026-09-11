@@ -127,7 +127,8 @@ AGitsLight::AGitsLight()
 
 void AGitsLight::PoseFromWorld(const FGitsWorldState& World, bool bInstant)
 {
-	TargetLevel = (float)FMath::Clamp(ReadNumber(World, TEXT("light.") + SystemId, InitialLevel), 0.0, 10.0);
+	if (!SwitchKey.IsEmpty()) { TargetLevel = ReadBool(World, SwitchKey, false) ? 10.f : 0.f; }
+	else { TargetLevel = (float)FMath::Clamp(ReadNumber(World, TEXT("light.") + SystemId, InitialLevel), 0.0, 10.0); }
 	if (bInstant) { CurrentLevel = TargetLevel; ApplyLevel(); }
 }
 
@@ -143,6 +144,11 @@ void AGitsLight::Tick(float DeltaTime)
 	if (!FMath::IsNearlyEqual(CurrentLevel, TargetLevel, 0.01f))
 	{
 		CurrentLevel = FMath::FInterpTo(CurrentLevel, TargetLevel, DeltaTime, 4.f);
+		ApplyLevel();
+	}
+	else if (bBeacon && CurrentLevel > 0.f)
+	{
+		BeaconPhase += DeltaTime * 2.2f;
 		ApplyLevel();
 	}
 }
@@ -174,5 +180,6 @@ void AGitsLight::ApplyLevel()
 	const GitsPower::EStage Stage = S ? S->GetPowerStage() : GitsPower::EStage::Nominal;
 	float Factor = GitsPower::LightFactor(Stage);
 	if (bEmergencyOnly) { Factor = Stage == GitsPower::EStage::Out ? 1.f : 0.f; }
-	Light->SetIntensity(FullIntensity * CurrentLevel / 10.f * Factor);
+	const float Pulse = (bBeacon && CurrentLevel > 0.f) ? 0.55f + 0.45f * FMath::Sin(BeaconPhase) : 1.f;
+	Light->SetIntensity(FullIntensity * CurrentLevel / 10.f * Factor * Pulse);
 }

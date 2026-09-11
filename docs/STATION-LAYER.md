@@ -189,7 +189,40 @@ it. It is the station's economy, not the script's physics.
 - `AGitsDoor`: `Frame` and `Panel` static meshes. Open is the panel raised by `OpenHeight` cm at
   `Speed` cm/s. Its key holds a bool.
 - `AGitsLight`: a point light in candelas. Its key holds a level 0..10; intensity is
-  `FullIntensity * level / 10`.
+  `FullIntensity * level / 10`. `SwitchKey` (e.g. `valve.lamp`) makes a bool key drive it instead;
+  `bBeacon` pulses it while on (the mast).
+- `AGitsVent`: a grille and a fan that spins while `vent.<id>` is true.
+- `AGitsHeater` (Phase 9): a wall radiator whose warm glow follows `heater.<id>`, 0 to 3.
+- `AGitsSprinkler`: a head whose spray column grows while `valve.<id>` is true.
+- `AGitsConveyor`: a belt whose crates ride round while `conveyor.<id>` is true.
+- `AGitsSectorGate`: a hatch that reads a door key (`door.inner`) and, released and used, loads
+  the next sector's map (`UGameplayStatics::OpenLevel`).
+
+## Sectors (Phase 9)
+
+One map per sector: `L_Sector1_Airlock`, `L_Sector2_Greenhouse`, `L_Sector3_Logistics`,
+`L_Sector4_Reactor`, each built by its `Tools/setup_sector<N>_content.py` on the shared
+`Tools/gits_content_lib.py`. The 22 systems of Sectors 2 to 4 are the reference's Acts 2 to 4
+re-authored line for line (level ids `a2-l01` to `a4-l06` on the script assets), each with a
+fitting that answers its goal: the frost lamp, the corridor heaters, the sprinklers over the
+channel planters, the west corridor going dark, the intake vent, the ballast and outbound lines,
+the marker lamps, the shelf grid, the survey board going red, the core ring, and the mast beacon
+that pulses when the transmission goes out. Each sector ends with its Make task from the
+reference (the corridor lamp, the depot tally, the transmission).
+
+Between maps: `UGitsProgressSubsystem` (game instance) remembers completed sectors, so a
+sector's exit stays released when the player comes back through it (`AGitsStation::BeginPlay`
+re-applies `SectorUnlocks`). The station and VANT state are per map; the power bus is per sector
+(`PowerBudget` 80 to 90 for the larger sectors). Sector 4's west door opens on the sector and
+leads nowhere the station can take you: the ending is the empty sledge rack and the mast holding
+the carrier.
+
+The recorder's wall-display view shows every open call frame as a "room" (`FGitsFrameSnapshot`),
+outermost first, so Sector 4's scope and recursion scripts can be read the way Ilse's log
+describes them.
+
+`Tools/check_curriculum.py` reads the four content scripts and checks the phase's acceptance:
+every concept tag in two or more systems, every misconception tag choreographed in two or more.
 
 Adding a system: subclass, pick a key, implement `PoseFromWorld`. Add the builtin that writes that
 key to the evaluator (`open_door`, `close_door`, `set_light` are in `GitsEvaluator.cpp`) and a
@@ -300,6 +333,6 @@ state, playback frame times and the slowest step change to the log), `GitsClose`
 and `GitsResume` (hold and release without a key), `GitsVerifyRewind`, `GitsPredict <n>` (answer
 VANT with the nth shown option), `GitsHint`, `GitsVantStatus`, `GitsPower`, `GitsReserve` (use the
 generator), `GitsSetPower <n>`, `GitsInsertLine <after> <text>` (Make scripts), `GitsSector`,
-`GitsFrameSample <s>`, `GitsWalkTo <x> <y>`. The study: `GitsStudy pre|post` (open the study
+`GitsFrameSample <s>`, `GitsWalkTo <x> <y>`, `GitsGate` (use the nearest sector gate). The study: `GitsStudy pre|post` (open the study
 panel, at the terminal if there is one), `GitsAnswer <n>` (the nth shown option, also the consent
 choice and the experience band), `GitsSkip`, `GitsExport`, `GitsTelemetry` (code, consent, count).

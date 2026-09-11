@@ -66,6 +66,8 @@ public:
 	bool IsComplete(const UGitsScript* Script) const;
 	/** Every counted terminal in the level is complete. */
 	bool IsSectorComplete() const { return bSectorComplete; }
+	/** The sector was completed on an earlier visit: no speech, no unlock (the station applies it). */
+	void MarkSectorRestored() { bSectorComplete = true; }
 	/** For a Make script: which test cases the last run of it passed, by index. */
 	const TSet<int32>& PassedTests(const UGitsScript* Script);
 
