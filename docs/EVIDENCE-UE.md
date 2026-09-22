@@ -20,7 +20,7 @@ Conventions: paths are relative to the repo root unless stated. "Sector" is the 
 
 | Item | Value |
 |---|---|
-| Commit | `53e5325109d1986b42a1efb69c41bc5557361830` |
+| Commit | `df497b48dd117a9e55c486ae79654de066ab8c22` |
 | Date | 2026-09-11 16:35:00 +0100 |
 | Subject | phase-9: Sectors 2 to 4, twenty-two systems, sector gates, new fittings and kit, the ending |
 | Branch | `main` |
@@ -113,7 +113,7 @@ under `docs/screenshots/phase-N/` (105 `.png` + 2 `.json` in total).
 
 | | |
 |---|---|
-| Commits | `59039e9`, `97caa15`, `073443c`, `9d71824`, `046a48f` (10 Sep 2026) |
+| Commits | `3fab9b3`, `012ac94`, `477db00`, `ceb9d2d`, `2d8e552` (10 Sep 2026) |
 | Built | UE 5.8 C++ first-person template; MCP plugin enabled and a client configured; Blender kit pipeline (`Kit.blend`, `export_kit.py`, `import_kit.py`) exporting one test cube with collision into the level; reference material imported (spec, ADRs, 30 fixtures, 3D docs); ADR-025/026. |
 
 | Criterion | Result |
@@ -135,7 +135,7 @@ Screenshots (`docs/screenshots/phase-0/`):
 
 | | |
 |---|---|
-| Commit | `fa060a4` (10 Sep 2026) |
+| Commit | `c9da1f1` (10 Sep 2026) |
 | Built | `Source/GhostInTheStack/Interpreter/`: lexer, parser with recognition pass, eager evaluator producing `FGitsTrace`, oracle, diff, 46-entry diagnostic catalogue, golden fixture runner as automation tests. |
 
 | Criterion | Result |
@@ -144,7 +144,7 @@ Screenshots (`docs/screenshots/phase-0/`):
 | both caps enforced in their own units | passed: `Evaluator.Caps` test; safety cap 50,000 steps, statement cap 2,000 statement executions (§3.5) |
 | recursion to depth 100 gives the friendly message | passed: fixture `outcome-call-depth` (cap 4000 statements), code `call-depth-exceeded` |
 | `-7 % 3` and floor-division fixtures pass | passed: fixture `tier1-python-sign-rules` |
-| no fixture edited to make it pass | passed: `git log -- Fixtures/` shows one commit, `97caa15` (the import); 0 commits modify a fixture afterwards |
+| no fixture edited to make it pass | passed: `git log -- Fixtures/` shows one commit, `012ac94` (the import); 0 commits modify a fixture afterwards |
 | "error catalogue with all 46 codes" (phase text) | passed: 46 codes, names identical to the reference's `DiagnosticCode` union (`comm` diff empty) |
 
 Status row says "45 automation tests green"; at HEAD there are 57 (§10).
@@ -158,7 +158,7 @@ Screenshots (`docs/screenshots/phase-1/`):
 
 | | |
 |---|---|
-| Commit | `812e10a` (10 Sep 2026) |
+| Commit | `3313758` (10 Sep 2026) |
 | Built | `L_Sector1_Airlock` with one corridor, one door, one terminal, one wall display; `UGitsStationSubsystem` runs the interpreter and drives the door from the trace through a play head; single-line editing; ADR-020 refusal on unchanged source. |
 
 | Criterion | Result |
@@ -182,7 +182,7 @@ Screenshots (`docs/screenshots/phase-2/`):
 
 | | |
 |---|---|
-| Commit | `9352e77` (11 Sep 2026) |
+| Commit | `feb0b4b` (11 Sep 2026) |
 | Built | `FGitsRecorder` (clock ⇄ statement beats, loop contexts); hold-R rewind on the same play head; terminal line highlight and wall-display bindings during rewind; `GitsVerifyRewind` console check. |
 
 | Criterion | Result |
@@ -207,7 +207,7 @@ Screenshots (`docs/screenshots/phase-3/`):
 
 | | |
 |---|---|
-| Commit | `3190e2a` (11 Sep 2026) |
+| Commit | `03b2035` (11 Sep 2026) |
 | Built | `UGitsVantSubsystem`, `FGitsShift` (the gate), ported mulberry32/FNV-1a RNG, terminal question mode, reveal at the anchored line, lock/release per ADR-030, tiered hints, intro/outro, caption HUD; ADR-027 to 030. |
 
 | Criterion | Result |
@@ -234,7 +234,7 @@ Screenshots (`docs/screenshots/phase-4/`):
 
 | | |
 |---|---|
-| Commit | `34fae7f` (11 Sep 2026) |
+| Commit | `679b481` (11 Sep 2026) |
 | Built | power bus on the station subsystem; per-script `RunCost`/`PredictedRunCost`; dimming stages; emergency lighting and camera torch at out; `AGitsGenerator` (reserve cell); `AGitsPowerGauge`; hints charge the bus; `GitsTags::ValidatePower` at level start. |
 
 | Criterion | Result |
@@ -260,7 +260,7 @@ Screenshots (`docs/screenshots/phase-5/`):
 
 | | |
 |---|---|
-| Commit | `21289dd` (11 Sep 2026) |
+| Commit | `c255389` (11 Sep 2026) |
 | Built | 15 kit pieces (`Tools/build_kit.py`, headless Blender) on one trim sheet (`Tools/make_trim_sheet.py`); Sector 1 laid out from the kit; rig, emergency lights, fills, dressing. |
 
 | Criterion | Result |
@@ -286,7 +286,7 @@ Screenshots (`docs/screenshots/phase-6/`):
 
 | | |
 |---|---|
-| Commit | `a9caba2` (11 Sep 2026) |
+| Commit | `c9fcf3b` (11 Sep 2026) |
 | Built | eight systems re-authored from Act 1 (plus one optional loops script); goals of three kinds including the Make task with tests; panels per system; vent and shift clock; sector unlock opens the airlock. |
 
 | Criterion | Result |
@@ -316,7 +316,7 @@ Screenshots (`docs/screenshots/phase-7/`):
 
 | | |
 |---|---|
-| Commits | `704733f`, `00a926c` (11 Sep 2026) |
+| Commits | `b28af41`, `30e1726` (11 Sep 2026) |
 | Built | `UGitsTelemetrySubsystem` (consent gate, 18 types, JSON-lines store, bundle export, PII tripwire); every event wired through VANT, the station, the terminal, the generator; the four instruments; `SGitsInstrumentPanel`; two `AGitsInstrumentTerminal`s in Sector 1; level ids on scripts. |
 
 | Criterion | Result |
@@ -343,7 +343,7 @@ Screenshots (`docs/screenshots/phase-8/`):
 
 | | |
 |---|---|
-| Commit | `53e5325` (11 Sep 2026) |
+| Commit | `df497b4` (11 Sep 2026) |
 | Built | three maps; 22 systems re-authored from Acts 2–4; `AGitsHeater`, `AGitsSprinkler`, `AGitsConveyor`, `AGitsSectorGate`, `UGitsProgressSubsystem`; light `SwitchKey`/`bBeacon`; 11 kit pieces; the rooms view; `Tools/check_curriculum.py`. |
 
 | Criterion | Result |
@@ -522,7 +522,7 @@ and prints `passed=57 failed=0` (11 Sep 2026, three runs during Phases 8–9, al
 `Interpreter.GoldenCoverage`, checks that every fixture's `-- covers:` line is represented.
 
 Fixture integrity by git: `git log --format=%h -- Fixtures/` returns exactly one commit,
-`97caa15` ("Add reference material: language spec, decisions, golden fixtures, 3D scaffold docs",
+`012ac94` ("Add reference material: language spec, decisions, golden fixtures, 3D scaffold docs",
 10 Sep 2026); `git log --diff-filter=M -- Fixtures/ | wc -l` is 0.
 
 ### 3.8 Where the C++ differs from the TypeScript reference
@@ -1576,7 +1576,7 @@ Success GhostInTheStack.Telemetry.Instruments.TracingItems
 Success GhostInTheStack.Telemetry.PiiTripwire
 ```
 
-### 16.5 Golden fixture files (`Fixtures/`, 60 files, one commit `97caa15`)
+### 16.5 Golden fixture files (`Fixtures/`, 60 files, one commit `012ac94`)
 
 a1-l03-cold-store, outcome-call-depth, outcome-division-by-zero, outcome-name-not-defined,
 outcome-statement-cap, outcome-type-mismatch, station-effects, station-oracle-read,
